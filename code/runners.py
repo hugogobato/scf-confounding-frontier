@@ -283,6 +283,8 @@ def run_cell(job: dict):
     mode = job["mode"]
     runner = MODE_RUNNER[mode]
     raw_path, means_path = Path(job["raw_path"]), Path(job["means_path"])
+    raw_path.parent.mkdir(parents=True, exist_ok=True)
+    means_path.parent.mkdir(parents=True, exist_ok=True)
     if raw_path.exists():
         try:
             have = pd.read_parquet(raw_path, columns=["rep"])
