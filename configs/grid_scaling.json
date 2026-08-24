@@ -1,0 +1,106 @@
+[
+ {
+  "config": {
+   "n": 1000,
+   "p": 1000,
+   "r": 5,
+   "l": [
+    3.0,
+    0.5,
+    0.5,
+    0.5,
+    0.5
+   ],
+   "theta": 0.5235987755982988,
+   "g": 1.0,
+   "profile": "mixed",
+   "label": "scaling",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "130bb09155ff",
+  "mode": "correctness",
+  "sweep": "scaling",
+  "reps": 2,
+  "raw_path": "data/sim/scaling/raw/130bb09155ff.parquet",
+  "means_path": "data/sim/scaling/means/130bb09155ff.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 8000,
+   "r": 5,
+   "l": [
+    6.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "theta": 0.5235987755982988,
+   "g": 1.0,
+   "profile": "mixed",
+   "label": "scaling",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "36b42706d1e0",
+  "mode": "correctness",
+  "sweep": "scaling",
+  "reps": 2,
+  "raw_path": "data/sim/scaling/raw/36b42706d1e0.parquet",
+  "means_path": "data/sim/scaling/means/36b42706d1e0.npz"
+ },
+ {
+  "config": {
+   "n": 4000,
+   "p": 8000,
+   "r": 5,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "g": 1.0,
+   "profile": "mixed",
+   "label": "scaling",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "a684c471455d",
+  "mode": "correctness",
+  "sweep": "scaling",
+  "reps": 2,
+  "raw_path": "data/sim/scaling/raw/a684c471455d.parquet",
+  "means_path": "data/sim/scaling/means/a684c471455d.npz"
+ },
+ {
+  "config": {
+   "n": 8000,
+   "p": 1600,
+   "r": 5,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "g": 1.0,
+   "profile": "mixed",
+   "label": "scaling",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "ef6ab884f7a8",
+  "mode": "correctness",
+  "sweep": "scaling",
+  "reps": 2,
+  "raw_path": "data/sim/scaling/raw/ef6ab884f7a8.parquet",
+  "means_path": "data/sim/scaling/means/ef6ab884f7a8.npz"
+ }
+]

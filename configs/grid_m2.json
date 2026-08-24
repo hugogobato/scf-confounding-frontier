@@ -1,0 +1,86 @@
+[
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "m2_weak",
+   "m2_treatment": true,
+   "m2_tau": 1.0,
+   "delta_g": 0.3,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "67db7e2b0442",
+  "mode": "m2",
+  "sweep": "m2",
+  "reps": 150,
+  "raw_path": "data/sim/m2/raw/67db7e2b0442.parquet",
+  "means_path": "data/sim/m2/means/67db7e2b0442.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 5,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "m2_weak",
+   "m2_treatment": true,
+   "m2_tau": 1.0,
+   "delta_g": 0.3,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "1ab9210749fc",
+  "mode": "m2",
+  "sweep": "m2",
+  "reps": 150,
+  "raw_path": "data/sim/m2/raw/1ab9210749fc.parquet",
+  "means_path": "data/sim/m2/means/1ab9210749fc.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "m2_weak",
+   "m2_treatment": true,
+   "m2_tau": 1.0,
+   "delta_g": 0.3,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "21f32e52c10e",
+  "mode": "m2",
+  "sweep": "m2",
+  "reps": 150,
+  "raw_path": "data/sim/m2/raw/21f32e52c10e.parquet",
+  "means_path": "data/sim/m2/means/21f32e52c10e.npz"
+ }
+]

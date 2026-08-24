@@ -1,0 +1,290 @@
+[
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.0,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "5c20477e7b8a",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/5c20477e7b8a.parquet",
+  "means_path": "data/sim/alignment/means/5c20477e7b8a.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.2617993877991494,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "de7465cbb361",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/de7465cbb361.parquet",
+  "means_path": "data/sim/alignment/means/de7465cbb361.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "e3955c2b2417",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/e3955c2b2417.parquet",
+  "means_path": "data/sim/alignment/means/e3955c2b2417.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.7853981633974483,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "a2de26eb0227",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/a2de26eb0227.parquet",
+  "means_path": "data/sim/alignment/means/a2de26eb0227.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.0471975511965976,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "17748900248a",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/17748900248a.parquet",
+  "means_path": "data/sim/alignment/means/17748900248a.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.3089969389957472,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "978d07dcb75e",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/978d07dcb75e.parquet",
+  "means_path": "data/sim/alignment/means/978d07dcb75e.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "6215583ffd95",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/6215583ffd95.parquet",
+  "means_path": "data/sim/alignment/means/6215583ffd95.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.832595714594046,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "9eed6407785c",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/9eed6407785c.parquet",
+  "means_path": "data/sim/alignment/means/9eed6407785c.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 2.0943951023931953,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "d02b148345c3",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/d02b148345c3.parquet",
+  "means_path": "data/sim/alignment/means/d02b148345c3.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 2.356194490192345,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "7f759e72b65e",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/7f759e72b65e.parquet",
+  "means_path": "data/sim/alignment/means/7f759e72b65e.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 2.6179938779914944,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "b8d6eec61a85",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/b8d6eec61a85.parquet",
+  "means_path": "data/sim/alignment/means/b8d6eec61a85.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 2.8797932657906435,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.0,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "b9beaff1ecc0",
+  "mode": "alignment",
+  "sweep": "alignment",
+  "reps": 800,
+  "raw_path": "data/sim/alignment/raw/b9beaff1ecc0.parquet",
+  "means_path": "data/sim/alignment/means/b9beaff1ecc0.npz"
+ }
+]

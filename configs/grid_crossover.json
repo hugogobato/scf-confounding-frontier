@@ -1,0 +1,362 @@
+[
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "g": 0.25,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "7ffc14e94529",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/7ffc14e94529.parquet",
+  "means_path": "data/sim/crossover/means/7ffc14e94529.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "g": 0.5,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "e3ce1da8f7ed",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/e3ce1da8f7ed.parquet",
+  "means_path": "data/sim/crossover/means/e3ce1da8f7ed.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "g": 1.0,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "07eeae1b443c",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/07eeae1b443c.parquet",
+  "means_path": "data/sim/crossover/means/07eeae1b443c.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "g": 2.0,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "e53b27ab3355",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/e53b27ab3355.parquet",
+  "means_path": "data/sim/crossover/means/e53b27ab3355.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "g": 4.0,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "7eda31b0267a",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/7eda31b0267a.parquet",
+  "means_path": "data/sim/crossover/means/7eda31b0267a.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "g": 0.25,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "6dca75004866",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/6dca75004866.parquet",
+  "means_path": "data/sim/crossover/means/6dca75004866.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "g": 0.5,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "44b1cfde2306",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/44b1cfde2306.parquet",
+  "means_path": "data/sim/crossover/means/44b1cfde2306.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "g": 1.0,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "7fa3e1e22f79",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/7fa3e1e22f79.parquet",
+  "means_path": "data/sim/crossover/means/7fa3e1e22f79.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "g": 2.0,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "69d69e6c5347",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/69d69e6c5347.parquet",
+  "means_path": "data/sim/crossover/means/69d69e6c5347.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "g": 4.0,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "8eaff95bb8a1",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/8eaff95bb8a1.parquet",
+  "means_path": "data/sim/crossover/means/8eaff95bb8a1.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "g": 0.25,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "f1b533876641",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/f1b533876641.parquet",
+  "means_path": "data/sim/crossover/means/f1b533876641.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "g": 0.5,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "24ed576c0eef",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/24ed576c0eef.parquet",
+  "means_path": "data/sim/crossover/means/24ed576c0eef.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "g": 1.0,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "90ceda202392",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/90ceda202392.parquet",
+  "means_path": "data/sim/crossover/means/90ceda202392.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "g": 2.0,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "52cadba9fdaa",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/52cadba9fdaa.parquet",
+  "means_path": "data/sim/crossover/means/52cadba9fdaa.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "g": 4.0,
+   "profile": "mixed",
+   "label": "crossover",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "705b46091a3b",
+  "mode": "crossover",
+  "sweep": "crossover",
+  "reps": 150,
+  "raw_path": "data/sim/crossover/raw/705b46091a3b.parquet",
+  "means_path": "data/sim/crossover/means/705b46091a3b.npz"
+ }
+]

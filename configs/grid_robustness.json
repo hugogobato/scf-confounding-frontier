@@ -1,0 +1,726 @@
+[
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V0_gauss",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "577631042004",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/577631042004.parquet",
+  "means_path": "data/sim/robustness/means/577631042004.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V0_gauss",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "60913fac11bd",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/60913fac11bd.parquet",
+  "means_path": "data/sim/robustness/means/60913fac11bd.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V0_gauss",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "188530d71951",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/188530d71951.parquet",
+  "means_path": "data/sim/robustness/means/188530d71951.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V0_gauss",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "45273a2ebd8a",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/45273a2ebd8a.parquet",
+  "means_path": "data/sim/robustness/means/45273a2ebd8a.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V1_t5",
+   "error_law": "t5",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "a0304ef84687",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/a0304ef84687.parquet",
+  "means_path": "data/sim/robustness/means/a0304ef84687.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V1_t5",
+   "error_law": "t5",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "caa086de4c4a",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/caa086de4c4a.parquet",
+  "means_path": "data/sim/robustness/means/caa086de4c4a.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V1_t5",
+   "error_law": "t5",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "fe4ba0e103c7",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/fe4ba0e103c7.parquet",
+  "means_path": "data/sim/robustness/means/fe4ba0e103c7.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V1_t5",
+   "error_law": "t5",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "95c8958d8bcf",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/95c8958d8bcf.parquet",
+  "means_path": "data/sim/robustness/means/95c8958d8bcf.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V2_rademacher_half",
+   "loading_kind": "rademacher_half",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "6a7c5efbe32a",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/6a7c5efbe32a.parquet",
+  "means_path": "data/sim/robustness/means/6a7c5efbe32a.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V2_rademacher_half",
+   "loading_kind": "rademacher_half",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "799c7094aeb7",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/799c7094aeb7.parquet",
+  "means_path": "data/sim/robustness/means/799c7094aeb7.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V2_rademacher_half",
+   "loading_kind": "rademacher_half",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "0829bf646058",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/0829bf646058.parquet",
+  "means_path": "data/sim/robustness/means/0829bf646058.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V2_rademacher_half",
+   "loading_kind": "rademacher_half",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "5bcc8003bc62",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/5bcc8003bc62.parquet",
+  "means_path": "data/sim/robustness/means/5bcc8003bc62.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V3_hetero_u",
+   "hetero_u": true,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "7de56325a429",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/7de56325a429.parquet",
+  "means_path": "data/sim/robustness/means/7de56325a429.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V3_hetero_u",
+   "hetero_u": true,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "2a6a9e144eb7",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/2a6a9e144eb7.parquet",
+  "means_path": "data/sim/robustness/means/2a6a9e144eb7.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V3_hetero_u",
+   "hetero_u": true,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "fb1f21f88b9e",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/fb1f21f88b9e.parquet",
+  "means_path": "data/sim/robustness/means/fb1f21f88b9e.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V3_hetero_u",
+   "hetero_u": true,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "009e04a6b932",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/009e04a6b932.parquet",
+  "means_path": "data/sim/robustness/means/009e04a6b932.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V4_corr_f",
+   "corr_factors": true,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "53f9e4049a7f",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/53f9e4049a7f.parquet",
+  "means_path": "data/sim/robustness/means/53f9e4049a7f.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V4_corr_f",
+   "corr_factors": true,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "e513265c37d1",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/e513265c37d1.parquet",
+  "means_path": "data/sim/robustness/means/e513265c37d1.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V4_corr_f",
+   "corr_factors": true,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "1777df929850",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/1777df929850.parquet",
+  "means_path": "data/sim/robustness/means/1777df929850.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V4_corr_f",
+   "corr_factors": true,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "499ae0c2c441",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/499ae0c2c441.parquet",
+  "means_path": "data/sim/robustness/means/499ae0c2c441.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V6_sparse_conf",
+   "conf_kind": "sparse",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "966b20373966",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/966b20373966.parquet",
+  "means_path": "data/sim/robustness/means/966b20373966.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V6_sparse_conf",
+   "conf_kind": "sparse",
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "28f05b342fac",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/28f05b342fac.parquet",
+  "means_path": "data/sim/robustness/means/28f05b342fac.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "V6_sparse_conf",
+   "conf_kind": "sparse",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "42fd97cca262",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/42fd97cca262.parquet",
+  "means_path": "data/sim/robustness/means/42fd97cca262.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 5,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V6_sparse_conf",
+   "conf_kind": "sparse",
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "6bfa750d8d97",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 250,
+  "raw_path": "data/sim/robustness/raw/6bfa750d8d97.parquet",
+  "means_path": "data/sim/robustness/means/6bfa750d8d97.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V5_r-1",
+   "r_misspec": -1,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "8256b347ce61",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 125,
+  "raw_path": "data/sim/robustness/raw/8256b347ce61.parquet",
+  "means_path": "data/sim/robustness/means/8256b347ce61.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 5,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V5_r-1",
+   "r_misspec": -1,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "11b8f6b9f5d0",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 125,
+  "raw_path": "data/sim/robustness/raw/11b8f6b9f5d0.parquet",
+  "means_path": "data/sim/robustness/means/11b8f6b9f5d0.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 5,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V5_r+1",
+   "r_misspec": 1,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "5ddae9c03815",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 125,
+  "raw_path": "data/sim/robustness/raw/5ddae9c03815.parquet",
+  "means_path": "data/sim/robustness/means/5ddae9c03815.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 5,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "V5_r+1",
+   "r_misspec": 1,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "52875dc28af6",
+  "mode": "robustness",
+  "sweep": "robustness",
+  "reps": 125,
+  "raw_path": "data/sim/robustness/raw/52875dc28af6.parquet",
+  "means_path": "data/sim/robustness/means/52875dc28af6.npz"
+ }
+]

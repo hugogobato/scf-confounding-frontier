@@ -1,0 +1,10 @@
+# data payloads stay out of git (parquets/npz are distributed via Colab
+# archives and consolidated locally); small manifests are kept.
+data/**
+!data/sim/shard_manifest.json
+!data/sim/cost_model.json
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.ipynb_checkpoints/

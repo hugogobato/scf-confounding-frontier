@@ -1,0 +1,1442 @@
+[
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "0084f1f38a6e",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/0084f1f38a6e.parquet",
+  "means_path": "data/sim/power/means/0084f1f38a6e.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "f0519275af40",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/f0519275af40.parquet",
+  "means_path": "data/sim/power/means/f0519275af40.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "95e109c3fc8d",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/95e109c3fc8d.parquet",
+  "means_path": "data/sim/power/means/95e109c3fc8d.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "a2ab8f26ad73",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/a2ab8f26ad73.parquet",
+  "means_path": "data/sim/power/means/a2ab8f26ad73.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "118ac9c82299",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/118ac9c82299.parquet",
+  "means_path": "data/sim/power/means/118ac9c82299.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "aa86fb25967d",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/aa86fb25967d.parquet",
+  "means_path": "data/sim/power/means/aa86fb25967d.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "bf4ef63c368b",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/bf4ef63c368b.parquet",
+  "means_path": "data/sim/power/means/bf4ef63c368b.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "4a4db7951b96",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/4a4db7951b96.parquet",
+  "means_path": "data/sim/power/means/4a4db7951b96.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "86ea293b9a1e",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/86ea293b9a1e.parquet",
+  "means_path": "data/sim/power/means/86ea293b9a1e.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    0.22360679774997896,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "7526fae47372",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/7526fae47372.parquet",
+  "means_path": "data/sim/power/means/7526fae47372.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "80c578ceca0f",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/80c578ceca0f.parquet",
+  "means_path": "data/sim/power/means/80c578ceca0f.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "231e0b71aa62",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/231e0b71aa62.parquet",
+  "means_path": "data/sim/power/means/231e0b71aa62.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "07166827ed20",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/07166827ed20.parquet",
+  "means_path": "data/sim/power/means/07166827ed20.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "ad91a73d676a",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/ad91a73d676a.parquet",
+  "means_path": "data/sim/power/means/ad91a73d676a.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "86e7d6f37e89",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/86e7d6f37e89.parquet",
+  "means_path": "data/sim/power/means/86e7d6f37e89.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "67fa152cc2ce",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/67fa152cc2ce.parquet",
+  "means_path": "data/sim/power/means/67fa152cc2ce.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "221d8c9b256a",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/221d8c9b256a.parquet",
+  "means_path": "data/sim/power/means/221d8c9b256a.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "e06fefdb38ef",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/e06fefdb38ef.parquet",
+  "means_path": "data/sim/power/means/e06fefdb38ef.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "d17946a60411",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/d17946a60411.parquet",
+  "means_path": "data/sim/power/means/d17946a60411.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 400,
+   "r": 3,
+   "l": [
+    1.3416407864998738,
+    0.22360679774997896,
+    0.22360679774997896
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "7f75c1bbad2c",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/7f75c1bbad2c.parquet",
+  "means_path": "data/sim/power/means/7f75c1bbad2c.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "56e0e86c1555",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/56e0e86c1555.parquet",
+  "means_path": "data/sim/power/means/56e0e86c1555.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "605f6a5d79cc",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/605f6a5d79cc.parquet",
+  "means_path": "data/sim/power/means/605f6a5d79cc.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "cbf10298ba9b",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/cbf10298ba9b.parquet",
+  "means_path": "data/sim/power/means/cbf10298ba9b.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "055fea2d4bc0",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/055fea2d4bc0.parquet",
+  "means_path": "data/sim/power/means/055fea2d4bc0.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "5e3aa50ce079",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/5e3aa50ce079.parquet",
+  "means_path": "data/sim/power/means/5e3aa50ce079.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "8ddc8a669c4f",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/8ddc8a669c4f.parquet",
+  "means_path": "data/sim/power/means/8ddc8a669c4f.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "0d42b586b7d5",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/0d42b586b7d5.parquet",
+  "means_path": "data/sim/power/means/0d42b586b7d5.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "3fec1c83615e",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/3fec1c83615e.parquet",
+  "means_path": "data/sim/power/means/3fec1c83615e.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "dc827e3e8f81",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/dc827e3e8f81.parquet",
+  "means_path": "data/sim/power/means/dc827e3e8f81.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    0.4472135954999579,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "3f417b0bc049",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/3f417b0bc049.parquet",
+  "means_path": "data/sim/power/means/3f417b0bc049.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "6462948bd644",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/6462948bd644.parquet",
+  "means_path": "data/sim/power/means/6462948bd644.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "373dfb444a5a",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/373dfb444a5a.parquet",
+  "means_path": "data/sim/power/means/373dfb444a5a.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "0c201b0c0b9b",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/0c201b0c0b9b.parquet",
+  "means_path": "data/sim/power/means/0c201b0c0b9b.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "934fca21dfa4",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/934fca21dfa4.parquet",
+  "means_path": "data/sim/power/means/934fca21dfa4.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "dad1dfcd18e9",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/dad1dfcd18e9.parquet",
+  "means_path": "data/sim/power/means/dad1dfcd18e9.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "4df937b2be51",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/4df937b2be51.parquet",
+  "means_path": "data/sim/power/means/4df937b2be51.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "9f2a6ba347a8",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/9f2a6ba347a8.parquet",
+  "means_path": "data/sim/power/means/9f2a6ba347a8.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "d115d8501cc9",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/d115d8501cc9.parquet",
+  "means_path": "data/sim/power/means/d115d8501cc9.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "5d8f27ee695e",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/5d8f27ee695e.parquet",
+  "means_path": "data/sim/power/means/5d8f27ee695e.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 1600,
+   "r": 3,
+   "l": [
+    2.6832815729997477,
+    0.4472135954999579,
+    0.4472135954999579
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": false
+  },
+  "config_id": "68c756e0e09c",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/68c756e0e09c.parquet",
+  "means_path": "data/sim/power/means/68c756e0e09c.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "9727fd616367",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/9727fd616367.parquet",
+  "means_path": "data/sim/power/means/9727fd616367.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "a8d863a90d69",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/a8d863a90d69.parquet",
+  "means_path": "data/sim/power/means/a8d863a90d69.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "c1821f061841",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/c1821f061841.parquet",
+  "means_path": "data/sim/power/means/c1821f061841.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "afb888c1e592",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/afb888c1e592.parquet",
+  "means_path": "data/sim/power/means/afb888c1e592.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "sub",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "78aa27d165c7",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/78aa27d165c7.parquet",
+  "means_path": "data/sim/power/means/78aa27d165c7.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "8ca0abc4c1bc",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/8ca0abc4c1bc.parquet",
+  "means_path": "data/sim/power/means/8ca0abc4c1bc.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "3e77ab4e7cfb",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/3e77ab4e7cfb.parquet",
+  "means_path": "data/sim/power/means/3e77ab4e7cfb.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "3cd0f1eecf2f",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/3cd0f1eecf2f.parquet",
+  "means_path": "data/sim/power/means/3cd0f1eecf2f.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "c6cc73a68698",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/c6cc73a68698.parquet",
+  "means_path": "data/sim/power/means/c6cc73a68698.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    0.7071067811865476,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "sub",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "ddcd7835ef9b",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/ddcd7835ef9b.parquet",
+  "means_path": "data/sim/power/means/ddcd7835ef9b.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "53f9ab82a68e",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/53f9ab82a68e.parquet",
+  "means_path": "data/sim/power/means/53f9ab82a68e.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "d845812cc895",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/d845812cc895.parquet",
+  "means_path": "data/sim/power/means/d845812cc895.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "85215b898694",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/85215b898694.parquet",
+  "means_path": "data/sim/power/means/85215b898694.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "6d6fef98ceba",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/6d6fef98ceba.parquet",
+  "means_path": "data/sim/power/means/6d6fef98ceba.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 0.5235987755982988,
+   "profile": "mixed",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "493d4b6f4d58",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/493d4b6f4d58.parquet",
+  "means_path": "data/sim/power/means/493d4b6f4d58.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.15,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "6562bf4bd50c",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/6562bf4bd50c.parquet",
+  "means_path": "data/sim/power/means/6562bf4bd50c.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.4,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "f1e8a8f0f880",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/f1e8a8f0f880.parquet",
+  "means_path": "data/sim/power/means/f1e8a8f0f880.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 0.8,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "4b7578d5abfb",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/4b7578d5abfb.parquet",
+  "means_path": "data/sim/power/means/4b7578d5abfb.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 1.6,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "032b33bf6244",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/032b33bf6244.parquet",
+  "means_path": "data/sim/power/means/032b33bf6244.npz"
+ },
+ {
+  "config": {
+   "n": 2000,
+   "p": 4000,
+   "r": 3,
+   "l": [
+    4.242640687119286,
+    0.7071067811865476,
+    0.7071067811865476
+   ],
+   "theta": 1.5707963267948966,
+   "profile": "mixed",
+   "label": "main",
+   "g": 3.2,
+   "q_fixed": true,
+   "twin_gamma0": true
+  },
+  "config_id": "b19ba7fb2e34",
+  "mode": "power",
+  "sweep": "power",
+  "reps": 300,
+  "raw_path": "data/sim/power/raw/b19ba7fb2e34.parquet",
+  "means_path": "data/sim/power/means/b19ba7fb2e34.npz"
+ }
+]
