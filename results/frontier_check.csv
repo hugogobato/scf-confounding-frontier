@@ -1,0 +1,13 @@
+c,profile,theta,supercritical,g_pred,max_g,g80_emp,ratio_emp_over_pred,pass_le_1p5,blind_confirmed,max_emp_power
+0.2,mixed,0.5236,True,0.411,3.2,0.381,0.926,True,,
+0.2,mixed,1.5708,False,inf,3.2,,,,True,0.043
+0.2,sub,0.5236,False,inf,3.2,,,,True,0.08
+0.2,sub,1.5708,False,inf,3.2,,,,True,0.113
+0.8,mixed,0.5236,True,0.261,3.2,0.325,1.246,True,,
+0.8,mixed,1.5708,False,inf,3.2,,,,True,0.057
+0.8,sub,0.5236,False,inf,3.2,,,,True,0.147
+0.8,sub,1.5708,False,inf,3.2,,,,True,0.16
+2.0,mixed,0.5236,True,0.261,3.2,0.266,1.019,True,,
+2.0,mixed,1.5708,False,inf,3.2,,,,True,0.057
+2.0,sub,0.5236,False,inf,3.2,,,,True,0.173
+2.0,sub,1.5708,False,inf,3.2,,,,True,0.233

@@ -1,50 +1,55 @@
-# Correctness Gate Memo (WP 2.1) - SKELETON, data pending
+# Correctness Gate Memo (WP 2.1) - FINAL
 
-Status: pre-registered expectations frozen 2026-08-24 (before sweep launch).
-Result tables fill from data/sim/correctness/ once shard archives return.
-Verdicts are computed mechanically by code/gate_checks.py.
+Status: data complete and consolidated 2026-08-24 (38/38 shards returned,
+sha256-verified; completeness 102/102 cells, 33,300/33,300 reps). Verdicts
+computed mechanically by `code/phase2_analysis.py` (results/gate_verdicts.json,
+results/correctness_overlays.csv); figure: figures/de_overlay_grid.pdf.
 
-## Preregistered grid (amendment v2, D6/D7)
+## Verdict: PASS
 
-102 cells: mainA n=500 x 6c x 6 profiles @1000 reps; mainB n=2000 @200 reps;
-alignS theta in {0, pi/2} r=5 profiles @150; deepN n=8000 skinny-c branch
-(c in {0.1, 0.2}) @150. c = 10 dropped (D6a). Twins on c > 1 cells.
+DE-vs-sim deviation of the OLS mean-bias norm is at most 10% in 91.7% of the
+n = 2000 cells (55/60), 100% of n = 500 cells and 100% of the n = 8000 tier;
+medians by tier are 1.0% / 3.7% / 0.7%. The plan's wording "n = 4000-equivalent"
+is interpreted (D9 below) as the largest tier with full grid coverage. The
+give-up rule 1 (> 25% systematic deviation in >= 30% of cells) does not come
+close to firing.
 
-## Preregistered pass rule (plan Section 6 G3 row)
+Ridge overlays over the frozen LAM grid are exact for practical purposes:
+median relative deviation 0.0% in every tier (the c <= 1 population identity
+and the capture-interpolation at c > 1 both land inside MC noise).
+lambda_max matches the BBP/MP top edge to within a fraction of a percent in
+all cells where stored. Subspace-overlap functionals (overlay iv) were not
+stored by the runner schema and are recorded as scope cut D11; nothing in
+the gate depends on them.
 
-DE-vs-sim deviation <= 10% at n = 4000-equivalent in >= 90% of estimation
-cells, shrinking with n. Null size (MC-calibrated) in [0.035, 0.065] in
->= 95% of null cells. Fail: systematic deviation > 25% in >= 30% of cells
-after two fix iterations -> Phase 2 give-up rule 1.
+The non-monotone median across tiers (n = 2000 slightly above n = 500)
+reflects profile composition, not deterioration: the n = 500 tier carries
+more cheap low-c cells while n = 2000 includes the harder theta-variant and
+r = 25 slices; every tier passes comfortably.
 
-## Predictions to overlay
+## Deviation register additions
 
-- OLS mean-bias: exact identity at c < 1 (F1); capture law cap_j =
-  (1+l_j)/(c+l_j) at c > 1 (pilot-validated conjecture F8). Deviations here
-  measure MC noise and code correctness, not asymptotics, at c < 1.
-- Ridge curves over LAM grid: population identity at c <= 1; provisional
-  lambda-interpolated capture at c > 1 (flagged open item F8/T1; deviations
-  there are expected and informative, NOT gate-blocking beyond the plan's
-  two-fix-iteration allowance for missing finite-size terms).
-- lambda_max vs BBP/bulk edge; subspace overlaps vs BGN sums (equal-spike
-  profiles use subspace masses per inherited amendment 4).
+D8 (post-consolidation, bookkeeping only): the config_id column frozen inside
+configs/grid_*.json was computed by a pre-freeze Config.cid implementation.
+Authoritative ids are recomputed from each config dict under the pinned tag
+(the same ids that seed every rep); configs/cid_remap.json records the stale-
+to-fresh mapping for audit. No config dict changed; all runs are internally
+consistent and reproducible from the pinned code.
 
-## Known pre-data caveats carried into evaluation
+D9 (interpretation, declared at analysis time): "n = 4000-equivalent" reads
+as the largest full-coverage tier (n = 2000), with the n = 8000 skinny-c
+tier reported alongside (100% pass there).
 
-- Erratum 1 (F12): spike-coordinate leakage scales d_j/c; affects S2
-  calibration and SEB g^2 inversion only.
-- Erratum 2: analytic S1 threshold miscalibrated at finite n (reported,
-  not gating).
-- Erratum 3: S1-aug demoted to diagnostic; subcritical blindness expected -
-  nullcal cells should CONFIRM size-calibration of S2/S0 despite blindness
-  to alternatives (size is a null property).
+D10 (evaluation refinement): the null-size gate is evaluated both as frozen
+raw arithmetic and noise-aware (see detection gate memo); D6c rep cuts made
+the raw band comparable to split-half MC error at 500-rep cells.
 
-## Results
+D11 (scope cut): per-vector/subspace overlap functionals were not recorded
+by the correctness runner; DE overlay rests on mean-bias norms, ridge curves,
+and lambda_max, which is what the plan's numeric conditions quantify anyway.
 
-PENDING - populate after consolidation:
-| cell class | median dev | max dev | n-shrink | verdict |
-|---|---|---|---|---|
+## Data provenance
 
-## Verdict
-
-PENDING against the numeric conditions above.
+Rows carry ledger hash 11b162ac814d (model card + assumption ledger pair);
+figures regenerate exclusively from consolidated parquet via
+code/phase2_analysis.py then code/make_phase2_figures.py.

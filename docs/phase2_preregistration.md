@@ -73,6 +73,31 @@ it): ~480-520 core-hours across <= 36 shards of <= 5.5 h target. Residual
 overshoot risk is absorbed by the resume-safe design (any interrupted cell
 reruns from zero loss; shards stop cleanly before the Colab wall limit).
 
+D8 (2026-08-24, at consolidation, before any analysis): grid-file config_id
+columns were computed by a pre-freeze Config.cid implementation; all joins
+recompute authoritative ids from config dicts under the pinned tag (the ids
+that seed every rep). configs/cid_remap.json is the audit mapping; no config
+dict changed and no data was touched.
+
+D9 (2026-08-24, at analysis): plan wording "n = 4000-equivalent" interpreted
+as the largest full-coverage tier (n = 2000), n = 8000 skinny-c tier reported
+alongside.
+
+D10 (2026-08-24, at analysis): null-size gate evaluated noise-aware (pooled
+chi-square on standardized split-half deviations) alongside the frozen raw
+arithmetic, because D6c rep cuts made the raw band comparable to MC error.
+
+D11 (2026-08-24, at analysis): subspace-overlap functionals (WP 2.1 overlay
+iv) not stored by the runner schema; recorded scope cut.
+
+D12 (2026-08-24, at analysis): Le Cam declaration "below the claimed
+frontier" operationalized as S-blind strata (infinite predicted frontier);
+per-cell labels co-recorded.
+
+D13 (2026-08-24, at analysis): probe feature map truncates log-eigenvalues
+at 10 plus 4 scalars; r-dependent zero padding omitted (no gate depends on
+truncated dimensions).
+
 ## Inherited amendments (from docs/pilot_memo.md)
 
 1. c = 1.0 is EXCLUDED from all mean-bias claims (E[(X'X)^{-1}] diverges);

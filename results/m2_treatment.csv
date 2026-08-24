@@ -1,0 +1,3 @@
+p,c,tau_ols,tau_ridge1,tau_trim_onatski,tau_trim_oracle_r
+400,0.2,0.0637,0.0552,0.0466,0.0466
+1600,0.8,0.0578,0.0386,0.0348,0.0348

@@ -8,3 +8,6 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 .ipynb_checkpoints/
+
+# returned Colab archives stay out of git
+notebooks/scf_shard_*.zip

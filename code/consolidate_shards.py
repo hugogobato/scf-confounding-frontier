@@ -24,8 +24,47 @@ ROOT = Path(__file__).resolve().parents[1]
 SIM = ROOT / "data" / "sim"
 
 
+def fresh_cid(cfg_kwargs: dict) -> str:
+    """Authoritative config id under the pinned harness.
+
+    Erratum E4 / deviation D8: the config_id column frozen inside
+    configs/grid_*.json was computed by a pre-freeze Config.cid; the pinned
+    tag's cid function is authoritative (it also seeds every rep). Grid
+    dicts are unchanged; only the id layer is reconciled here.
+    """
+    import sys
+    sys.path.insert(0, str(ROOT / "code"))
+    from simulator import Config
+    return Config(**cfg_kwargs).cid
+
+
+def write_remap():
+    """Audit file: stale grid id -> fresh id for every grid job."""
+    remap = {}
+    for gp in sorted((ROOT / "configs").glob("grid_*.json")):
+        for j in json.loads(gp.read_text()):
+            remap[j["config_id"]] = fresh_cid(j["config"])
+    out = ROOT / "configs" / "cid_remap.json"
+    out.write_text(json.dumps(remap, indent=1, sort_keys=True))
+    return len(remap)
+
+
 def sha256_file(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def _locate(td: Path, key: str):
+    """Manifest keys are /content-relative ('data/sim/...'); archives may
+    store members either with or without the 'data/' prefix."""
+    for cand in (td / key, td / key.removeprefix("data" + "/")):
+        if cand.exists():
+            return cand
+    return None
+
+
+def _sweep_of(key: str) -> str:
+    parts = Path(key).parts
+    return parts[parts.index("sim") + 1] if "sim" in parts else "unknown"
 
 
 def ingest_archive(archive: Path) -> dict:
@@ -34,31 +73,25 @@ def ingest_archive(archive: Path) -> dict:
     with tempfile.TemporaryDirectory() as td:
         with zipfile.ZipFile(archive) as z:
             z.extractall(td)
-        data_dir = Path(td) / "data"
-        mpath = data_dir / "manifest.json"
+        td = Path(td)
+        mpath = td / "data" / "manifest.json"
+        if not mpath.exists():
+            mpath = td / "manifest.json"
         if not mpath.exists():
             report["error"] = "missing manifest.json"
             return report
         manifest = json.loads(mpath.read_text())
         for f, h in manifest["files"].items():
-            fp = Path(td) / f
-            if not fp.exists() or sha256_file(fp) != h:
+            fp = _locate(td, f)
+            if fp is None or sha256_file(fp) != h:
                 report["files_bad"].append(f)
                 continue
             report["files_ok"] += 1
-            rel = Path(f)
-            if rel.suffix == ".parquet":
-                sweep = rel.parts[1] if len(rel.parts) > 2 else "unknown"
-                dst = SIM / sweep / "raw"
-                dst.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(fp, dst / rel.name)
-                report["copied"] += 1
-            elif rel.suffix == ".npz":
-                sweep = rel.parts[1] if len(rel.parts) > 2 else "unknown"
-                dst = SIM / sweep / "means"
-                dst.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(fp, dst / rel.name)
-                report["copied"] += 1
+            sweep = _sweep_of(f)
+            dst = SIM / sweep / ("raw" if fp.suffix == ".parquet" else "means")
+            dst.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(fp, dst / fp.name)
+            report["copied"] += 1
     return report
 
 
@@ -77,7 +110,7 @@ def consolidate_sweep(sweep: str) -> dict:
             have[cid] = max(have.get(cid, 0), int(df["rep"].nunique()))
     status = []
     for j in grid:
-        cid = j["config_id"]
+        cid = fresh_cid(j["config"])
         got = have.get(cid, 0)
         status.append({
             "config_id": cid, "sweep": sweep,
@@ -108,6 +141,8 @@ def main():
     if not args:
         print(__doc__)
         sys.exit(1)
+    n = write_remap()
+    print(f"cid_remap.json written ({n} ids reconciled, deviation D8)")
     for a in args:
         p = Path(a)
         if p.is_dir():

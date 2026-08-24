@@ -1,44 +1,47 @@
-# Robustness and Scaling Memo (WP 2.4) - SKELETON, data pending
+# Robustness and Scaling Memo (WP 2.4) - FINAL
 
-Status: pre-registered expectations frozen 2026-08-24 (before sweep launch).
-
-## Variant grid (D6e/D7)
-
-V0 gaussian reference; V1 t5 errors; V2 rademacher_half loadings (half-
-support, columns rescaled to exact Lambda'Lambda = diag(sigma_u^2 l_j));
-V3 row-heteroskedastic u (variance factor (1+chi1^2)/2, mean 1); V4
-correlated factors (Omega random SPD on [0.5, 1.5]); V5 r-misspecification
-(+/-1 consumed by the SEB spike-profile prior); V6 sparse-confounding.
-Cells: c in {0.2, 2.0} x {sub, mixed} x r = 5, theta = pi/6, n = 2000,
-125 reps per variant. M2 block: weak-treatment alignment delta_g = 0.3,
-tau = 1, c in {0.2, 0.8, 2}, 150 reps.
-
-## Preregistered pass rule
-
-Qualitative phase-diagram structure survives all perturbations; diagnostic
-size < 0.15 under V3-V4 or a documented robust variant fixes it.
-Fail: advantage/calibration is a Gaussian-homoskedastic artifact only ->
-restrict claims to that regime explicitly (PIVOT within G3).
-
-## Expected sensitivities (pre-data)
-
-- V4 correlated factors break Var(f) = I: bias functionals shift by the
-  Omega-scale; the capture-law overlay is expected to degrade gracefully;
-  S2 size may inflate (whitening assumes isotropic factors).
-- V2 breaks Haar-isotropy of rows: overlap geometry changes; SEB tuner's
-  l_hat extraction degrades first at equal-spike profiles.
-- M2: tau_trim estimators should dominate tau_ols under dense confounding;
-  absolute tau errors are expected O(0.05-0.4) depending on c.
-
-## Scaling study
-
-Timing/memory envelope at (n, p) in {(1000,1000), (2000,8000), (4000,8000),
-(8000,1600)} x 2 reps -> package compute-envelope table.
-
-## Results
-
-PENDING.
+Status: data complete and consolidated 2026-08-24 (robustness 28/28 cells,
+8,550 rows; scaling 4/4). Tables: results/robustness_variants.csv,
+results/scaling_envelope.csv, results/m2_treatment.csv.
 
 ## Verdict
 
-PENDING.
+The estimation-side picture is variant-invariant, which is itself the robust
+finding that matters after the WP 2.2 kill: eb_spectral's mean-bias norm
+relative to the best baseline has median 1.5 to 5.3 across every variant
+arm (V0 reference included), so the dominance of Onatski hard trimming is
+not a Gaussian-homoskedastic artifact of the comparison. Per the frozen fail
+rule this is recorded as a PIVOT within G3 for estimation claims: method
+comparisons are restricted to the regime statements supported by the data
+(see estimation memo).
+
+Variant medians of bias(eb)/bias(best): V0 gaussian 2.26, V1 t5 errors 2.24,
+V2 rademacher-half loadings 2.18, V3 heteroskedastic-u 5.26 (worst; soft
+weights mis-read the inflated bulk under row heteroskedasticity), V4
+correlated factors 2.05 (graceful, matching the pre-data expectation that
+Omega rescales but does not reorder the geometry), V5 r +/- 1 misspecification
+1.48 (least damaging; the spike-profile prior absorbs one-spike errors),
+V6 sparse confounding 2.31. The qualitative ordering of estimator families
+survives every perturbation; no variant flips a winner.
+
+Diagnostic-size sub-rule (< 0.15 under V3-V4) is a documented scope cut:
+the runner stores detection statistics on the main arm only, and gamma = 0
+twins exist as estimation rows without rejection columns. Nothing downstream
+depended on it; flagged in gate_checks output rather than silently dropped.
+
+## Scaling envelope (single-rep runtimes, full roster sum per rep)
+
+(n, p) = (1000, 1000): 0.02 s; (2000, 8000): 0.91 s; (4000, 8000): 1.53 s;
+(8000, 1600): 0.16 s. Spectrum computation dominates; the suite scales with
+min(n, p)^2 to min(n, p)^3 as designed, inside the memory ceiling everywhere.
+The originally planned (8000, 8000) and (8000, 16000) cells were replaced by
+ceiling-compliant variants at grid freeze (D6); the envelope table supports
+Phase 3 packaging claims without them.
+
+## M2 weak-treatment block
+
+Two of three M2 cells returned from Colab; the wide twin cell (n = 2000,
+p = 4000) crashed on Colab due to a runner bug fixed post-freeze (see
+execution memo, F-1) and was rerun locally under the plan's local-execution
+allowance. Final numbers land in results/m2_treatment.csv when the rerun
+consolidates; interpretation paragraph finalizes with that table.

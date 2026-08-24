@@ -241,7 +241,7 @@ def run_m2_rep(cfg: Config, rep: int):
     S = Xc @ V[:, :cfg.r]
     out["tau_trim_oracle_r"] = tau_from_joint(np.column_stack([D, S]))
     lam = 1.0
-    Sc = Xc.T @ Xc / n + lam * np.eye(len(d))
+    Sc = Xc.T @ Xc / n + lam * np.eye(Xc.shape[1])
     rhs = Xc.T @ Ys / n
     c_vec = Xc.T @ D / n
     m = float(D @ D) / n

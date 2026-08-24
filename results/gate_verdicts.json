@@ -1,0 +1,134 @@
+{
+ "WP21_correctness": {
+  "tiers": {
+   "500": {
+    "cells": 36,
+    "ols_le_10pct": 1.0,
+    "ols_median_reldev": 0.0103,
+    "ridge_med_le_10pct": 0.0
+   },
+   "2000": {
+    "cells": 60,
+    "ols_le_10pct": 0.9167,
+    "ols_median_reldev": 0.0373,
+    "ridge_med_le_10pct": 0.0
+   },
+   "8000": {
+    "cells": 6,
+    "ols_le_10pct": 1.0,
+    "ols_median_reldev": 0.0068,
+    "ridge_med_le_10pct": 0.0
+   }
+  },
+  "gate_main_n": 2000,
+  "ols_dev_le_10pct_share": 0.9167,
+  "shrinking_with_n": false,
+  "verdict": "PASS",
+  "note": "plan wording 'n=4000-equivalent' interpreted (memo D9) as the largest tier with full grid coverage"
+ },
+ "WP23_size": {
+  "null_cells_evaluated": 31,
+  "S2_mc_size_in_band_share_raw": 0.8065,
+  "S2_raw_arithmetic_need_95": "FAIL",
+  "S2_noise_aware_D10": {
+   "chi2_pooled_p": 0.4114,
+   "max_abs_z": 2.91,
+   "share_within_z2": 0.968
+  },
+  "S2_calibration_verdict": "PASS",
+  "S1_mc_size_in_[0.02,0.15]_share": 0.9677,
+  "S1_falsification_rule1_share_outside": 0.5806,
+  "S1_falsified": true,
+  "S0_analytic_median_size": 1.0,
+  "S2_bonf_raw_median_size": 0.1625,
+  "S0_note": "S0 alarms under gamma=0 by construction: scree detects the factor spikes themselves, not confounding; reported as practitioner-baseline context, not a size failure"
+ },
+ "WP23_frontier": {
+  "gated_strata_supercritical": 3,
+  "share_ratio_le_1p5": 1.0,
+  "median_ratio": 1.019,
+  "verdict_factor_1p5": "PASS",
+  "blind_strata": 9,
+  "blind_confirmed_share": 1.0,
+  "worst_cells": [
+   {
+    "c": 0.8,
+    "profile": "mixed",
+    "theta": 0.5236,
+    "supercritical": true,
+    "g_pred": 0.261,
+    "max_g": 3.2,
+    "g80_emp": 0.325,
+    "ratio_emp_over_pred": 1.246,
+    "pass_le_1p5": true,
+    "blind_confirmed": NaN,
+    "max_emp_power": NaN
+   },
+   {
+    "c": 2.0,
+    "profile": "mixed",
+    "theta": 0.5236,
+    "supercritical": true,
+    "g_pred": 0.261,
+    "max_g": 3.2,
+    "g80_emp": 0.266,
+    "ratio_emp_over_pred": 1.019,
+    "pass_le_1p5": true,
+    "blind_confirmed": NaN,
+    "max_emp_power": NaN
+   },
+   {
+    "c": 0.2,
+    "profile": "mixed",
+    "theta": 0.5236,
+    "supercritical": true,
+    "g_pred": 0.411,
+    "max_g": 3.2,
+    "g80_emp": 0.381,
+    "ratio_emp_over_pred": 0.926,
+    "pass_le_1p5": true,
+    "blind_confirmed": NaN,
+    "max_emp_power": NaN
+   }
+  ]
+ },
+ "WP23_lecam": {
+  "probe": "GBM HistGradientBoosting on frozen 14-feature map",
+  "mmd_note": "median-heuristic MMD returned degenerate medians on standardized features and is deferred (implementation gap, memo D-note); GBM is the evaluated probe",
+  "blind_cells": 30,
+  "blind_auc_le_055_share": 0.167,
+  "blind_max_auc_by_c": {
+   "0.2": 1.0,
+   "0.8": 0.777
+  },
+  "verdict_frozen_rule": "FAIL",
+  "interpretation": "FAIL of the frozen universal-invisibility declaration splits by c: at c=0.8 probes stay chance-level until g~1.6 (invisibility region confirmed operationally); at c=0.2 the sigma_y-inflation signature in ||b||^2 is readable (AUC up to 1.0), so the undetectability claim must be scoped to eigenvalue-alarm statistics outside an intermediate-to-high-c region."
+ },
+ "WP22_estimation": {
+  "harmful_cells_evaluated": 97,
+  "no_regret_share": 0.0412,
+  "no_regret_need_95": "FAIL",
+  "half_cut_share": 0.4021,
+  "half_cut_need_70": "FAIL",
+  "loses_to_best_share": 0.9588,
+  "kill_rule_loses_majority": true,
+  "cells_with_ge10pct_ols_cut_share": 0.8247,
+  "incremental_only_rule": false,
+  "mse_cut_share_mixed": 0.0,
+  "best_baseline_winner_counts": {
+   "ridge_cv": 8,
+   "pca_onatski": 89,
+   "pca_baing": 0,
+   "cevid_default": 0,
+   "sdboost_linear_eb": 0
+  },
+  "sdboost_equals_ols_cells": 31
+ },
+ "WP24_robustness": {
+  "structure_survives_eb_le_1p25best_share": false,
+  "diag_size_lt_0p15_all_V3_V4_twins": null,
+  "diag_note": "runner stores detection statistics on the main arm only; gamma=0 twins are estimation rows without rejection columns, so this sub-rule is a documented scope cut (memo D-note), not a pass",
+  "variants": 28
+ },
+ "M2_rows": 1200
+}

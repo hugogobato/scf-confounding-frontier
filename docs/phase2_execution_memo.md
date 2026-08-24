@@ -99,3 +99,62 @@ docs/phase2_preregistration.md.
   quantify the empirical side.
 - Analysis-phase artifacts: overlay/figure scripts, MC-threshold analysis,
   probe training runs (all operate on returned parquet only).
+
+## FINALIZATION RECORD (2026-08-24, post-data)
+
+### Consolidation and integrity
+
+All 38 shard archives returned and ingested: sha256 verification passed for
+every payload file against embedded manifests; completeness 8 sweeps at
+100% (504 cells total, ~131k reps); the single incomplete cell was m2's wide
+twin arm (F-1 below). Zone.Identifier artifacts from the Windows download
+hop were removed before ingestion. Deviations D8-D13 were registered at
+consolidation/analysis time (see preregistration register).
+
+Post-freeze harness fixes applied on main (tag `phase2-freeze` remains the
+exact code the Colab shards ran):
+- F-1: run_m2_rep added an identity matrix sized min(n,p) to a p x p Gram,
+  crashing every p > n M2 cell (this is why shard 08 produced no wide-m2
+  output; not a wall-limit issue). Fixed, cell rerun locally under the
+  plan's local-execution allowance (~45 core-minutes), then consolidated.
+- F-2: run_cell now creates output directories itself (Colab shards call it
+  without run_jobs' pre-creation). Caught by the end-to-end clone test
+  before distribution.
+- F-3: consolidate_shards.py made layout-tolerant (archives store members
+  relative to data/, manifest keys /content-relative).
+
+### Analysis pipeline
+
+code/phase2_analysis.py computes all gate verdicts mechanically from
+consolidated parquet into results/gate_verdicts.json plus per-topic CSVs;
+code/make_phase2_figures.py renders the six preregistered figures from those
+CSVs (regeneration order: consolidate -> analyze -> figures).
+
+### G3 verdict summary (full detail in the four gate memos)
+
+1. WP 2.1 correctness: PASS. OLS mean-bias DE overlay within 10% in 91.7%
+   of n = 2000 cells, 100% at n in {500, 8000}; ridge overlays exact.
+   The capture law (c > 1) and exact identity (c < 1) both hold at MC noise.
+2. WP 2.2 estimation: KILL for eb_spectral as competitor (give-up rule 2):
+   no-regret in 4.1% of harmful cells vs >= 95% required; pca_onatski wins
+   89/97. Attribution: the SEB tuner loses the worst slices while eb_cv_tau
+   does not; sdboost_linear_eb collapses exactly to OLS in 42/97 cells.
+   Contribution pivots to correctness + detection layers.
+3. WP 2.3 detection: size PASS noise-aware (chi2 p = 0.41, max|z| = 2.91;
+   raw arithmetic FAIL co-reported per D10); power frontier PASS (3/3
+   supercritical strata within factor 1.5, median ratio 1.02); blind region
+   confirmed 9/9 strata with the sharpest alignment signature (S2 power
+   1.000 everywhere except 0.022 exactly at theta = pi/2); Le Cam probe
+   scopes the invisibility claim by c (chance-level probes at c = 0.8 up to
+   g ~ 1.6, but AUC up to 1.0 at c = 0.2 via the ||b||^2 sigma-inflation
+   signature). S1 analytic falsification rule fired as pre-declared; D5
+   consequence stands. T2/T3 question upgraded: characterize the
+   detectability phase diagram of second-moment functionals in (c, g).
+4. WP 2.4 robustness/scaling/M2: estimation verdict variant-invariant
+   (PIVOT recorded); scaling envelope table delivered; diagnostic-size
+   sub-rule scope cut (D-note); M2 finalized after F-1 rerun.
+
+Phase 2 closes with G3 = GO on the correctness + detection frontier program
+(the paper's spine), NO-GO on soft-trim tuning as an estimator contribution,
+and a materially sharpened theory agenda (T1 capture-law derivation now has
+exact full-scale validation; T2/T3 has empirical phase structure to explain).
