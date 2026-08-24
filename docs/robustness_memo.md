@@ -38,10 +38,16 @@ The originally planned (8000, 8000) and (8000, 16000) cells were replaced by
 ceiling-compliant variants at grid freeze (D6); the envelope table supports
 Phase 3 packaging claims without them.
 
-## M2 weak-treatment block
+## M2 weak-treatment block (final)
 
-Two of three M2 cells returned from Colab; the wide twin cell (n = 2000,
-p = 4000) crashed on Colab due to a runner bug fixed post-freeze (see
-execution memo, F-1) and was rerun locally under the plan's local-execution
-allowance. Final numbers land in results/m2_treatment.csv when the rerun
-consolidates; interpretation paragraph finalizes with that table.
+All three cells complete (150 reps each). Mean absolute tau errors:
+c = 0.2: OLS 0.064, ridge(1) 0.055, trim-onatski 0.047, trim-oracle-r 0.047;
+c = 0.8: 0.058 / 0.039 / 0.035 / 0.035;
+c = 2.0: 0.391 / 0.046 / 0.042 / 0.042.
+Under weak-treatment alignment (delta_g = 0.3), naive OLS degrades six-fold
+across the c-range while both trimmed estimators stay flat, and Onatski
+selection matches oracle-r exactly in every cell. Treatment-effect estimation
+under dense confounding inherits the Phase 2 detection geometry: trim first,
+then regress. This is the cleanest positive packaging of the hard-trim
+dominance finding for Phase 3 (it aligns with, rather than fights, the WP 2.2
+kill: trimming is the right tool; soft weighting is not).

@@ -130,5 +130,5 @@
   "diag_note": "runner stores detection statistics on the main arm only; gamma=0 twins are estimation rows without rejection columns, so this sub-rule is a documented scope cut (memo D-note), not a pass",
   "variants": 28
  },
- "M2_rows": 1200
+ "M2_rows": 1800
 }

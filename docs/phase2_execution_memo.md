@@ -116,7 +116,8 @@ exact code the Colab shards ran):
 - F-1: run_m2_rep added an identity matrix sized min(n,p) to a p x p Gram,
   crashing every p > n M2 cell (this is why shard 08 produced no wide-m2
   output; not a wall-limit issue). Fixed, cell rerun locally under the
-  plan's local-execution allowance (~45 core-minutes), then consolidated.
+  plan's local-execution allowance (~57 core-minutes), consolidated; all
+  nine sweeps now report 100% completeness (504/504 cells, ~131k reps).
 - F-2: run_cell now creates output directories itself (Colab shards call it
   without run_jobs' pre-creation). Caught by the end-to-end clone test
   before distribution.
