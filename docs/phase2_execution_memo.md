@@ -49,9 +49,16 @@ docs/phase2_preregistration.md.
 
 ## How to run Phase 2 (operator instructions)
 
+0. Code distribution: the public repository
+   github.com/hugogobato/scf-confounding-frontier carries the harness; each
+   notebook clones it at the pinned tag `phase2-freeze` and verifies the
+   five harness files against generation-time sha256 prefixes before
+   running (mismatch aborts). If the harness ever changes: commit, move/
+   re-create the tag, re-run code/make_shards.py, and redistribute
+   notebooks - never mix notebooks with an unpinned checkout.
 1. Upload notebooks colab_shard_XX.ipynb to Colab accounts (any grouping of
-   the 38; each is self-contained). Run them; download the produced
-   scf_shard_XX.zip archives.
+   the 38; each is self-contained given internet access for the clone).
+   Run them; download the produced scf_shard_XX.zip archives.
 2. Drop all archives into one folder, then:
        python3 code/consolidate_shards.py <folder-with-zips>
    It verifies checksums against embedded manifests, ingests payloads into
