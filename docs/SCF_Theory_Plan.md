@@ -70,6 +70,25 @@ isolation for an early complete win.
 
 ### TP-1 (T1) Capture-law theorem  [tag: adapt]
 
+EXECUTION STATUS (2026-08-25, session 2): T1.b CLOSED at r = 1. The
+Wishart-route joint-moment assembly that failed at (6.708, 5) was diagnosed
+as a bookkeeping bug (A_e limit is sqrt(l) t/sqrt(n), not sqrt(l t/n); the
+t = 1 cell had masked it), after which the collapse sqrt(l)t/(1+t(1+l)) =
+sqrt(l)/(c+l) is an EXACT algebraic identity in t - no joint-moment
+calculation needed; all cross-moment means vanish exactly by Haar-probe odd
+symmetry. Full proof + companion artifact theorem R2 (E[q'Pi q] ->
+(c-1)/(c+l)) written into docs/theory_T1_capture_law.md Sections 4.1-4.9;
+adversarially audited by an independent agent (checklist A-N all PASS,
+85+ fresh falsification cells, verdict PROOF STANDS; one Section-4.9
+exposition erratum and one variance-bound typo found and fixed in place).
+Fixed-r extension fully reduced (Woodbury + vanishing lemmas L1-L3,
+Section 5), numerically confirmed at r = 2 incl. a subcritical spike.
+Remaining: componentwise r>=2 write-up (clerical); ridge interpolation
+T1.c via shifted resolvents (Silverstein-Choi eq. 1.3/1.4 pins in
+lit/theory_T1_wishart_locators.md) - DECISIVE CHECK FIRST: reconcile
+against ridge_capture's PROVISIONAL xi-split form at t != 1 cells before
+proving either.
+
 Target statement (r = 1 first, then fixed r):
 
 (T1.a, provable) c <= 1: E[beta_hat_OLS - beta | Lambda] =
@@ -177,9 +196,9 @@ Feeds the package's adjustment documentation. 1-2 weeks.
 
 | ID | Claim | Tag | Numerical hook |
 |----|-------|-----|----------------|
-| C-T1a | exact c<=1 identity | provable | identity unit test (1e-8) |
-| C-T1b | capture decomposition c>1 | adapt | correctness_overlays.csv <= 10% at n=8000 |
-| C-T1c | ridge interpolation | adapt | ridge overlays median deviation 0.0% |
+| C-T1a | exact c<=1 identity | provable (PROVED) | identity unit test (1e-8) |
+| C-T1b | capture decomposition c>1 + artifact R2 | PROVED at r=1 (elementary Wishart route, audited); fixed-r write-up clerical | correctness_overlays.csv <= 10% at n=8000; tests/test_theory_T1.py |
+| C-T1c | ridge interpolation | adapt (route specified; reconcile xi-split form FIRST) | ridge overlays median deviation 0.0% |
 | C-T2 | frontier achievability + kappa_n,k | adapt | power_surface ratios <= 1.5 |
 | C-T3a | eigen-alarm impossibility below BBP | adapt | blind strata power <= 0.25 at max g |
 | C-T3b | visibility boundary phase curve | NEW/adapt | lecam_probe_auc.csv match incl. c-ordering |
@@ -205,7 +224,11 @@ class definition against the ablation grid before writing the proof.
 
 ## Immediate next actions
 
-1. TP-1.1 (r = 1 reduction write-up).
-2. TP-1.2 counterexample search THEN derivation (superseded-formula trap).
-3. TP-5 write-up (cheap banked win).
-4. TP-6 statement using TP-1.1/1.2 outputs.
+1. T1.c ridge: run the decisive reconciliation check (corrected-machinery
+   ridge capture vs ridge_capture PROVISIONAL xi-split at t != 1 cells);
+   then prove the winner via shifted-resolvent assembly (Section 6 of
+   theory_T1_capture_law.md).
+2. Fixed-r componentwise write-up (clerical; lemmas L1-L3 already proved).
+3. TP-6 (T7 trimmed-tau DE): now unblocked end-to-end - consume the
+   capture law via Frisch-Waugh.
+4. TP-3b visibility boundary (highest novelty per week) after T7.
