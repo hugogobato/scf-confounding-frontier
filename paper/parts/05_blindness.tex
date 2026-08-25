@@ -1,0 +1,72 @@
+\section{What cannot be detected: impossibility and the visibility boundary}
+\label{sec:blindness}
+
+Section~\ref{sec:detection} mapped what the calibrated alarm sees and at what strength. This section maps the complement: which statistic classes cannot see sub-threshold dense confounding, where the exact boundary sits, and where our own universal claims broke under pre-registered falsification and had to be rescoped. The bookkeeping matters as much as the theorems, so the class map comes first.
+
+\subsection{Statistic classes, and what impossibility can mean}
+
+\begin{remark}[Trivial layer]
+\label{rem:purex}
+Statistics depending on $(Y,X)$ only through $\mathrm{spec}(X_c^\top X_c/n)$ are independent of $\gamma$ under every model in play, so power equals size identically. Scree alarms live here. Their blindness to confounding is a data-processing identity, not an asymptotic statement, and we record it as a remark so that it cannot masquerade as a finding.
+\end{remark}
+
+The substantive class comprises augmented-spectrum alarms: statistics measurable with respect to the spectrum of the sample second-moment matrix of the standardized pair,
+\[
+M_{\mathrm{aug}}=\begin{pmatrix}1 & b^\top\\ b & \hat\Sigma\end{pmatrix},
+\]
+that is, eigenvalue functionals of the whitened cross-moment structure. The planned theorem targeted exactly this class. Fix a subcritical profile ($l_j\le\sqrt c$ for all $j$), fixed $r$, and Haar loadings, with response standardization in force. Below the BBP threshold the overlap between sample spikes and the coherent confounding direction collapses at rate $n^{-1/2}$ \citep{benaychgeorges2012singular}, and $H_0$ versus $H_1$ reduces to a rank-one deformation on the first coordinate of a spiked population matrix whose effective spike strength carries $\sigma_y(g)^{-1}$ in the denominator, so self-normalization pushes detectability down precisely as the confounder grows. The OMH contiguity machine \citep{onatski2013asymptotic}, developed for sphericity-plus-rank-one alternatives, yields uniform asymptotics for the log likelihood ratio below a distance-to-threshold functional; Le Cam's two-point lemma then converts mutual contiguity into a clean conclusion: no test measurable with respect to $\mathrm{spec}(M_{\mathrm{aug}})$ has asymptotic power exceeding size.
+
+What is claimed, and what is not, must be fenced explicitly. First, every impossibility statement here is statistic-class-scoped and never information-theoretic: contiguity arguments themselves produce a strictly positive likelihood-ratio power envelope near the threshold, so information-theoretic detectability below the BBP boundary remains possible in principle, and our certificates bind named classes only. Second, pure-X blindness is the trivial Remark~\ref{rem:purex}. Third, and most important for honest reporting: the strong version of the augmented-class claim, mutual contiguity of the full spectrum $\mathrm{spec}(M_{\mathrm{aug}})$ throughout the no-detachment region, was fed to our own pre-registered falsifiers and did not survive.
+
+The falsifiers are worth reading. Fresh-draw Mann-Whitney AUCs of the true $\lambda_{\max}(M_{\mathrm{aug}})$ at $(c=0.2$, subcritical profile, $\theta=\pi/6)$ fall consistently toward perfection, from $0.286$ to $0.051$ at $g=3.2$ and from $0.351$ to $0.133$ at $g=1.6$ as $n$ runs from $800$ to $3200$: separation is consistent and downward, the opposite of contiguity. At the visibility fixed point derived below ($\theta=\pi/2$, equal subcritical spikes, so $\omega=\omega_\star$), the cross-moment mass is flat ($0.7014$ versus $0.7066$) and every bulk spectral functional is flat, yet the augmented root separates upward with AUC $0.998$ and $1.000$ at $n=1600$ and $3200$, $g=3.2$. The direction and existence of separation depend on the coupling geometry rather than merely on total mass: response standardization rescales the entire first-coordinate block through $\sigma_y(g)$, a self-normalization signature with no analogue in the OMH alternative. A pipeline erratum compounds the history: the frozen S1 implementation silently inverted its secular bracket whenever the bracketing discriminant turned negative, which is common at $c\le 1$, returning a degenerate surrogate correlated with $\lambda_{\max}(\hat\Sigma)$. Every stored S1 artifact therefore reads ``surrogate-S1'', and gate verdicts are unaffected because S1 was demoted to diagnostic before any sweep data existed, with self-consistent Monte Carlo thresholds.
+
+The impossibility statement that ships is layered. It is airtight for pure-X alarms by identity; it holds, proved via Proposition~\ref{prop:ceiling} and confirmed in $9$ of $9$ blind strata, for the spike-coordinate calibrated class S2; and it is false as a universal claim for $\mathrm{spec}(M_{\mathrm{aug}})$, which in fact detects subcritical confounding with a geometry-dependent direction. Every decoupling claim in this paper cites these scopes. The alignment stress test sharpens the geometric point (Figure~\ref{fig:alignment}): sweeping $\theta$ at fixed profile and strength over twelve configurations of $800$ replicates each, S2 power holds at $1.000$ at every angle except exactly $\theta=\pi/2$, where it collapses to $0.022$, while the principal-component $F$ baseline falls only to $0.262$. Detection tracks supercritical-aligned mass, never total confounding.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/alignment_stress.pdf}
+\caption{Alignment stress test: detection power against the alignment angle $\theta$ of the confounding direction, from $\theta=0$ (strongest factor) to $\theta=\pi/2$ (weakest reported factor). The calibrated alarm S2 collapses only at exact subcritical alignment ($\theta=\pi/2$: power $0.022$), while the principal-component $F$ baseline retains $0.262$. Size is $\theta$-invariant by construction.}
+\label{fig:alignment}
+\end{figure}
+
+\subsection{An exact visibility boundary for quadratic probes}
+
+Eigenvalue alarms aside, the cheapest summary of $(\tilde Y,X_c)$ is quadratic. Take as carrier $q(\tilde Y,X_c)=\|b\|^2$, with $b=X_c^\top\tilde Y/n$ now the fully self-standardized cross-moment, $\tilde Y=Y_c/\mathrm{sd}_y$. Write $\omega=\sum_j l_j\,\mathrm{dir}_j^2=\|\Lambda\,\mathrm{dir}\|^2$ for the per-unit-strength confounding mass and $A=1+\sigma_\varepsilon^2$.
+
+\begin{proposition}[Visibility law]
+\label{prop:visibility}
+As $n,p\to\infty$ with $c=p/n$ fixed under Haar loadings,
+\[
+v_0:=\lim\mathbb{E}\,\mathrm{sd}_y^2\big|_{H_0}=A,
+\qquad
+M_0:=\lim\mathbb{E}\big[\|X_c^\top Y_c/n\|^2\,\big|\,H_0\big]=1+cA,
+\]
+and
+\[
+\mathbb{E}[q\mid g]\;\longrightarrow\;\frac{M_0+g^2(\omega+c)}{v_0+g^2}
+\;=\;m_0-\frac{g^2(\omega_\star-\omega)}{v_0+g^2},
+\qquad
+m_0=\frac{M_0}{v_0},\qquad
+\omega_\star=\frac{1}{A}.
+\]
+The standardized shift $\Delta(g)=\mathbb{E}[q\mid g]-m_0$ therefore satiates: $\sup_g|\Delta(g)|=|\omega_\star-\omega|$, approached from whichever side of the fixed point the profile sits. Let $a$ denote the separation, in null-standard-deviation units, required for the target AUC. Quadratic probes of $(b,\mathrm{sd}_y)$ are born blind iff
+$|\omega-\omega_\star|\le a\,\mathrm{sd}_0(q_0)$;
+otherwise the visibility threshold solves $g_{\mathrm{vis}}^2=a\,\mathrm{sd}_0(q_0)\,v_0/\{\kappa-a\,\mathrm{sd}_0(q_0)\}$ with headroom $\kappa=\omega_\star-\omega>0$.
+\end{proposition}
+
+Every deterministic constant closes within $2\%$ at $n=2000$: measured $v_0$ is $1.9948$ and $2.0114$ against $A=2$ at $c=0.2$ and $0.8$; measured $M_0$ is $1.3986$ and $2.6168$ against $1.4$ and $2.6$; measured $m_0$ is $0.7005$ and $1.3006$ against $0.70$ and $1.30$. The headline is the interaction with the aspect ratio. For the scaling profiles deployed throughout the study, $l_j\propto\sqrt c$, so $\omega=w_0\sqrt c$ with $w_0=0.5$ for the fully subcritical profile and $w_0=2.375$ for the mixed profile at $\theta=\pi/6$. The subcritical profile meets the fixed point exactly at $c=1$, since $\kappa_{\mathrm{sub}}(c)=0.5\,(1-\sqrt c)$: the Marchenko-Pastur boundary is precisely where quadratic probes are born blind. Beyond it the sign flips, $\omega>\omega_\star$, and $\|b\|^2$ inflates instead of deflating. The mixed profile crosses at $c=0.044$ and stays visibly signed across the whole tested grid. Measured anchors agree with the class map: $\mathrm{sd}_0(q_0)=0.0331$ and $0.0422$, headrooms $\kappa=0.276$ and $0.053$, ceiling ratios $|\Delta|_{\max}/\mathrm{sd}_0$ of $8.3$ in the visible class, where AUC tending to $1$ is reached, versus $1.26$ in the blind class, where the single-carrier AUC stalls between $0.18$ and $0.25$ even at $g=3.2$. With Mann-Whitney $\mathrm{AUC}=\Phi(-|\Delta|/(\sqrt 2\,\mathrm{sd}_0))$ on the deflation side, a budget of $a\approx 2.5$ buys $\mathrm{AUC}\approx 0.96$.
+
+\subsection{The Le Cam probe, reported honestly}
+
+The frozen declaration operationalized computational invisibility as AUC $\le 0.55$ for both flexible probes below the claimed frontier, evaluated with gradient-boosted trees on a frozen $14$-feature spectral map. As a universal statement it failed, and the failure is the most instructive measurement in the study because it splits by aspect. At $c=0.8$ the probe sits at chance level, AUC between $0.50$ and $0.58$, through $g=0.8$ and becomes informative only around $g\ge 1.6$ (AUC $0.62$ to $0.78$): operational invisibility survives flexible discriminators at practically relevant strengths. At $c=0.2$ the probe reads the confounding easily, with AUC $0.84$ already at $g=0.15$ and reaching $1.0$. Feature forensics identify the exploited carrier: the only informative feature is $\|b\|^2$, whose mean shift at $(c=0.2,g=0.8)$ is about $-2.2$ standard deviations and negative, because $\sigma_y^2$ inflates faster than the cross-moment mean, exactly the deflation mechanism of Proposition~\ref{prop:visibility}.
+
+Claims were rescoped rather than defended. Subcritical dense confounding is invisible to the eigenvalue-alarm classes everywhere measured, subject to the layering above; it is additionally invisible to concentrated cross-moment functionals in an intermediate-to-high-$c$ regime at $n=2000$; and it is not invisible at low $c$. The theory question accordingly upgrades from whether some second-moment statistic can remain blind to characterizing the detectability phase diagram of general second-moment functionals in $(c,g)$, a question the visibility boundary begins to answer for the quadratic carrier.
+
+Two disclosures complete the record. First, the MMD probe was deferred: its median-heuristic bandwidth returned degenerate values on standardized features, an implementation gap recorded as such, leaving the boosted trees as the evaluated probe. Second, at small $g$ the classifier outperforms the mean-shift envelope: at $c=0.2$, $g=0.15$, the measured AUC of $0.845$ exceeds the Gaussian-envelope prediction near $0.53$ because the learner also exploits distributional shape beyond the first moment. The closed-form curve is therefore the lower envelope and the class-map backbone, and per-point small-$g$ AUC prediction is explicitly out of scope. Compared with confounding-strength diagnostics \citep{janzing2018detecting,rendsburg2024consistent}, which estimate magnitude without shipping exact null laws, the contribution here is a calibrated boundary: a stated functional, a stated ceiling, and a stated aspect at which seeing stops.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/lecam_probe_auc.pdf}
+\caption{Le Cam probe honesty: gradient-boosted AUC against confounding strength $g$ at matched configurations, split by aspect ratio. At $c=0.8$ the probe remains at chance through $g=0.8$ and turns informative only near $g=1.6$; at $c=0.2$ the self-standardized $\|b\|^2$ signature is readable immediately (AUC up to $1.0$). The frozen universal-invisibility rule fails as a universal statement and is rescoped by $c$.}
+\label{fig:lecam}
+\end{figure}

@@ -1,0 +1,167 @@
+\begin{thebibliography}{19}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Baik et~al.(2005)Baik, Ben~Arous, and P{\'e}ch{\'e}]{bbp2005phase}
+Jinho Baik, G{\'e}rard Ben~Arous, and Sandrine P{\'e}ch{\'e}.
+\newblock Phase transition of the largest eigenvalue for nonnull complex sample
+  covariance matrices.
+\newblock \emph{Annals of Probability}, 33\penalty0 (5):\penalty0 1647--1672,
+  2005.
+\newblock \doi{10.1214/009117905000000233}.
+\newblock Verified title differs from the plan's short title; the real-case
+  statement used in SCF follows from the same analysis and is stated explicitly
+  in benaychgeorges2011eigenvalues.
+
+\bibitem[Benaych-Georges and Nadakuditi(2011)]{benaychgeorges2011eigenvalues}
+Florent Benaych-Georges and Raj~Rao Nadakuditi.
+\newblock The eigenvalues and eigenvectors of finite, low rank perturbations of
+  large random matrices.
+\newblock \emph{Advances in Mathematics}, 227\penalty0 (1):\penalty0 494--521,
+  2011.
+\newblock \doi{10.1016/j.aim.2011.02.007}.
+
+\bibitem[Benaych-Georges and Nadakuditi(2012)]{benaychgeorges2012singular}
+Florent Benaych-Georges and Raj~Rao Nadakuditi.
+\newblock The singular values and vectors of low rank perturbations of large
+  rectangular random matrices.
+\newblock \emph{Journal of Multivariate Analysis}, 111:\penalty0 120--135,
+  2012.
+\newblock \doi{10.1016/j.jmva.2012.04.019}.
+
+\bibitem[Cevid et~al.(2020)Cevid, B{\"u}hlmann, and
+  Meinshausen]{cevid2020spectral}
+Domagoj Cevid, Peter B{\"u}hlmann, and Nicolai Meinshausen.
+\newblock Spectral deconfounding via perturbed sparse linear models.
+\newblock \emph{Journal of Machine Learning Research}, 21:\penalty0 19--545,
+  2020.
+\newblock URL \url{https://jmlr.org/papers/v21/19-545.html}.
+\newblock arXiv:1811.05352. CORRECTION vs research plan: published in JMLR, not
+  Annals of Statistics.
+
+\bibitem[Dobriban and Wager(2018)]{dobriban2018high}
+Edgar Dobriban and Stefan Wager.
+\newblock High-dimensional asymptotics of prediction: Ridge regression and
+  classification.
+\newblock \emph{Annals of Statistics}, 46\penalty0 (1):\penalty0 247--279,
+  2018.
+\newblock \doi{10.1214/17-AOS1549}.
+
+\bibitem[Fan and Liao(2014)]{fan2014endogeneity}
+Jianqing Fan and Yuan Liao.
+\newblock Endogeneity in high dimensions.
+\newblock \emph{Annals of Statistics}, 42\penalty0 (3):\penalty0 872--917,
+  2014.
+\newblock \doi{10.1214/13-AOS1202}.
+
+\bibitem[Guo et~al.(2022)Guo, {\v{C}}evid, and B{\"u}hlmann]{guo2022ddll}
+Zijian Guo, Domagoj {\v{C}}evid, and Peter B{\"u}hlmann.
+\newblock Doubly debiased lasso: High-dimensional inference under hidden
+  confounding.
+\newblock \emph{Annals of Statistics}, 50\penalty0 (5):\penalty0 2500--2530,
+  2022.
+\newblock \doi{10.1214/21-AOS2152}.
+\newblock URL \url{https://arxiv.org/abs/2004.03758}.
+\newblock DOI to re-verify at Phase 2 baseline freeze; arXiv record verified.
+
+\bibitem[Hastie et~al.(2022)Hastie, Montanari, Rosset, and
+  Tibshirani]{hastie2022surprises}
+Trevor Hastie, Andrea Montanari, Saharon Rosset, and Ryan~J. Tibshirani.
+\newblock Surprises in high-dimensional ridgeless least squares interpolation.
+\newblock \emph{Annals of Statistics}, 50\penalty0 (2):\penalty0 949--986,
+  2022.
+\newblock \doi{10.1214/21-AOS2133}.
+
+\bibitem[Janzing and Sch{\"o}lkopf(2018)]{janzing2018detecting}
+Dominik Janzing and Bernhard Sch{\"o}lkopf.
+\newblock Detecting confounding in multivariate linear models via spectral
+  analysis.
+\newblock \emph{Journal of Causal Inference}, 6\penalty0 (1), 2018.
+\newblock \doi{10.1515/jci-2017-0013}.
+\newblock Flagged locator from plan now resolved.
+
+\bibitem[Johnstone(2001)]{johnstone2001distribution}
+Iain~M. Johnstone.
+\newblock On the distribution of the largest eigenvalue in principal components
+  analysis.
+\newblock \emph{Annals of Statistics}, 29\penalty0 (2):\penalty0 295--327,
+  2001.
+\newblock \doi{10.1214/aos/1009210544}.
+
+\bibitem[Knowles and Yin(2017)]{knowles2017anisotropic}
+Antti Knowles and Jun Yin.
+\newblock Anisotropic local laws for random matrices.
+\newblock \emph{Probability Theory and Related Fields}, 169\penalty0
+  (1-2):\penalty0 257--352, 2017.
+\newblock \doi{10.1007/s00440-016-0730-4}.
+
+\bibitem[Marchenko and Pastur(1967)]{marchenko1967distribution}
+Vladimir~A. Marchenko and Leonid~A. Pastur.
+\newblock Distribution of eigenvalues for some sets of random matrices, 1967.
+\newblock Mathematics of the USSR-Sbornik 1(4):457--483. FLAGGED: no resolvable
+  digital locator; classical citation kept for completeness.
+
+\bibitem[Nava et~al.(2026)Nava, B{\"u}hlmann, and Sigrist]{nava2026sdboost}
+Antonio Nava, Peter B{\"u}hlmann, and Fabio Sigrist.
+\newblock Spectrally deconfounded gradient boosting.
+\newblock \emph{arXiv preprint arXiv:2607.09371}, 2026.
+\newblock URL \url{https://arxiv.org/abs/2607.09371}.
+
+\bibitem[Onatski(2010)]{onatski2010determining}
+Alexei Onatski.
+\newblock Determining the number of factors from empirical distribution of
+  eigenvalues.
+\newblock \emph{Review of Economics and Statistics}, 92\penalty0 (4):\penalty0
+  1004--1016, 2010.
+\newblock \doi{10.1162/rest_a_00043}.
+
+\bibitem[Onatski et~al.(2013)Onatski, Moreira, and
+  Hallin]{onatski2013asymptotic}
+Alexei Onatski, Marcelo~J. Moreira, and Marc Hallin.
+\newblock Asymptotic power of sphericity tests for high-dimensional data.
+\newblock \emph{Annals of Statistics}, 41\penalty0 (3):\penalty0 1204--1231,
+  2013.
+\newblock \doi{10.1214/13-AOS1100}.
+\newblock URL \url{https://arxiv.org/abs/1306.4867}.
+\newblock Theorem-level read completed during prior-art verification.
+
+\bibitem[Rendsburg et~al.(2024)Rendsburg, Vankadara, Ghoshdastidar, and von
+  Luxburg]{rendsburg2024consistent}
+Lydia Rendsburg, L.~C. Vankadara, Debarghya Ghoshdastidar, and Ulrike von
+  Luxburg.
+\newblock A consistent estimator for confounding strength.
+\newblock \emph{Mathematical Statistics and Learning}, 7\penalty0 (3):\penalty0
+  189--220, 2024.
+\newblock \doi{10.4171/msl/47}.
+\newblock URL \url{https://arxiv.org/abs/2211.01903}.
+
+\bibitem[Scheidegger et~al.(2025)Scheidegger, Guo, and
+  B{\"u}hlmann]{scheidegger2024spectral}
+Cyrill Scheidegger, Zijian Guo, and Peter B{\"u}hlmann.
+\newblock Spectral deconfounding for high-dimensional sparse additive models.
+\newblock \emph{ACM / IMS Journal of Data Science}, 2\penalty0 (1):\penalty0
+  1--52, 2025.
+\newblock \doi{10.1145/3711116}.
+\newblock URL \url{https://arxiv.org/abs/2312.02860}.
+
+\bibitem[Ulmer et~al.(2025)Ulmer, Scheidegger, and
+  B{\"u}hlmann]{ulmer2025sdforest}
+Melissa Ulmer, Cyrill Scheidegger, and Peter B{\"u}hlmann.
+\newblock Spectrally deconfounded random forests.
+\newblock \emph{Journal of Computational and Graphical Statistics}, 35\penalty0
+  (2):\penalty0 758--768, 2025.
+\newblock \doi{10.1080/10618600.2025.2569602}.
+\newblock URL \url{https://arxiv.org/abs/2502.03969}.
+
+\bibitem[Wang and Blei(2019)]{wang2019blessings}
+Yixin Wang and David~M. Blei.
+\newblock The blessings of multiple causes.
+\newblock \emph{Journal of the American Statistical Association}, 114\penalty0
+  (528):\penalty0 1574--1596, 2019.
+\newblock \doi{10.1080/01621459.2019.1686987}.
+\newblock Issue corrected from plan's 527 to 528.
+
+\end{thebibliography}

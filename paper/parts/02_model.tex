@@ -1,0 +1,128 @@
+\section{Model, estimands, and assumption ledger}
+\label{sec:model}
+
+This section fixes the models, normalizations, and estimands, records the identification subtlety behind the assumption ledger, and states the detection problem.
+
+\subsection{Data-generating models}
+\label{subsec:dgm}
+
+\paragraph{M1: vector structural target.}
+One observational dataset consists of $n$ independent copies of $(f_i, u_i, \eps_i)$, with $f_i$ an $r$-vector of latent factors, $u_i$ a $p$-vector of design noise, and scalar $\eps_i$, generating
+\[
+X = \Lambda f + u, \qquad Y = \beta^\top X + \gamma^\top f + \eps .
+\]
+Here $\Lambda$ collects $p \times r$ dense loadings, $\beta$ is the structural coefficient vector, and $\gamma$ couples factors to response; the observable data are $(Y, X)$ only, with $f$ latent. All confounding enters the conditional mean through the single $p$-vector $b := \Lambda\gamma$, the bias direction; this form is second-moment equivalent, under Gaussian errors, to a joint-Gaussian model with $\mathrm{Cov}(X,Y) = \Sigma_X\beta + \Lambda\gamma$.
+
+\paragraph{M2: scalar treatment target.}
+M2 adds an observed treatment $D$,
+\[
+D = \pi^\top X + \delta^\top f + \nu, \qquad Y = \tau D + \beta^\top X + \gamma^\top f + \eps ,
+\]
+with independent noise $\nu$ and scalar target $\tau$, reserved for the treatment-effect analysis; all prior development uses M1.
+
+\paragraph{Binding normalizations.}
+Six conventions hold throughout. First, $\sigma_u^2 = 1$ unless stated otherwise, and spike strengths are relative to $\sigma_u^2$, so statements are scale equivariant. Second, $l_1 \ge \cdots \ge l_r \ge 0$ are the eigenvalues of $\Lambda\Lambda^\top/\sigma_u^2$, so the population eigenvalues of $\Sigma_X/\sigma_u^2$ are $1 + l_j$, where $\Sigma_X = \mathrm{Var}(X) = \sigma_u^2 I + \Lambda\Lambda^\top$. Third, $c = p/n$ may take any positive value. Fourth, $\|\beta\|_2 = 1$ and $\gamma = g\,\mathrm{dir}(\theta)$ with $g = \|\gamma\|_2$ and $\mathrm{dir}(\theta) = \cos(\theta)e_1 + \sin(\theta)e_2$ in the coordinate basis of factor space. Fifth, $\Lambda = Q\,\mathrm{diag}(\sigma_u\sqrt{l_1}, \dots, \sigma_u\sqrt{l_r})$ with Haar-isotropically drawn orthonormal columns $Q$; dense loadings means exactly this isotropic row distribution. Sixth, $u_{ij}$ and $\eps_i$ are standard normal at finite $n$.
+
+\paragraph{Why this geometry.}
+Write $u_j := Qe_j$ for the population eigenvector directions of $\Sigma_X$, with eigenvalues $1 + l_j$. Since $b = \sum_{j \le r} \sigma_u\sqrt{l_j}\,\gamma_j u_j$, the angle $\theta$ controls how much confounding mass rides on strong versus weak factor directions while leaving the design spectrum $(l_1,\dots,l_r)$, hence its scree and Tracy--Widom appearance, untouched. $\theta$ thus slides confounding between directions an eigenvalue alarm can see and directions it cannot; separating visible from harmful is why $\theta$ grids every experiment below.
+
+One caveat is recorded honestly. Exactly zero OLS bias together with nonzero spikes requires $\Lambda\gamma = 0$, which cannot occur for generic full-rank $\Lambda$; ``harmless'' therefore always means small bias ratio, operationalized as $\gamma$ aligned with negligible-strength factors (auxiliary cells take secondary spikes $l = 10^{-4}$, whose per-direction OLS bias coefficient $\sqrt{l}/(1+l)$ is near $0.01$), never exactly zero.
+
+\subsection{Estimands}
+\label{subsec:estimands}
+
+\begin{definition}[Loading-conditional bias]
+\label{def:bias}
+For an estimator $T$ of $\beta$ under M1, the bias functional is
+$\mathrm{Bias}(T) = \mathbb{E}\left[\,T(Y,X) \mid \Lambda\,\right] - \beta$,
+averaging over $f$, $u$, $\eps$, and the draw of $\beta$, but conditioning on the realized loading geometry $\Lambda$ (equivalently $Q$). The scalar gate summary is
+$\mathrm{rel\_bias}(T) = \|\mathrm{Bias}(T)\|_2 / \|\beta\|_2$.
+\end{definition}
+
+The conditioning carries content: were $Q$ redrawn Haar-isotropically on every replicate, the unconditional mean bias vector would vanish by spherical symmetry, while each dataset still suffers an $O(1)$ bias along its own realized spike directions, so the unconditional moment averages away exactly the error practitioners incur. This functional is what simulations estimate ($Q$ drawn once per configuration) and what the laws of Section 3 predict.
+
+A companion functional isolates what confounding adds over pure fitting artifacts:
+\[
+\mathrm{rel\_bias}_{\mathrm{conf}}(T)
+= \frac{\bigl\| \mathbb{E}[T \mid \Lambda, \gamma] - \mathbb{E}[T \mid \Lambda, \gamma = 0] \bigr\|_2}{\|\beta\|_2},
+\]
+estimated from twin arms under common random seeds. The subtraction matters for $c > 1$, where minimum-norm least squares shrinks $\beta$ even without confounding; at $c \le 1$ an exact finite-$n$ identity makes the functionals coincide, so twin arms run only there.
+
+\begin{definition}[Outlier visibility]
+\label{def:visibility}
+$V(X) = \lambda_{\max}(X^\top X/n)/\sigma_u^2$, compared against the Tracy--Widom upper $99\%$ quantile for white noise scaled by $1/n$; configurations exceeding it are outlier-positive.
+\end{definition}
+
+Two frontier quantities organize the empirical questions: the detection frontier $s_{\mathrm{detect}}(l,c)$, the minimal effective detection spike (Definition~\ref{def:seff}) at which the calibrated test of Section~\ref{subsec:detection} reaches power $1/2$ at size $0.05$, and the removal frontier $s_{\mathrm{remove}}(l,c)$, the minimal spike strength at which worst-case over-$\theta$ relative bias of the best spectral estimator falls to at most $\delta = 0.05$. They are claimed distinct: regions exist where $V(X)$ sits below the Tracy--Widom threshold yet $\mathrm{rel\_bias}$ reaches $0.2$ (invisible yet harmful), and regions where the design is clearly outlier-positive (spikes with $l > 2\sqrt{c}$) yet $\mathrm{rel\_bias}$ stays at or below $0.02$ (visible yet harmless).
+
+\subsection{The identification subtlety and the assumption ledger}
+\label{subsec:ledger}
+
+Second moments of $(Y,X)$ identify far less than generative parameters: because $\mathrm{Cov}(X,Y) = \Sigma_X\beta + \Lambda\gamma$, every pair $(\tilde\beta, \tilde\gamma)$ with $\tilde\beta + \Sigma_X^{-1}\Lambda\tilde\gamma = \beta + \Sigma_X^{-1}\Lambda\gamma$ induces the same joint law, and from data alone only
+\[
+\beta^* := \beta + \Sigma_X^{-1}\,\Lambda\gamma
+\]
+is identified. Two consequences follow. Bias functionals stay well defined regardless: they are expectations over the generative model, and an estimator's probability limit ($\beta^*$ for OLS) is a deterministic function of $(\Sigma_X, b)$. But testing $H_0\colon \gamma = 0$ is meaningless without assumptions separating the structural direction from spike directions, since the same second moments admit both a confounded and a confounding-free reading; the ledger pairs each assumption with its role and failure mode.
+
+\begin{assumption}[A1: dense factor structure]
+\label{assump:A1}
+$X = \Lambda f + u$ with $f \in \mathbb{R}^r$, $r$ fixed as $n, p \to \infty$ (slow growth with $r = o(p^{1/2})$ admissible), loadings $\Lambda = QD$, $Q$ of dimension $p \times r$ with Haar-isotropic orthonormal columns, $D = \sigma_u\,\mathrm{diag}(\sqrt{l_1}, \dots, \sqrt{l_r})$, and fixed $l_1 \ge \cdots \ge l_r \ge 0$ with $c = p/n \in (0,\infty)$.
+\end{assumption}
+
+A1 produces the spectral profile, spikes or hidden bulk mass, on which bias functionals and detection statistics act; sparse or discrete loadings destroy the isotropic delocalization our overlap computations rely on, making results loading-dependent.
+
+\begin{assumption}[A2: error law]
+\label{assump:A2}
+$u_{ij}$ and $\eps_i$ are i.i.d.\ Gaussian at finite $n$, mutually independent and independent of $f$.
+\end{assumption}
+
+A2 licenses exact finite-$n$ facts, Tracy--Widom fluctuation scales and Gaussian resolvent identities among them. Heavy tails inflate $\lambda_{\max}$ beyond spike-plus-fluctuation predictions, and heteroskedasticity shifts the bulk edge, breaking naive calibration. Qualitative bias regions should survive non-Gaussianity; we test that rather than assume it.
+
+\begin{assumption}[A3: independence of factors, design noise, and errors]
+\label{assump:A3}
+$f_i$, $u_i$, and $\eps_i$ are mutually independent across units and across sources.
+\end{assumption}
+
+A3 makes $\mathrm{Cov}(X,Y) = \Sigma_X\beta + \Lambda\gamma$ an exact identity and the bias functionals well defined with no assumption on $f$ beyond unit variance; dependence between $f$ and $u$ would redefine $\Sigma_X$ itself, and is out of scope.
+
+\begin{assumption}[A4a: near-orthogonality of the structural direction]
+\label{assump:A4a}
+$\beta$ is drawn independently of $(Q, \gamma, l)$ with $\mathbb{E}[\beta] = 0$, $\|\beta\|_2 = 1$, delocalized coordinates (for instance uniform on $S^{p-1}$); equivalently, $|\langle \beta, u_j \rangle| = O_p(p^{-1/2})$ for each $j \le r$.
+\end{assumption}
+
+A4a is the material assumption and standing default, in the spirit of perturbed-design near-orthogonality. It spreads the $\beta$ signal over the bulk of the whitened cross-moment spectrum while $\Lambda\gamma$ concentrates on spike directions, so testing $H_0\colon \gamma = 0$ is well posed with $\Lambda$ treated as a nuisance estimated from $X$. Estimation claims need not invoke A4a; only detection claims do. If $\beta$ correlates with leading eigenvectors, part of the signal mimics a spike and test size inflates; a dedicated alignment sweep quantifies tolerated violation. Three sensitivity variants replace A4a where flagged. A4b (perturbed sparsity) sets $\beta = \beta_s + \Lambda\gamma/\sigma_u^2$ with $\beta_s$ $k$-sparse, $k = o(n/\log p)$: detection becomes finding a dense perturbation of a sparse regression. A4c (multiple responses) shares loadings across $m \ge r$ responses, identifying the confounding subspace from the cross-response moment matrix, mainly strengthening power. A4d (mechanism independence, after Janzing--Schoelkopf) assumes $\beta$ independent of the spectrum of $\Sigma_X$; it motivates comparison baselines but is never maintained ourselves. Every detection statement names its variant, defaulting to A4a.
+
+\begin{assumption}[A5: homoskedastic noise]
+\label{assump:A5}
+$\mathrm{Var}(u_{ij}) = \sigma_u^2$ constant in $i, j$, and $\mathrm{Var}(\eps_i) = \sigma_\eps^2$ constant in $i$.
+\end{assumption}
+
+A5 keeps raw Tracy--Widom thresholds valid; heteroskedasticity moves the bulk edge and invalidates uncalibrated critical values, with normalization-based corrections the documented recovery path under predeclared degradation tolerances.
+
+\begin{assumption}[A6: number of factors]
+\label{assump:A6}
+Either $r$ is known (theory statements), or it is estimated by the Onatski ratio rule applied to the sample spectrum of $X$ (spectral-trimming baselines).
+\end{assumption}
+
+Trimming requires the retained rank $k$: misspecification by one factor is a robustness cell, overestimation keeping confounding directions inside the retained subspace so bias survives, underestimation removing signal alongside confounding; both appear in reported phase diagrams.
+
+\subsection{The detection problem}
+\label{subsec:detection}
+
+Detection asks whether the observed joint law of $(Y,X)$ contains evidence of confounding at all. Under A4a the hypotheses are
+\[
+H_0\colon \gamma = 0 \qquad\text{versus}\qquad H_1\colon \gamma \ne 0 \ \text{with}\ \|\Lambda\gamma\|_2 = \Theta(1),
+\]
+and interest centers on whitened cross-moments. With $\widehat\Sigma = X^\top X/n$ and $W = XY/n$: S1 is the largest eigenvalue of $\widehat\Sigma^{-1} W W^\top \widehat\Sigma^{-1}/n$ with Tracy--Widom-calibrated threshold; S2 consists of linear spectral statistics of $\widehat\Sigma^{-1} W W^\top$ at data-chosen test functions; S3 is the Onatski ratio statistic for spiked directions of the whitened cross-moment. Named baselines outside the family: residual F-test, UCM bootstrap (Rendsburg et al.), scree inspection.
+
+\begin{definition}[Effective detection spike]
+\label{def:seff}
+On the $\sigma_u^2 = 1$ scale,
+\[
+s_{\mathrm{eff}} := \bigl\| P_{\mathrm{spike}}\;\Sigma_X^{-1/2}\,\Lambda\gamma \bigr\|_2^2
+= \sum_{j\,:\,l_j > \sqrt{c}} \frac{l_j}{1 + l_j}\,\gamma_j^2 ,
+\]
+where $P_{\mathrm{spike}}$ projects onto supercritical population eigenvector directions.
+\end{definition}
+
+Only supercritical-aligned mass yields a coherent rank-$r$ mean shift in the whitened cross-moment; the rest hides in the bulk. Under subcritical profiles $s_{\mathrm{eff}} = 0$ at leading order regardless of $g$: this is the formal content of ``invisible,'' and why visibility (Definition~\ref{def:visibility}) and harmfulness (Definition~\ref{def:bias}) must be tracked separately. $s_{\mathrm{detect}}$ marks where calibrated alarms fire, $s_{\mathrm{remove}}$ where spectral adjustment suffices; the gap between them is what this paper maps.

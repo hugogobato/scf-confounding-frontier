@@ -1,0 +1,57 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[round]{natbib}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\E}{\mathrm{E}}
+
+\title{The Confounding Frontier:\\ Exact Spectral Bias Laws, Calibrated Detection,\\ and the Limits of Deconfounding under Dense Hidden Confounding}
+
+\author{Hugo Souto\thanks{Code, data artifacts, memos, and the \texttt{confounderalarm} package: repository \texttt{scf} accompanying this paper. Every empirical claim maps to a figure, parquet artifact, and configuration identifier in \texttt{paper/claim\_map.md}.}}
+\date{August 25, 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+High-dimensional observational studies routinely suffer dense latent confounding: pervasive latent factors shift both the covariates and the response at once. We develop an exact spectral theory of when this confounding matters, when it is detectable, and when spectral adjustment helps or hurts, for regression in the proportional regime $c=p/n$. Four results anchor the paper. First, a capture law: when $c>1$, minimum-norm least squares inherits along each population spike direction $q_j$ a bias component rescaled by $\mathrm{cap}_j=(1+l_j)/(c+l_j)$, while at $c\le 1$ the population bias is inherited exactly; the law is proved by an elementary argument (Gram completion of squares, Sherman--Morrison, inverse-Wishart moments) that uses no local-law machinery, extends to any fixed number of factors, interpolates through ridge regression, and yields a trimmed-coefficient law explaining why trim-then-regress treatment estimates stay flat across $c$ while ordinary least squares inflates roughly six-fold. Second, a calibrated alarm whose power frontier is predictable: the empirical frontier matching the deterministic prediction has median ratio $1.02$ across strata, with size control verified over thousands of null replicates. Third, scoped impossibility: below the Baik--Ben Arous--P\'ech\'e threshold, eigenvalue-alarm statistics are blind to dense confounding under response standardization, and quadratic probes obey an explicit visibility law whose born-blind boundary sits exactly at the Marchenko--Pastur point $c=1$ for scaling spike profiles; a flexible machine-learning probe confirms operational invisibility at $c=0.8$ while detecting reliably at $c=0.2$, so claims are rescoped rather than asserted universally. Fourth, a characterized negative result: empirically Bayes tuned soft spectral trimming either collapses exactly to ordinary least squares or loses to Onatski hard-trimming in every measured harmful cell (no-regret share $4.1\%$ even with oracle tuning), a failure mode our dominance theorem explains and that the capture law predicts. Semi-synthetic benchmarks on three real covariate geometries validate the alarm's straddle of its predicted frontier and the trim-then-regress recipe ($\tau$ error $0.173$ against $0.421$ for ordinary least squares under matched injection). A released package turns the theory into verdicts with calibrated p-values and blind-region certificates.
+\end{abstract}
+
+\input{parts/01_intro}
+\input{parts/02_model}
+\input{parts/03_capture}
+\input{parts/04_detection}
+\input{parts/05_blindness}
+\input{parts/06_estimation}
+\input{parts/07_benchmarks}
+\input{parts/08_limitations}
+
+\appendix
+
+\section{Reproducibility}\label{app:repro}
+
+Every number in this paper regenerates from frozen artifacts. The simulation grids were defined before any sweep data existed and are hash-locked (\texttt{configs/grid\_*.json}, grid hash \texttt{a920e554e692}); every result row carries the hash of the model card and assumption ledger pair, so no undocumented modeling knob can enter a reported cell. The global seed is $20260823$, with per-replication seeds derived deterministically from configuration and replication identifiers. Figures regenerate exclusively from parquet files through versioned scripts (\texttt{code/make\_pilot\_figures.py}, \texttt{code/make\_phase2\_figures.py}); no figure is edited by hand.
+
+The identity layer is guarded by permanent tests: classical transcriptions (Marchenko--Pastur edges, BBP outlier locations, BGN overlaps, Tracy--Widom null calibration) run to stated tolerances in \texttt{tests/test\_identities.py}, and each theorem carries its own falsifier suite, including \texttt{tests/test\_theory\_T1.py} ($39$ checks covering an $(l,c)$ grid, $n$-scaling probes, and corners near $c=1$) and the trimmed-law and visibility-law suites ($48$ further checks). The full suite is green at the submission tag. Large sweeps executed as self-contained Google Colab shards ($38$ phase-two notebooks plus six benchmark notebooks) with per-file checksums consolidated locally; the same shards constitute the computational appendix. The package \texttt{confounderalarm} (version $0.1.0$) installs cleanly in a fresh virtual environment and its examples run end to end. An artifact manifest with sha256 checksums for every parquet, figure, and table used here accompanies the repository, and \texttt{paper/claim\_map.md} links each claim to its figures, artifacts, and configuration identifiers.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

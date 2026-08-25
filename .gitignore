@@ -10,4 +10,5 @@ __pycache__/
 .ipynb_checkpoints/
 
 # returned Colab archives stay out of git
-notebooks/scf_shard_*.zip
+notebooks
+*:Zone.Identifier

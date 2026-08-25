@@ -1,0 +1,48 @@
+\section{A calibrated confounding alarm with a predictable power frontier}
+\label{sec:detection}
+
+The detection problem is $H_0\colon \gamma=0$ against $H_1\colon \gamma=g\,\mathrm{dir}$ with $g=\|\gamma\|$ and $\|\mathrm{dir}\|=1$, observed through the standardized pair $(\tilde Y,X_c)$, where $\tilde Y$ is $Y$ centered and rescaled to unit sample variance. Throughout, $c=p/n$, $b=X_c^{\top}\tilde Y/n$ is the sample cross-moment, and $(d_j,v_j)$, $j=1,\dots,p$, are the eigenpairs of the sample covariance $\hat\Sigma=X_c^\top X_c/n$. The alarm we ship is deliberately selective: it listens only to the coordinates through which supercritical confounding ($l_j>\sqrt c$) must express itself \citep{bbp2005phase,benaychgeorges2012singular}, and it pays for that selectivity with a price we characterize exactly.
+
+\subsection{Construction}
+
+For each selected coordinate $j\le k$, where $k$ comes from an eigenvalue-ratio edge selector on $\hat\Sigma$ capped at ten, define
+\[
+z_j=\frac{\sqrt n\, v_j^\top b}{\sqrt{d_j}},
+\qquad
+T_{\max}=\max_{j\le k}\frac{|z_j|}{\sqrt{\widehat{\mathrm{var}}_j}},
+\qquad
+\widehat{\mathrm{var}}_j=\frac{\hat\sigma_\varepsilon^2+d_j/c}{\hat\sigma_y^{\,2}},
+\]
+with the two nuisance estimates following a shared frozen convention. The statistic $T_{\max}$ (S2, \emph{maxz\_cal}) rejects above a threshold, and two threshold conventions are carried side by side: the frozen gate rule reads $T_{\max}$ against the matched-null Monte Carlo 95th percentile, while the arithmetic fallback applies the two-sided Gaussian Bonferroni cut $z_{1-0.05/(2k)}$. The variance law inside the calibration is exact rather than heuristic: conditional on the design, $\mathrm{Var}(z_j)=(\sigma_\varepsilon^2+d_j/c)/\sigma_y^2$ under $H_0$, because the Haar draw of the regression vector leaks into every rowspace coordinate with variance $d_j/c$, a leakage tax that grows exactly where $p\gg n$.
+
+\subsection{Why the finite-\texorpdfstring{$n$}{n} null is not Gaussian-max, and why that became a theorem}
+
+The naive mental model treats the $z_j$ as independent standard Gaussians and reads $T_{\max}$ against a Bonferroni quantile. The measured matched-null 95th percentile of the calibrated statistic runs at roughly $1.7$ times that naive scale, a gap large enough to demand explanation rather than patching, and the explanation became a derivation target in its own right. First, a conditional independence lemma: under $H_0$ the pairwise covariances of the calibrated coordinates vanish identically, eigenvector orthogonality killing both the loading channel and the noise channel, so the correct null model is a maximum over independent coordinates with unequal scales, not correlated chi-squares. Second, the inflation is a marginal-scale effect: the realized null law $\kappa_{n,k}$ of $T_{\max}$ factorizes into a dominant scale-calibration ratio, produced by the nuisance estimator pair (validated against $c\le 1$ bulk geometry, it systematically mis-scales on the $n$-side spectrum when $c>1$; at $c=5$ the credited scale at the top coordinate is about $3.5$ times too small, with measured $4.21$ against a predicted $3.50$), times an exact max-over-$k$ term that stays within $(0.9,1.05]$ for $k\le 10$, plus a documented positive spread correction from per-replicate fluctuation of the nuisance estimates, a Jensen effect for ratios. Correlations never enter. Two consequences follow: Bonferroni is nearly exact once the scales are right, so no multiple-testing pathology hides here, and analytic thresholds at $c>1$ are admissible only after applying the scale law, which is why the Monte Carlo threshold is the frozen default.
+
+The calibration evidence is at scale. Across $31$ null cells ($39{,}200$ replicate pairs), the noise-aware evaluation against true size $0.05$ returns pooled $\chi^2$ $p=0.4114$, maximum standardized deviation $2.91$, and $96.8\%$ of cells within $\pm 2$ standard deviations: statistically indistinguishable from perfect calibration. We co-report the less flattering arithmetic. The raw share of cells landing inside the frozen band $[0.035,0.065]$ is $80.65\%$, a number that mostly measures replication budgets, since at $500$ to $1200$ replicates per cell the split-half standard error reaches $0.014$, comparable to the band's entire half-width. The raw Bonferroni convention shows median size $0.1625$, quantifying the same $1.7\times$ looseness from the other side. Finally, the scree baseline S0 records median analytic ``size'' $1.0$ under $\gamma=0$, by construction and by design: scree detects the population spikes themselves rather than confounding \citep{johnstone2001distribution}, so naive visibility alarms fire on every spiked design, confounded or not.
+
+\subsection{The power frontier}
+
+The predictor assembles the same objects the null law identified: per-coordinate mean shifts placed at the BBP sample locations with capture-weighted couplings, the $d_j/c$ leakage tax, and the matched-null percentile as threshold scale. One approximation is declared up front. The frozen predictor treats the calibrated shift as linear in $g$, whereas the true shift scales like $g/\sqrt{A+g^2}$ with $A=1+\sigma_\varepsilon^2$, because response self-normalization deflates couplings as the confounding strengthens; inside the gated strength range this bends slopes by under $15\%$, well inside the pre-declared factor-$1.5$ tolerance.
+
+Evaluation is gated to the three strata whose direction carries supercritical-aligned mass: mixed profile, $\theta=\pi/6$, $c\in\{0.2,0.8,2.0\}$, $n=2000$. Empirical $g$ at $80\%$ power lands inside the band in every case, with ratios of empirical to predicted $0.93$, $1.25$, and $1.02$ across increasing $c$; the median ratio is $1.02$ and the share of gated strata within factor $1.5$ is exactly $1.0$. The worst cell ($c=0.8$, mixed profile, $\theta=\pi/6$) predicts $g_{\mathrm{pred}}=0.261$ against empirical $g_{80}=0.325$, a ratio of $1.246$, still comfortably passing. Figure~\ref{fig:power} overlays the full power surfaces on the predicted frontiers.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/power_surface_vs_frontier.pdf}
+\caption{Empirical power of the calibrated alarm S2 against confounding strength $g$ for the Phase-2 strata ($n=2000$), overlaid on the frozen frontier predictions built from the exact null-variance law with capture-weighted BBP locations and the $d_j/c$ leakage tax. Supercritical-aligned strata (mixed profile, $\theta=\pi/6$) track the predicted $80\%$ contour within a factor of about one (ratios $0.93$, $1.25$, $1.02$; median $1.02$). Strata without supercritical-aligned mass remain at or below $0.25$ power at the largest simulated strength $g=3.2$.}
+\label{fig:power}
+\end{figure}
+
+In the nine remaining strata the prediction is an infinite frontier: fully subcritical spike profiles, or mass concentrated on the subcritical second factor near $\theta=\pi/2$. All nine strata confirm the forecast, with empirical power at or below $0.25$ at the largest simulated strength $g=3.2$ (confirmed in $9$ of $9$ strata). This is not a finite-sample accident but a ceiling.
+
+\begin{proposition}[Subcritical power ceiling]
+\label{prop:ceiling}
+Fix a subcritical profile ($l_j<\sqrt c$ for all $j$) and any fixed $g$. The overlap of every sample eigenvector with the coherent confounding direction is $O_p(n^{-1/2})$ \citep{benaychgeorges2012singular}, so the calibrated coordinate means stay tight and the asymptotic power of $T_{\max}$ at level $\alpha$ converges to
+\[
+\mathrm{pow}_\infty(g)=\Pr\Big(\max_j\big|\mu_j^{\mathrm{tight}}(g)+\kappa_j N_j\big|>\mathrm{thr}\Big)\;<\;1,
+\]
+a constant strictly below one, where $\kappa_j$ are the realized null scales and $\mathrm{thr}$ the calibrated threshold.
+\end{proposition}
+
+Measured maxima in the blind strata, $0.17$ to $0.25$ at $g=3.2$ and rising only slowly in $g$, match a saturating mean-shift law rather than a slow escape. ``Infinite frontier'' is thus gate shorthand for a precise statement: no accessible strength reaches $80\%$ power, and the honest asymptotic bound sits strictly below one. What the alarm cannot see, by which mechanisms, and exactly where quadratic summaries go blind as well, is the business of Section~\ref{sec:blindness}.
