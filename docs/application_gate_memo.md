@@ -117,3 +117,14 @@ pkg/confounderalarm v0.1.0: pip install -e . green; pytest 3/3 green;
 README with two worked examples; CLI (python -m confounderalarm --csv ...);
 API returns verdict + p-value + (r_hat, l_hat, c) + g* placement +
 blind-region certificate + Onatski hard-trim adjustment for (Y, D, X).
+
+## Independent replication (2026-08-25, Colab CPU vs local workstation)
+
+All pass-2 arms re-run from the pinned tag `phase3-freeze` via the
+clone-at-tag notebooks on independent hardware (Google Colab CPUs). Same
+seeds, same code. Results (results/bench_replication.csv): 41/41 cells,
+max |Delta T| = 7.7e-13, max |Delta ucm_rho| = 3.7e-14, max |Delta js| =
+9.1e-12, ZERO rejection disagreements across every replicate of every
+cell. The benchmark layer of the paper is exactly reproducible from the
+public repository alone (sources are re-fetched with pinned checksums and
+designs re-verified by sha256 before any run).
