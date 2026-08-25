@@ -97,7 +97,7 @@ def main():
     # refuse to pin a tag that does not exist or does not point at HEAD
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
                           capture_output=True, text=True).stdout.strip()
-    tgt = subprocess.run(["git", "rev-parse", args.tag + "^{{commit}}"],
+    tgt = subprocess.run(["git", "rev-parse", args.tag + "^{commit}"],
                          cwd=ROOT, capture_output=True, text=True)
     if tgt.returncode != 0:
         raise SystemExit(f"tag {args.tag} does not exist - create it first "
