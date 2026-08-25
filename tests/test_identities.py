@@ -102,13 +102,20 @@ def test_minnorm_isotropic_limit():
 
 
 def test_ridge_capture_reduces_to_superseded_capture():
-    # ridge_capture's lambda -> 0 limit is the superseded xi-based capture;
-    # the pilot-validated minnorm_capture law differs at c > 1 (F8, memo)
+    # UPDATED 2026-08-25: the proved shifted-resolvent ridge capture
+    # (docs/theory_T1_capture_law.md Section 6) has lam -> 0 limit equal to
+    # the PROVED min-norm capture law (1+l)/(c+l), NOT the superseded
+    # xi-based guess. The old assertion here enshrined the xi-split
+    # interpolation, which the decisive reconciliation check falsified
+    # (max err 0.081 vs 0.003 for the proved form); the superseded form is
+    # preserved as ridge_capture_superseded and still reduces to
+    # bgn_capture_superseded as lam -> 0.
     l = np.array([2.0, 1.5])
     c = 5.0
-    cap0 = df.bgn_capture_superseded(l, c)
     cap_lam = df.ridge_capture(l, 1e-12, c)
-    assert np.allclose(cap_lam, cap0, rtol=1e-6)
+    assert np.allclose(cap_lam, df.minnorm_capture(l, c), rtol=1e-6)
+    cap_old = df.ridge_capture_superseded(l, 1e-12, c)
+    assert np.allclose(cap_old, df.bgn_capture_superseded(l, c), rtol=1e-6)
 
 
 def test_minnorm_capture_law_anchors():

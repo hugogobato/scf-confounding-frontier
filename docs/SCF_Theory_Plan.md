@@ -83,11 +83,14 @@ adversarially audited by an independent agent (checklist A-N all PASS,
 exposition erratum and one variance-bound typo found and fixed in place).
 Fixed-r extension fully reduced (Woodbury + vanishing lemmas L1-L3,
 Section 5), numerically confirmed at r = 2 incl. a subcritical spike.
-Remaining: componentwise r>=2 write-up (clerical); ridge interpolation
-T1.c via shifted resolvents (Silverstein-Choi eq. 1.3/1.4 pins in
-lit/theory_T1_wishart_locators.md) - DECISIVE CHECK FIRST: reconcile
-against ridge_capture's PROVISIONAL xi-split form at t != 1 cells before
-proving either.
+T1.c ridge interpolation ALSO CLOSED same session: corrected shifted-
+resolvent capture cap(lam) = (1+l)m_bar/(1+(1+l)m_bar) with m_bar the root
+of lam m^2 + (lam+c-1)m - 1 = 0 (Section 6); decisive reconciliation
+falsified the PROVISIONAL xi-split form (max err 0.081 + lambda drift vs
+0.003 for the proved form); code updated (ridge_capture now proved form,
+old kept as ridge_capture_superseded); lam->0 collapse to the min-norm law
+is exact, replacing the old test that enshrined the superseded constant.
+Remaining: componentwise r>=2 write-up (clerical).
 
 Target statement (r = 1 first, then fixed r):
 
@@ -198,7 +201,7 @@ Feeds the package's adjustment documentation. 1-2 weeks.
 |----|-------|-----|----------------|
 | C-T1a | exact c<=1 identity | provable (PROVED) | identity unit test (1e-8) |
 | C-T1b | capture decomposition c>1 + artifact R2 | PROVED at r=1 (elementary Wishart route, audited); fixed-r write-up clerical | correctness_overlays.csv <= 10% at n=8000; tests/test_theory_T1.py |
-| C-T1c | ridge interpolation | adapt (route specified; reconcile xi-split form FIRST) | ridge overlays median deviation 0.0% |
+| C-T1c | ridge interpolation | PROVED at r=1 (closed 2026-08-25): shifted-resolvent cap(lam) = (1+l)m_bar/(1+(1+l)m_bar), m_bar root of lam m^2+(lam+c-1)m-1; superseded xi-split FALSIFIED by decisive reconciliation (max err 0.081 vs 0.003) and preserved as ridge_capture_superseded | ridge overlays median deviation 0.0%; tests/test_theory_T1.py ridge cells |
 | C-T2 | frontier achievability + kappa_n,k | adapt | power_surface ratios <= 1.5 |
 | C-T3a | eigen-alarm impossibility below BBP | adapt | blind strata power <= 0.25 at max g |
 | C-T3b | visibility boundary phase curve | NEW/adapt | lecam_probe_auc.csv match incl. c-ordering |
@@ -224,11 +227,9 @@ class definition against the ablation grid before writing the proof.
 
 ## Immediate next actions
 
-1. T1.c ridge: run the decisive reconciliation check (corrected-machinery
-   ridge capture vs ridge_capture PROVISIONAL xi-split at t != 1 cells);
-   then prove the winner via shifted-resolvent assembly (Section 6 of
-   theory_T1_capture_law.md).
-2. Fixed-r componentwise write-up (clerical; lemmas L1-L3 already proved).
-3. TP-6 (T7 trimmed-tau DE): now unblocked end-to-end - consume the
-   capture law via Frisch-Waugh.
-4. TP-3b visibility boundary (highest novelty per week) after T7.
+1. TP-6 (T7 trimmed-tau DE): unblocked end-to-end - consume the proved
+   capture law via Frisch-Waugh; feeds the package docs.
+2. TP-3b visibility-boundary curve (highest novelty per week).
+3. Fixed-r componentwise write-up for T1 (clerical; lemmas L1-L3 proved).
+4. Optional: rerun ridge overlay figures with the proved cap(lam) and
+   record the (small) prediction deltas in a memo line.

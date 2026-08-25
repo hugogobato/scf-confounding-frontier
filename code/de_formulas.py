@@ -185,20 +185,57 @@ def mp_stieltjes_inv(lam: float, a: float) -> float:
 
 
 def ridge_capture(l: np.ndarray, lam: float, c: float, sigma2: float = 1.0) -> np.ndarray:
-    """Capture coefficients of E[(Sigmahat + lam)^{-1} Sigmahat] on spike dirs, c>1.
+    """Ridge capture coefficients on spike directions, c > 1 (F8, PROVED).
 
-    F8 companion. On the spike direction u_j the sample spike sits at nu_j =
-    bbp_location(l_j, c) and contributes xi_j * nu_j / (nu_j + lam); the leaked
-    mass (1 - xi_j) sees the bulk operator, whose ridge-weighted trace gives
-    (1/c) * E[t/(t+lam)] = (1/c)(1 - lam * m_inv(lam, a=1/c)):
+    Shifted-resolvent assembly (docs/theory_T1_capture_law.md Section 6,
+    closed 2026-08-25): with m_bar := lam-side companion Stieltjes value,
 
-        cap_j(lam) = xi_j nu_j/(nu_j + lam)
-                     + (1 - xi_j) (1/c) (1 - lam * m_inv(lam, 1/c)).
+        m_bar(lam) = positive root of  lam*m^2 + (lam + c - 1)*m - 1 = 0
+                   = [-(lam+c-1) + sqrt((lam+c-1)^2 + 4 lam)] / (2 lam),
 
-    Consistency anchor: lim_{lam->0} cap_j = xi_j + (1-xi_j)/c, i.e., the
-    SUPERSEDED xi-based min-norm guess (see bgn_capture_superseded). The
-    lambda-dependence itself is calibrated empirically by the WP 1.5 revisit
-    cells before Phase 2 uses it; treat as PROVISIONAL for c > 1.
+        cap_j(lam) = (1 + l_j) m_bar / (1 + (1 + l_j) m_bar).
+
+    Directional mean: E[<beta_hat_ridge - beta, q> | Q,beta] =
+    -(cap_j(lam) - 1)<beta,q_j> + cap_j(lam) sqrt(l_j)/(1+l_j) gamma_j,
+    i.e., the SAME structure as minnorm_capture with cap -> cap(lam).
+
+    Collapse checks: lam->0 gives m_bar = 1/(c-1) and cap_j(0) =
+    (1+l_j)/(c+l_j) (the proved min-norm capture law); lam->inf gives
+    cap -> 0 (beta_hat -> 0). Reconciliation falsifier (2026-08-25):
+    matches simulation to max |err| 0.003 over 9 (l,c,lam) cells while the
+    superseded xi-split form errs up to 0.081 with lambda-dependent drift;
+    see ridge_capture_superseded and docs/theory_T1_capture_law.md.
+    """
+    l = np.asarray(l, float)
+    mb = mp_stieltjes_bulk_nside(float(lam), float(c))
+    return (1.0 + l) * mb / (1.0 + (1.0 + l) * mb)
+
+
+def mp_stieltjes_bulk_nside(lam: float, c: float) -> float:
+    """lim tr(G + n*lam I)^{-1} for bulk Wishart K ~ W_n(I, df ~ c*n).
+
+    Positive root of lam*m^2 + (lam + c - 1)*m - 1 = 0; equals
+    int (x+lam)^{-1} d g(x) where g is the law of K/n eigenvalues
+    (nonzero branch). Continuity anchor m_bar(0+) = 1/(c-1).
+    Rationalized form 2/[(lam+c-1)+sqrt((lam+c-1)^2+4 lam)] avoids
+    catastrophic cancellation as lam -> 0.
+    """
+    if lam <= 0:
+        return 1.0 / (c - 1.0)
+    s = np.sqrt((lam + c - 1.0) ** 2 + 4.0 * lam)
+    return 2.0 / (lam + c - 1.0 + s)
+
+
+def ridge_capture_superseded(
+    l: np.ndarray, lam: float, c: float, sigma2: float = 1.0
+) -> np.ndarray:
+    """SUPERSEDED xi-split ridge capture (kept for audit trail).
+
+    cap_j(lam) = xi_j nu_j/(nu_j+lam) + (1-xi_j)(1/c)(1-lam*m_inv(lam,1/c)).
+    FALSIFIED 2026-08-25 by the decisive reconciliation check: its lam->0
+    limit is the rejected superseded min-norm guess xi+(1-xi)/c, and
+    simulation shows lambda-dependent drift up to 0.081 absolute (vs 0.003
+    for the proved form) across (l,c,lam) cells at n=350, 200 reps.
     """
     l = np.asarray(l, float)
     xi = np.array([bgn_overlap(li, c) for li in l])
