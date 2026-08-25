@@ -158,15 +158,22 @@ Stop rule: 3 weeks.
 response standardization: two-point argument in the contiguity regime
 (OMH technique), scoped to statistics measurable wrt the eigenvalues of the
 augmented moment matrix. Status: subcritical blindness confirmed 9/9 strata.
-(b) NEW object from the Le Cam probe split: delta-method phase curve in
-(c, g) for concentrated quadratic functionals of b = X'Ytilde/n explaining
-why ||b||^2-class probes are blind at c = 0.8 up to g ~ 1.6 but informative
-at c = 0.2 (relative shift vs beta-mass floor growing with p). Deliverable:
-predicted AUC-vs-g curve matched to results/lecam_probe_auc.csv within MC
-tolerance including the c-ordering. Guardrail: the sigma_y-standardization
-makes the H0/H1 pair NONstandard (sigma-normalization subtlety flagged since
-E3/D5); a proof that ignores the random denominator is void.
-Stop rule: 4 weeks total; fallbacks documented in the research plan.
+OPEN (adapt; OMH skeleton frozen in docs/theory_T3_scoped_impossibility.md).
+(b) CLOSED 2026-08-25 (session 3; docs/theory_T3_visibility_boundary.md):
+the probe feature is q(b) = ||b||^2 with b the self-standardized cross-
+moment. Closed forms (all verified at n=2000 to <=2%): v0 = 1+sigma_eps^2,
+M0 = 1+c(1+sigma_eps^2), floor m0 = M0/v0, mean-shift curve
+E[q|g] = (M0 + g^2(omega + c))/(v0 + g^2) with omega = sum l_j dir_j^2.
+THE VISIBILITY LAW: delta(g) satiates at |delta|max = |omega_star - omega|,
+omega_star = 1/(1+sigma_eps^2); quadratic probes are BLIND at every g iff
+|omega - omega_star| <= A sd_0(q0). For scaling profiles l ~ sqrt(c) the
+sub-profile hits the fixed point exactly AT c = 1 (kappa_sub = 0.5(1-sqrt(c))):
+the Marchenko-Pastur boundary is where quadratic probes are born blind.
+Sign map (sub deflate / mixed inflate / c=1 null) matches forensics;
+frozen-csv ordering and plateaus reproduced as the class map, with the
+honest caveat that small-g frozen AUCs exceed the Gaussian mean-shift
+envelope (GBM exploits shape beyond first moment; recorded, not tuned).
+Falsifier: tests/test_theory_T3b.py.
 
 ### TP-4 (T4) Hard-trim dominance  [adapt]
 
@@ -190,10 +197,17 @@ equality check over returned means npz (already on disk).
 
 ### TP-6 (T7) Trimmed-tau DE for M2  [NEW small]
 
-plim and CLT for the Onatski-trimmed treatment coefficient under dense
-confounding via Frisch-Waugh: tau_trim inherits the capture-law bias floor;
-tau errors flat in c while OLS inflates six-fold (results/m2_treatment.csv).
-Feeds the package's adjustment documentation. 1-2 weeks.
+CLOSED 2026-08-25 (session 3; docs/theory_T7_trimmed_tau.md): exact FWL
+identity for the trim arm and exact Sherman-Morrison identity
+tau_hat_ols = d'G^-1Y/(1+d'G^-1D) for the min-norm arm (verified to 15
+digits); plim DEs proved at elementary level. The six-fold OLS inflation is
+the shrinkage term -tau/(1+Lambda_D) with Lambda_D = (1-1/c)||pi||^2 +
+sum_j delta_j^2 t(1+t)/(1+t(1+l_j)) + sigma_nu^2 t (predicted 1.558 vs
+measured 1.5548 +/- 0.072 at c=2); the trim is immune because [D,S] has
+full column rank. Trim flatness across c follows from the delta-gamma
+survival channel rho_j in [1/(1+l_j), 1] and a c-flat denominator v_D.
+CLT stated with separated-spikes scope guardrail. Falsifier:
+tests/test_theory_T7.py.
 
 ## Claims register
 
@@ -204,10 +218,10 @@ Feeds the package's adjustment documentation. 1-2 weeks.
 | C-T1c | ridge interpolation | PROVED at r=1 (closed 2026-08-25): shifted-resolvent cap(lam) = (1+l)m_bar/(1+(1+l)m_bar), m_bar root of lam m^2+(lam+c-1)m-1; superseded xi-split FALSIFIED by decisive reconciliation (max err 0.081 vs 0.003) and preserved as ridge_capture_superseded | ridge overlays median deviation 0.0%; tests/test_theory_T1.py ridge cells |
 | C-T2 | frontier achievability + kappa_n,k | adapt | power_surface ratios <= 1.5 |
 | C-T3a | eigen-alarm impossibility below BBP | adapt | blind strata power <= 0.25 at max g |
-| C-T3b | visibility boundary phase curve | NEW/adapt | lecam_probe_auc.csv match incl. c-ordering |
+| C-T3b | visibility boundary phase curve | CLOSED (mean-shift class map + saturation ceiling; small-g shape envelope caveat) | lecam_probe_auc.csv ordering; tests/test_theory_T3b.py |
 | C-T4 | hard-trim dominance | adapt | estimation_cell_detail.csv dominance pattern |
 | C-T6 | sdboost collapse | provable | npz byte-equality 42/97 |
-| C-T7 | trimmed-tau plim + CLT | NEW | m2_treatment.csv flatness |
+| C-T7 | trimmed-tau plim + CLT | CLOSED (both arms; OLS shrinkage mechanism verified) | m2_treatment.csv flatness; tests/test_theory_T7.py |
 
 ## Dependency graph
 
@@ -227,9 +241,13 @@ class definition against the ablation grid before writing the proof.
 
 ## Immediate next actions
 
-1. TP-6 (T7 trimmed-tau DE): unblocked end-to-end - consume the proved
-   capture law via Frisch-Waugh; feeds the package docs.
-2. TP-3b visibility-boundary curve (highest novelty per week).
-3. Fixed-r componentwise write-up for T1 (clerical; lemmas L1-L3 proved).
-4. Optional: rerun ridge overlay figures with the proved cap(lam) and
-   record the (small) prediction deltas in a memo line.
+1. T3(a) proof program (OMH adaptation; the last open impossibility piece;
+   skeleton + guardrails already frozen in docs/theory_T3_scoped_impossibility.md).
+2. TP-4 (T4 hard-trim dominance) - needs only TP-1.2 vocabulary.
+3. Clerical fixed-r write-up for T1 (lemmas L1-L3 proved).
+4. Optional: rerun ridge overlay figures with proved cap(lam); record deltas.
+
+STATUS SNAPSHOT (2026-08-25, end of session 3): CLOSED - T1.a, T1.b (r=1,
+audited), T1.c ridge (r=1), R2 artifact, fixed-r reduction, T6, T7 both
+arms, T3(b) class map. OPEN - T3(a) OMH adaptation, T2 frontier
+achievability, T4 dominance, clerical write-ups.
