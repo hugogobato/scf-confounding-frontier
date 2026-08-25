@@ -1,0 +1,9 @@
+{
+ "comment": "sha256 prefixes of the processed design matrices X (float64, C-contiguous, row-major bytes). Verified by colab_shard_main.py after deterministic regeneration from primary sources.",
+ "A_main": "d80a428c8e01663d",
+ "A_sub": "c0f599ad2eb6cb9b",
+ "B_main": "c263f00d939b3f35",
+ "B_wide": "51d5a23e79630b1a",
+ "C_main": "19b9ce86cd7a9c5d",
+ "C_wide": "90f98495f55a1dd3"
+}
