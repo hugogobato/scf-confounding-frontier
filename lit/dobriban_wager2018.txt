@@ -1,0 +1,3789 @@
+arXiv:1507.03003v2 [math.ST] 4 Nov 2015
+
+High-Dimensional Asymptotics of Prediction:
+Ridge Regression and Classification
+Edgar Dobriban
+
+Stefan Wager
+
+Stanford University
+Abstract
+We provide a unified analysis of the predictive risk of ridge regression
+and regularized discriminant analysis in a dense random effects model.
+We work in a high-dimensional asymptotic regime where p, n → ∞ and
+p/n → γ ∈ (0, ∞), and allow for arbitrary covariance among the features.
+For both methods, we provide an explicit and efficiently computable expression for the limiting predictive risk, which depends only on the spectrum of the feature-covariance matrix, the signal strength, and the aspect
+ratio γ. Especially in the case of regularized discriminant analysis, we
+find that predictive accuracy has a nuanced dependence on the eigenvalue
+distribution of the covariance matrix, suggesting that analyses based on
+the operator norm of the covariance matrix may not be sharp. Our results also uncover several qualitative insights about both methods: for
+example, with ridge regression, there is an exact inverse relation between
+the limiting predictive risk and the limiting estimation risk given a fixed
+signal strength. Our analysis builds on recent advances in random matrix
+theory.
+
+1
+
+Introduction
+
+Suppose a statistician observes n training examples (xi , yi ) ∈ Rp × Y drawn
+independently from an unknown distribution D, and wants to find a rule for
+predicting y on future unlabeled draws x from D. In other words, the statistician
+seeks a function h : Rp → Y, h(x) = g(c> x) for which ED [` (y, h (x))] is small,
+where ` (·, ·) is a loss function; in regression Y = R and ` is the squared error
+loss, while in classification Y = {0, 1} and ` is the 0–1 loss. Such prediction
+problems lie at the heart over several scientific and industrial endeavors in fields
+ranging from genetics (Wray et al., 2007) and computer vision (Russakovsky
+et al., 2014) to Medicare resource allocation (Kleinberg et al., 2015).
+There are various enabling hypotheses that allow for successful prediction
+in high dimensions. These encode domain-specific knowledge and guide model
+fitting. Popular options include the “sparsity hypothesis”, i.e., that there is a
+E-mail: {dobriban, swager}@stanford.edu
+
+1
+
+good predictive rule depending only on w · x for some sparse weight vector w
+(Candès and Tao, 2007; Hastie et al., 2015), the “manifold hypothesis” positing
+that the xi have useful low-dimensional geometric structure (Rifai et al., 2011;
+Simard et al., 2000), and several variants of an “independence hypothesis” that
+rely on independence assumptions for the feature distribution (Bickel and Levina, 2004; Ng and Jordan, 2001). The choice of enabling hypothesis is important
+from a practical perspective, as it helps choose which predictive method to use,
+e.g., the lasso with sparsity, neighborhood-based methods under the manifold
+hypothesis, or naive Bayes given independent features.
+There are several applications, however, where the above enabling hypotheses are not known to apply, and where practitioners have achieved accurate highdimensional prediction using dense—i.e., non-sparse—ridge-regularized linear
+methods trained on highly correlated features. One striking example is the
+case of document classification with dictionary-based features of the form “how
+many times does the j-th word in the dictionary appear in the current document.” Even though p  n, dense ridge-regularized methods reliably work well
+across a wide range of problem settings (Sutton and McCallum, 2006; Toutanova
+et al., 2003), and sometimes even achieve state-of-the-art performance on important engineering tasks (Wang and Manning, 2012). As another example,
+in a recent bioinformatics test of prediction algorithms (Bernau et al., 2014),
+ridge regression—and a method that was previously proposed by those same
+authors—performed best, better than lasso regression and boosting.
+The goal of this paper is to gain better understanding of when dense, ridgeregularized linear prediction methods can be expected to work well. We focus
+on a random-effects hypothesis: we assume that the effect size of each feature is
+drawn independently at random. This can be viewed as an average-case analysis over dense parameters. Our hypothesis is of course very strong; however,
+it yields a qualitatively different theory for high-dimensional prediction than
+popular approaches, and thus may motivate future conceptual developments.
+Hypothesis (random effects). Each predictor has a small, independent random
+effect on the outcome.
+This hypothesis is fruitful both conceptually and methodologically. Using
+random matrix theoretic techniques (see, e.g., Bai and Silverstein, 2010), we derive closed-form expressions for the limiting predictive risk of idge-regularized
+regression and discriminant analysis, allowing for the features x to have a general covariance structure Σ. The resulting formulas are pleasingly simple and
+depend on Σ through the Stieltjes transform of the limiting empirical spectral
+distribution. More prosaically, Σ only enters into our formulas through the
+b + λIp×p )−1 ) and p−1 tr((Σ
+b + λIp×p )−2 ), where
+almost-sure limits of p−1 tr((Σ
+b
+Σ is the sample covariance and λ > 0 the ridge-regularization parameter. Notably, the same mathematical tools can describe the two problems.
+From a practical perspective, we identify several high-dimensional regimes
+where mildly regularized discriminant analysis performs strikingly well. Thus,
+it appears that the random-effects hypothesis can at least qualitatively reproduce the empirical successes of Bernau et al. (2014), Sutton and McCallum
+2
+
+(2006), Toutanova et al. (2003), Wang and Manning (2012), and others. We
+hope that further work motivated by generalizations of the random-effects hypothesis could yield a new theoretical underpinning for dense high-dimensional
+prediction.
+
+1.1
+
+Overview of Results
+
+We begin with an informal overview of our results; in Section 1.4, we switch to
+a formal and fully rigorous presentation. In this paper we analyze the predictive
+risk of ridge-regularized regression and classification when n, p → ∞ jointly. We
+work in a high-dimensional asymptotic regime where p/n converges to a limiting
+aspect ratio p/n → γ > 0. The spectral distribution—i.e., the cumulative
+distribution function of the eigenvalues—of the feature covariance matrix Σ
+converges weakly to a limiting spectral measure supported on [0, ∞). This
+allows Σ to be general, and we will see several examples later. In random
+matrix theory, this framework goes back to Marchenko and Pastur (1967); see,
+e.g., Bai and Silverstein (2010). It has been used in statistics and wireless
+communications by, among others, Couillet and Debbah (2011), Serdobolskii
+(2007), Tulino and Verdú (2004), and Yao et al. (2015).
+In this paper, we present results for ridge regression (Hoerl and Kennard,
+1970) and regularized discriminant analysis (RDA) (Friedman, 1989; Serdobolskii, 1983). Our first result derives the asymptotic predictive risk of ridge regression. We observe a sample from the linear model Y = Xw +ε, where each row of
+X is random with Cov [x] = Σ and where ε is independent centered noise with
+coordinate-wise variance 1. Given a new test example x, ridge regression then
+predicts ŷ = ŵλ · x for ŵλ = (X > X + nλIp×p )−1 X > Y ; the tuning parameter
+λ > 0 governs the strength of the regularization. When the regression coefficient
+w is normally distributed with identity covariance, ridge regression is a Bayes
+estimator, thus a random effects hypothesis is natural. We consider a more
+general random-effects
+hypothesis where E [w] = 0, and Var [w] = p−1 α2 Ip×p .
+
+
+2
+2
+b be the sample
+Let α = E kwk2 be the expected signal strength, and let Σ
+covariance matrix of the features. Then, under assumptions detailed in Section
+2, we show the following result:
+Theorem (informal statement). The predictive risk of ridge regression, i.e.,
+h
+i
+2
+Err (ŵλ ) := Ex, y∼D (y − ŵλ · x)
+has an almost-sure limit under high-dimensional asymptotics. This limit only
+depends on the signal strength α2 , the aspect ratio γ, the regularization paramb
+eter λ, and the Stieltjes transform of the limiting eigenvalue distribution of Σ.
+∗
+2
+For the optimal tuning parameter, λ = γ/α
+Err (ŵλ∗ ) →a.s.
+
+1
+,
+λ∗ v(−λ∗ )
+
+(1)
+
+where v is the companion Stieltjes transform of the limiting eigenvalue distribub defined in Section 1.4.
+tion of Σ,
+3
+
+The required functionals of the limiting empirical eigenvalue distribution can
+be written in terms of almost-sure limits of simple quantities. For example, the
+result (1) can be written as
+
+Err (ŵλ∗ ) −
+
+−1
+
+−1 
+γ2 1
+γ
+b
+→a.s. 0.
++1−γ
+tr Σ + 2 Ip×p
+α2 p
+α
+
+For general λ, the limiting error rate depends on the almost sure limits of both
+b + λIp×p )−1 ) and p−1 tr((Σ
+b + λIp×p )−2 ).
+p−1 tr((Σ
+Thanks to the simple form of (1), we can use our results to gain qualitative
+insights about the behavior of ridge regression. We show that, when the signalto-noise ratio is high, i.e., α  1, the accuracy of ridge regression has a sharp
+phase transition at γ = 1 regardless of Σ, essentially validating a conjecture of
+Liang and Srebro (2010) on the “regimes of learning” problem. We also find that
+ridge regression obeys an inaccuracy principle, whereby there are no correlation
+structures Σ for which prediction and estimation of w∗ are both easy. For γ = 1
+this simplifies to
+i
+h
+2
+Err (ŵλ ) · E kŵλ − w∗ k2 ≥ α2 ;
+this bound is tight for optimally-tuned ridge regression. We refer to Section 2.2
+for the general relation. We find the simplicity of the inverse relation remarkable.
+In the second part of the paper, we study regularized discriminant analysis
+in the two-class Gaussian problem
+y ∼ {±1} with P [y = 1] = 1/2, and x ∼ N (µy , Σ) ,
+
+(2)
+
+where µ±1 and Σ are unknown. While our results cover unequal class probabilities, for simplicity here we present the case when P [y = 1] = 1/2. We instantiate
+the random-effects hypothesis by assuming that the pairs (µ−1, i , µ+1, i ) are
+ in-
+dependently and identically distributed for i = 1, ..., p, and write α2 = E kδk22
+with δ = (µ+1 − µ−1 )/2. We again work in a high-dimensional regime where
+p/n → γ > 0 and the within-class covariance Σ has a limiting spectral distribution. Given this notation, the Bayes-optimal decision boundary is orthogonal to w∗ = Σ−1 δ; meanwhile, the regularized discriminant classifier predicts
+ŷ = sign (ŵλ · x), where the form of the weight-vector ŵλ is given in Section 3.
+Theorem (informal statement). In high dimensions, and in the metric induced
+by Σ, the angle between w∗ and ŵλ , i.e.,
+hŵλ , w∗ iΣ
+cosΣ (ŵλ , w∗ ) = p
+, hu, viΣ = u> Σv,
+hŵλ , ŵλ iΣ hw∗ , w∗ iΣ
+has an almost-sure limit. The classification error of regularized discriminant
+analysis converges to an almost-sure limit that depends only on this limiting
+angle, as well as the limiting Bayes error. The limiting risk can be expressed in
+terms of α, γ, λ, as well the Stieltjes transform of the limit eigenvalue distribution of the empirical within-class covariance matrix.
+4
+
+We can again use our result to derive qualitative insights about the behavior
+of RDA. We find that the limiting angle between ŵλ and w∗ converges to a
+non-trivial quantity as α2 → ∞, implying that our analysis is helpful in understanding the asymptotics of RDA even in a very high signal-to-noise regime.
+Finally, by studying the limits λ → 0 and λ → ∞, we can recover known highdimensional asymptotic results about Fisher’s linear discriminant analysis and
+naive Bayes methods going back to Bickel and Levina (2004), Raudys (1967),
+Saranadasa (1993), and even early work by Kolmogorov.
+Mathematically, our results build on recent advances in random matrix theory. The main difficulty here is finding explicit limits of certain trace functionals involving both the sample and the population covariance matrix. For
+instance, the Stieltjes transform m of the empirical spectral distribution satisb + λIp×p )−1 ). However, standard random mafies m(−λ) = limp→∞ p−1 tr((Σ
+trix theory does not provide simple expressions for the limits of functionals like
+b + λIp×p )−1 ) or p−1 tr([Σ(Σ
+b + λIp×p )]−2 ) that involve both Σ and
+p−1 tr(Σ(Σ
+b
+Σ. For this we leverage and build on recent results, including the work of Chen
+et al. (2011), Hachem et al. (2007), and Ledoit and Péché (2011). Our contributions include some new explicit formulas, for which we refer to the proofs.
+These formulas may prove useful for the analysis of other statistical methods under high-dimensional asymptotics, such as principal component regression and
+kernel regression.
+
+1.2
+
+A First Example
+
+A key contribution of our theory is a precise understanding of the effect of correlations between the features on regularized discriminant analysis. Correlated
+features have a non-trivial effect, and cannot be summarized using standard
+notions such as the condition number of Σ or the classification margin. The full
+eigenvalue spectrum of Σ matters. This is in contrast with popular analyses of
+high-dimensional classification methods, in which the bounds often depend on
+the operator norm kΣkop (see for instance the review Fan et al. (2011)), thus
+suggesting that existing analyses of many classification methods are not sharp.
+Consider the following examples: First, Σ has eigenvalues corresponding to
+evenly-spaced quantiles of the standard Exponential distribution; Second, Σ
+has a depth-d BinaryTree covariance structure that has been used in population genetics to model the correlations between populations whose evolutionary
+history is described by a balanced binary tree (Pickrell and Pritchard, 2012). In
+both cases, we set the class means µy such as to keep the Bayes error constant
+across experiments. Figure 1 plots our formulas for the asymptotic error rate
+along with empirical realizations of the classification error.
+Both covariance structures are far from the identity, and have similar condition numbers. However, the Exponential problem is vastly more difficult for
+RDA than the BinaryTree problem. This example shows that classical notions
+like the classification margin or the condition number of Σ cannot satisfactorily
+explain the high-dimensional predictive performance of RDA; meanwhile, our
+asymptotic formulas are accurate even in moderate sample sizes. Our compu5
+
+tational results are reproducible and open-source software to do so is available
+from https://github.com/dobriban/high-dim-risk-experiments/.
+
+1.3
+
+Related Work
+
+Random matrix theoretic approaches have been used to study regression and
+classification in high-dimensional statistics (Serdobolskii, 2007; Yao et al., 2015),
+as well as wireless communications (Couillet and Debbah, 2011; Tulino and
+Verdú, 2004). Various regression and M-estimation problems have been studied
+in high dimensions using approximate message passing (Bayati and Montanari,
+2012; Donoho and Montanari, 2015) as well as methods inspired by random
+matrix theory (Bean et al., 2013). We also note a remarkably early random
+matrix theoretic analysis of regularized discriminant analysis by Serdobolskii
+(1983). In the wireless communications literature, the estimation properties of
+ridge regression are well understood; however its prediction error has not been
+studied.
+El Karoui and Kösters (2011) study the geometric sensitivity of random
+matrix results, and discuss the consequences to ridge regression and regularized
+discriminant analysis, under weak theoretical assumptions. In contrast, we make
+stronger assumptions that enable explicit formulas for the limiting risk of both
+methods, and allow us to uncover several qualitative phenomena. Our use of
+Ledoit and Péché (2011)’s results simplifies the proof.
+We review the literature focusing on ridge regression or RDA specifically in
+Sections 2.3 and 3.5 respectively. Important references include, among others,
+Bickel and Levina (2004), Dicker (2014), El Karoui (2013), Fujikoshi et al.
+(2011), Hsu et al. (2014), Saranadasa (1993), and Zollanvari and Dougherty
+(2015).
+
+1.4
+
+Basics and Notation
+
+We begin the formal presentation by reviewing some key concepts and notation
+from random matrix theory that are used in our high-dimensional asymptotic
+analysis. Random matrix theory lets us describe the asymptotics of the eigenvalues of large matrices (see e.g., Bai and Silverstein, 2010). These results are
+typically stated in terms of the spectral distribution, which for a symmetric
+matrix
+Pp A is the cumulative distribution function of its eigenvalues: FA (x) =
+p−1 i=1 I(λi (A) ≤ x). In particular, the well-known Marchenko-Pastur theorem, given below, characterizes the spectral distribution of covariance matrices.
+We will assume the following high-dimensional asymptotic model:
+Assumption A. (high-dimensional asymptotics) The following conditions hold.
+1. The data X ∈ Rn×p is generated as X = Z Σ1/2 for an n×p matrix Z with
+i.i.d. entries satisfying E [Zij ] = 0 and Var [Zij ] = 1, and a deterministic
+p × p positive semidefinite covariance matrix Σ.
+2. The sample size n → ∞ while the dimensionality p → ∞ as well, such
+that the aspect ratio p/n → γ > 0.
+6
+
+0.5
+
+0.5
+
+0.4
+
+0.4
+
+0.3
+0.2
+
+1
+
+2 p
+
+3
+
+4
+
+5
+
+0.5
+
+0.5
+
+0.4
+
+0.4
+
+0.3
+0.2
+
+0
+
+1
+
+p
+6
+
+2
+
+0
+
+1
+
+p
+6
+
+2
+
+0
+
+1
+
+p
+6
+
+2
+
+3
+
+0.3
+0.2
+0.1
+0
+
+0
+
+1
+
+2 p
+
+3
+
+4
+
+5
+
+6
+
+0.5
+
+0.4
+
+0.4
+
+test error
+
+0.5
+
+0.3
+0.2
+
+0.3
+0.2
+0.1
+
+0.1
+0
+
+0
+
+6
+
+0.1
+
+test error
+
+0.2
+
+0
+0
+
+test error
+
+test error
+
+γ=1
+
+0.3
+
+0.1
+
+0.1
+0
+
+γ=2
+
+Exponential
+
+test error
+
+test error
+
+γ = 0.5
+
+BinaryTree
+
+0
+0
+
+1
+
+2 p
+
+3
+
+4
+
+5
+
+6
+
+3
+
+Figure 1: Classification error of RDA in the BinaryTree and Exponential
+models. The theoretical formula (red, dashed) is overlaid with the results from
+simulations (blue, solid); we also display the oracle error (yellow, dotted). The
+class means are drawn from µ±1 ∼ N 0, α2 p−1 Ip×p , where α is calibrated such
+that the oracle classifier always has an error rate of 1%. For BinaryTree, we
+train on n = γ −1 p samples, where p = 1024; for Exponential, we use n = 500
+samples. We test the trained model on 10,000 new samples, and report the
+average classification error. Our asymptotically-motivated theoretical formulas
+appear to be accurate here, even though we only have a moderate problem
+size. The parameter λ, defined in Section 3, quantifies the strength of the
+regularization.
+
+7
+
+3. The spectral distribution FΣ of Σ converges to a limit probability distribution H supported [0, ∞), called the population spectral distribution (PSD).
+Families of covariance matrices Σ that fit the setting of this theorem include
+the identity covariance, BinaryTree, Exponential and the autoregressive AR-1
+model with Σij = ρ|i−j| (see Grenander and Szegő, 1984, for the last one).
+Theorem (Marchenko and Pastur (1967); Silverstein (1995)). Under assumpb
+tion A, the spectral distribution FΣ
+b of the sample covariance matrix Σ also converges weakly, with probability 1, to a limiting distribution supported on [0, ∞).
+The limiting distrbution F is called the empirical spectral distribution (ESD),
+and is determined uniquely by a fixed point equation for its Stieltjes transform,
+which is defined for any distribution G supported on [0, ∞) as
+Z ∞
+dG(l)
+, z ∈ C \ R+ .
+mG (z) =
+l=0 l − z
+b satisfies
+Given this notation, the Stieltjes transform of the spectral measure of Σ
+
+−1 
+1
+b
+mΣ
+tr
+Σ − z Ip×p
+converges to m (z)
+(3)
+b (z) =
+p
+both almost surely and in expectation, for any z ∈ C \ R+ ; here, we wrote
+m (z) := mF (z). We also define the companion Stieltjes transform v(z), which
+is the Stieltjes transform of the limiting spectral distribution of the matrix
+b = n−1 XX > . This is related to m(z) by
+Σ
+γ (m(z) + 1/z) = v(z) + 1/z for all z ∈ C \ R+ .
+(4)
+R∞
+2
+In addition, we write the derivatives as1 m0 (z) = l=0 dG(l)/ (l − z) and
+v 0 (z) = γ(m0 (z) − z −2 ) + z −2 . These derivatives can also be understood in
+terms of empirical observables, through the relation
+
+−2 
+1
+b + λIp×p
+tr Σ
+→a.s. m0 (−λ).
+p
+Finally, our analysis also relies on several more recent formulas for limits of
+b In particular, we use a formula
+trace functionals involving both Σ and Σ.
+due to Ledoit and Péché (2011), who in the analysis of eigenvectors of sample
+covariance matrices showed that, under certain moment conditions:2
+ 
+
+
+−1 
+1
+1
+1
+b
+tr Σ Σ + λIp×p
+→a.s.
+−1
+as n, p → ∞;
+(5)
+p
+γ λ v(−λ)
+1 We will denote by v 0 (−λ) the derivative of the Stieltjes transform, v 0 (z), evaluated at
+z = −λ; and not the derivative of the function λ → v(−λ).
+2 See the supplement for more details about this result.
+
+8
+
+2
+
+Predictive Risk of Ridge Regression
+
+In the first part of the paper, we study the predictive behavior of ridge regression
+under large-dimensional asymptotics. Suppose that we have data drawn from
+a p-dimensional random-design linear model with n independent observations
+yi = xi · w + εi . The noise terms εi are independent, centered, with variance
+one, and are independent of the other random quantities. The xi are arranged
+as the rows of the n × p matrix X, and yi are the entries of the n × 1 vector Y .
+We estimate w by ridge regression: ŵλ = (X > X + λ n Ip×p )−1 X > Y , for some
+2
+λ > 0. We make the following random weights assumption, where α2 = E[kwk2 ]
+is the expected signal strength.
+Assumption B. (random regression coefficients) The true weight vector w is
+random with E [w] = 0, and Var [w] = p−1 α2 Ip×p .
+Our result about the predictive risk of ridge regression
+is stated in terms
+
+of the expected predictive risk rλ (X) = E (y − ŷλ )2 X , where (x, y) is taken
+to be an independent test example from the same distribution as the training
+data, and ŷλ = ŵλ · x.
+Theorem 2.1. Under Assumptions A and B, suppose moreover that the eigen3
+values
+ 12 of Σ are uniformly bounded above: kΣkop ≤ C, for all p. Also assume
+E Zij
+< C for all p. Then,
+1. Writing γp = p/n and λ∗p = γp α−2 , the finite sample predictive risk rλ∗p (X)
+converges almost surely
+ 
+−1 
+γp
+b + γp Ip×p
+rλ∗p (X) = 1 +
+tr Σ Σ
+(6)
+p
+α2
+1
+,
+→a.s. R∗ (H, α2 , γ) := ∗
+λ v(−λ∗ )
+where λ∗ = γα−2 .
+2. Moreover, for any λ > 0, the predictive risk converges almost surely to the
+limiting predictive risk Rλ (H, α2 , γ), where
+
+ 2
+
+
+1
+λα
+λv 0 (−λ)
+Rλ (H, α2 , γ) =
+1+
+−1
+1−
+.
+λv(−λ)
+γ
+v(−λ)
+The choice λ∗ minimizes Rλ (H, α2 , γ).
+Proof outline. The proof of part 1 is sufficiently simple to outline here; see the
+3 Below, C will denote an arbitrary fixed constant whose meaning can change from line to
+line.
+
+9
+
+supplement for part 2. We begin by verifying formula (6):
+ 
+
+2
+rλ∗p (X) = 1 + E x · ŵλ∗p − w
+X
+
+
+> 
+
+= 1 + E ŵλ∗p − w Σ ŵλ∗p − w X
+
+−2 
+= 1 + λ∗p 2 α2 n tr Σ X > X + λ∗p n Ip×p
+
+−1 >
+−1 
++ tr Σ X > X + λ∗p n Ip×p
+X X X > X + λ∗p n Ip×p
+ 
+−1 
+γp
+b + γp Ip×p
+.
+tr Σ Σ
+=1+
+p
+α2
+On the last line we used the choice of λ∗p . From the results of Ledoit and Péché
+b + γp α−2 Ip×p )−1 )
+(2011), and from γp → γ, it can be verified that p−1 tr(Σ(Σ
+converges almost surely to limit in (5), finishing part 1.
+This result fully characterizes the first order behavior of the predictive risk of
+ridge regression under high-dimensional asymptotics. To verify its finite-sample
+accuracy, we perform a simulation with the BinaryTree and Exponential models. We compute the limit risks using the algorithms in the supplement. The
+results in Figure 2 show that the formulas given in Theorem 2.1 appear to be
+accurate, even in small sized problems. In Figure 2, for BinaryTree we train on
+n = γ −1 p samples, where p = 24 ; for Exponential on n = 20. We set the signal
+strength to α2 = 1 and generated w, X, and ε as Gaussian random variables
+with i.i.d. entries and the desired variance. The results are averaged over 500
+simulation runs; we evaluated the empirical prediction error using a test set of
+size 100.
+Intriguingly, Figure 2 shows that the prediction performance of ridge regression is very similar on the two problems. This presents a marked contrast to the
+RDA example given in the introduction, where the two covariance structures
+led to very different classification performance. Thus, it appears that the loss
+function and the spectrum of Σ can interact non-trivially.
+Meanwhile, in the special case of identity covariance, the quantity Rλ − 1
+coincides with the normalized estimation error, so we recover known results
+described in, e.g., Tulino and Verdú (2004). When Σ = Ip×p , we have an explicit
+expression for the Stieltjes transform (e.g., Bai and Silverstein, 2010, p. 52),
+valid for λ > 0:
+p
+−(1 − γ + λ) + (1 − γ + λ)2 + 4γλ
+mI (−λ; γ) =
+.
+(7)
+2γλ
+Theorem 2.1 implies that the limit predictive risk of ridge regression for general
+λ equals
+
+Rλ (α2 , γ) = 1 + γmI (−λ; γ) + λ λα2 − γ m0I (−λ; γ),
+
+10
+
+BinaryTree
+
+Exponential
+2
+
+γ = 0.5
+
+2
+1.5
+
+1.5
+
+1
+
+1
+
+0.5
+
+0.5
+
+0
+
+1
+
+p
+6
+
+2
+
+0
+
+3
+
+0.5
+
+1 p 1.5
+
+2
+
+2.5
+
+1 p 1.5
+
+2
+
+2.5
+
+1 p 1.5
+
+2
+
+2.5
+
+6
+
+5
+
+4
+
+4
+
+3
+
+γ=1
+
+3
+2
+
+2
+
+1
+
+1
+0
+
+0.5
+
+1
+
+1.5
+p
+
+2
+
+0
+
+2.5
+
+0.5
+
+6
+
+6
+
+3
+
+2.5
+2
+
+2
+
+γ=2
+
+1.5
+1
+
+1
+
+0.5
+0
+
+1
+
+p
+6
+
+2
+
+0
+
+3
+
+0.5
+
+6
+
+Figure 2: Prediction error of ridge regression in the BinaryTree and
+Exponential model. The theoretical formula (red, dashed) is overlaid with
+the results from simulations (blue, solid). The signals are drawn from
+w ∼ N 0, p−1 Ip×p . For BinaryTree, we train on n = γ −1 p samples, where
+p = 24 ; for Exponential on n = 20. We take 100 instances of random training
+data sets, and for each we test on 500 samples. We report the average test error
+over all 50,000 test cases.
+
+11
+
+which has an explicit form. Furthermore, the optimal risk has a particularly
+simple form:
+
+
+s
+2
+1
+γ−1 2
+γ−1 2
+∗
+2
+(8)
+R (α , γ) =
+1+
+1−
++ 4α2  .
+α +
+α
+2
+γ
+γ
+See the supplement for details on these derivations.
+
+2.1
+
+Regimes of Learning
+
+As an application of Theorem 2.1, we study how the difficulty of ridge regression depends on the signal strength α2 . Liang and Srebro (2010) call this
+the regimes of learning problem and argue that, for small α2 the complexity
+of ridge regression should be tightly characterized by dimension-independent
+Rademacher bounds, while for large α2 the error rate should only depend on
+γ. Liang and Srebro (2010) justify their claims using generalization bounds for
+the identity-covariance case Σ = Ip×p , and conjecture that similar relationships
+should hold in general. Using our results, we can give a precise characterization
+of the regimes of learning of optimally-regularized ridge regression with general
+covariance Σ.
+From Theorem 2.1, we know that given a signal strength α2 , the asymptotically optimal choice for λ is λ∗ (α) = γ/α2 , in which case the predictive risk of
+ridge regression converges to
+R∗ (H, α2 , γ) =
+
+1
+.
+λ∗ v(−λ∗ )
+
+We now use this formula to examine the two limiting behaviors of the risk,
+for weak and strong signals. The results below are proved in the supplement,
+assuming that the population spectral distribution H is supported on a set
+bounded away from 0 and infinity.
+The weak-signal limit is relatively simple. First, limα2 →0 R∗ (H, α2 , γ) = 1,
+reflecting that for a small signal, we predict a near-zero outcome due to a large
+regularization. Second, limα2 →0 (R∗ (H, α2 , γ) − 1)/α2 = EH T , where EH T is
+the large-sample limit of the normalized traces p−1 tr Σ. Therefore, for small
+α, the difficulty of the prediction is determined to first order by the average
+eigenvalue, or equivalently by the average variance of the features, and does not
+depend on the size of the ratio γ = p/n.
+Conversely, the strong-signal limiting behavior of the risk depends the aspect
+ratio γ, and experiences a phase transition at γ = 1. When γ < 1, the predictive
+risk converges to
+1
+lim R∗ (H, α2 , γ) =
+1−γ
+α2 →∞
+regardless of Σ. This quantity is known to be the n, p → ∞, p/n → γ limit
+of the risk of ordinary least squares (OLS). Thus when p < n and we have a
+
+12
+
+very strong signal, ridge regression cannot outperform OLS, although of course
+it can do much better with a small α.
+When γ > 1, the risk R∗ (H, α2 , γ) can grow unboundedly large with α.
+Moreover, we can verify that
+lim α−2 R∗ (H, α2 , γ) =
+
+α2 →∞
+
+1
+≥ 0.
+γ v(0)
+
+(9)
+
+Thus, the limiting error rate depends on the covariance matrix through v(0). In
+general there is no closed-form expression for v(0), which is instead characterized
+as the unique c > 0 for which
+Z ∞
+tc
+1
+=
+dH(t).
+γ
+t=0 1 + tc
+In the special case Σ = Ip×p , however, the limiting expression simplifies to
+1/(γv(0)) = (γ − 1)/γ. In other words, when p > n, optimally tuned ridge
+regression can capture a constant fraction of the signal, and its test-set fraction
+of explained variance tends to γ −1 .
+Finally, in the threshold case γ = 1, the risk R∗ (H, α2 , γ) scales with α:
+1
+lim α−1 R∗ (H, α2 , γ) = p
+,
+(10)
+EH [T −1 ]
+
+
+
+where EH T −1 is the large-sample limit of p−1 tr Σ−1 . Thus, the absolute
+risk R∗ diverges to infinity, but the normalized error α−2 R∗ (H, α2 , γ) goes to
+0. This appears to be a rather unusual risk profile. In the case Σ = Ip×p
+ ,
+our expression simplifies further and we get the finite-α formula R∗ α2 , 1 =
+√
+( 4α2 + 1 + 1)/2, which scales like α.
+In summary, we find that for general covariance Σ, the strong-signal risk
+R∗ (α2 , γ) scales as Θ(1) if γ < 1, as Θ(α) if γ = 1, and as Θ(α2 ) if γ > 1. We
+illustrate this phenomenon in Figure 3, in the case of the identity covariance
+Σ = Ip×p . We see that when γ < 1 the error rate stabilizes, whereas when
+γ > 1, the error rate eventually gets a slope of 1 on the log-log scale. Finally,
+when γ = 1, the error rate has a log-log slope of 1/2.
+Thus, thanks to Theorem 2.1, we can derive a complete and exact answer
+the regimes of learning question posed by Liang and Srebro (2010) in the case
+of ridge regression. The results (9) and (10) not only show that the scalings
+found by Liang and Srebro (2010) with Σ = Ip×p hold for arbitrary Σ, but make
+explicit how the slopes depend on the limiting population spectral distribution.
+The ease with which we were able to read off this scaling from Theorem 2.1
+attests to the power of the random matrix approach.
+α2 →∞
+
+2.2
+
+An Inaccuracy Principle for Ridge Regression
+
+Our results also reveal an intriguing inverse relationship between the prediction and estimation errors of ridge regression.
+Specifically,
+
+ denoting the meansquared estimation error as RE,n (λ) = E kŵλ − w∗ k2 , it is well known that
+13
+
+10000
+1000
+100
+10
+1
+
+Excess Error Rate: R* − 1
+
+γ>1
+γ=1
+γ<1
+
+1
+
+10
+100
+1000
+Signal Strength: α2
+
+10000
+
+Figure 3: Phase transition for predictive risk of ridge regression with identity
+covariance Σ = Ip×p . Error rates are plotted for γ = 0.25, 0.5, 0.8, 0.9, 1, 1.1,
+1.3, 2, 4, and 8.
+optimally tuned ridge regression satisfies, under the conditions of Theorem 2.1,
+RE,n (λ∗ ) →a.s. RE := γ m (−λ∗ ) for λ∗ = γα−2 ,
+where m is the Stieltjes transform of the limiting empirical spectral distribution
+(see, e.g., Tulino and Verdú, 2004, Chapter 3). Combining this result with
+Theorem 2.1 and (4), we find the following relationship between the limiting
+predictive risk RP and the limiting estimation risk RE .
+Corollary 2.2. Under the conditions of Theorem 2.1, the asymptotic predictive
+and estimation risks of optimally-tuned ridge regression are inversely related,
+
+
+1
+RE
+1−
+=γ 1− 2 .
+RP
+α
+The equation holds for all limit eigenvalue distributions H of the covariance matrices Σ. Both sides of the above equation
+are
+
+ non-negative: RP
+cannot fall below the intrinsic noise level Var Y X = 1, while RE ≤
+lim supp→∞ RE, n (λ∗ ) ≤ lim supp→∞ RE, n (0) = α2 . When γ = 1, we get the
+even simpler equation
+RE RP = α2 .
+
+14
+
+The product of the estimation and prediction risks equals the signal strength.
+Since this holds for the optimal λ∗ , it also implies that for any λ we have the
+lower bound RE (λ) · RP (λ) ≥ α2 ; we find the explicit formula relating the two
+risks remarkable. The inverse relationship may be somewhat surprising, but it
+has an intuitive explanation.4 When the features are highly correlated and v
+is correspondingly large, prediction is easy because y lies close to the “small”
+column space of the feature matrix X, but estimation of w is hard due to multicollinearity. As correlation decreases, prediction gets harder but estimation gets
+easier.
+
+2.3
+
+Related Work for High-Dimensional Ridge Regression
+
+Random-design ridge regression in high dimensions is a thoroughly studied topic.
+In particular, El Karoui (2013) and Dicker (2014) study ridge regression with
+identity covariance Σ = Ip×p in an asymptotic framework similar to ours; this
+special case is considerably more
+than a general covariance. The
+ restrictive
+2
+study of the estimation error E kŵλ − wk of ridge regression has received
+substantial attention in the wireless communication literature; see, e.g., Couillet and Debbah (2011) and Tulino and Verdú (2004) for references. To our
+knowledge, however, that literature has not addressed the behavior of prediction error. Finally, we also note the work of Hsu et al. (2014), who provide
+finite-sample concentration inequalities on the out-of-sample prediction error of
+random-design ridge regression, without obtaining limiting formulas. In contrast to these results, we give explicit limiting formulas for the prediction error.
+
+3
+
+Regularized Discriminant Analysis
+
+In the second part of the paper, we return to regularized discriminant analysis
+and the two-class Gaussian discrimination problem (2). For simplicity we will
+first discuss the case when the population label proportions are balanced. In
+this case, the Bayes oracle predicts using (Anderson, 2003)
+
+
+
+µ+1 − µ−1
+µ−1 + µ+1
+with δ =
+,
+ŷ(x) = sign δ > Σ−1 x −
+2
+2
+√
+and has an error rate ErrBayes = Φ (−∆n,p ), where ∆n,p = δ > Σ−1 δ is half the
+between-class Mahalanobis distance. The Gaussian classification problem has
+a rich history, going back to Fisher’s pioneering work on linear discriminant
+analysis (LDA). When we have the same number of examples from both the
+positive and negative classes, i.e., n−1 = n+1 = n/2, LDA classifies using the
+4 A similar heuristic was given by Liang and Srebro (2010), without theoretical justification.
+
+15
+
+linear rule
+
+
+
+µ̂−1 + µ̂+1
+> b −1
+ŷ = sign δ̂ Σc
+x−
+, where
+2
+n
+1 X
+2
+µ̂+1 − µ̂−1 b
+⊗2
+, Σc =
+(xi − µ̂yi ) , and µ̂±1 =
+δ̂ =
+2
+n − 2 i=1
+n
+
+X
+
+xi .
+
+{i:yi =±1}
+
+b c is the centered covariance matrix. In the low-dimensional case where
+Here Σ
+n gets large while p remains fixed, LDA is the natural plug-in rule for Gaussian classification and efficiently converges to the Bayes discrimination function
+(Anderson, 2003; Efron, 1975). When p is on the same order as n, however, the
+b −1 is unstable and the performance of LDA declines, as dismatrix inverse Σ
+c
+cussed among others by Bickel and Levina (2004). Instead, we will study regularized discriminant analysis, the linear rule ŷ = hŵλ (x − (µ̂−1 + µ̂+1 )/2) where
+b c + λIp×p )−1 δ̂ (Friedman,
+hw (x) = sign(w · x) and the weight vector is 5 ŵλ = (Σ
+1989; Serdobolskii, 1983).
+
+3.1
+
+High-Dimensional Asymptotics
+
+Throughout this section, we make a random-effects
+about the class
+ assumption
+
+means, where the expected signal strength is E kδk22 = α2 . We denote the
+classification error of RDA as Err (ŵλ ) = P [y 6= sign{ŵλ · (x − µ̂)}]. The probability is with respect to a independent test data point (x, y) from the same
+distribution as the training data.
+Assumption C. (random weights in classification) The following conditions
+hold:
+1. µ−1 and µ+1 are randomly generated as µ−1 = µ̄ − δ and µ+1 = µ̄ + δ,
+where δ has i.i.d. coordinates with
+h
+i
+C
+α2
+, and E δi4+η ≤ 2+η/2
+E [δi ] = 0, Var [δi ] =
+p
+p
+for some fixed constants η > 0 and C.
+2. µ̄ = (µ−1 + µ+1 )/2 is either fixed, or random and independent of δ, X and
+y, and satisfies lim supp→∞ kµ̄k22 /p1/2−ζ ≤ C almost surely for some fixed
+constants ζ > 0 and C.
+Theorem 3.1. Under parts 2 and 3 of Assumption A, and Assumption C,
+suppose moreover that that the eigenvalues of Σ are uniformly bounded as 0 <
+b < λmin (Σ) ≤ λmax (Σ) ≤ B for some fixed constants b and B. Finally,
+5 The notation was chosen to emphasize the similarities between ridge regression and RDA.
+There will be no possibility for confusion with the ridge regression weight vector, also denoted
+ŵλ .
+
+16
+
+suppose that we have a balanced population P [y = 1] = 1/2 and equal class sizes
+n−1 = n+1 . Then, the classification error of RDA converges almost surely
+Err (ŵλ ) →a.s. Φ (−Θ(λ)) , where Θ(λ) = p
+
+α2 τ (λ)
+α2 η (λ) + ξ (λ)
+
+and τ , η, and ξ are determined by the problem parameters H and γ:
+τ (λ) = λmv, η (λ) =
+
+v − λv 0
+v0
+, ξ (λ) = 2 − 1.
+γ
+v
+
+Here, m = m(−λ) is the Stieltjes transform of the limit empirical spectral distrib c , and v = v(−λ) is the companion Stieltjes
+bution F of the covariance matrix Σ
+transform defined in (4).
+The proof of Theorem 3.1 (in the supplement) is similar to Theorem 2.1, but
+more involved. The main difficulty is to evaluate explicitly the limits of certain
+functionals of the population and sample covariance matrices. We extend the
+result of Ledoit and Péché (2011), and rely on additional results and ideas from
+Hachem et al. (2007) and Chen et al. (2011). In particular, we use a derivative
+trick for Stieltjes transforms, similar to that employed in a related context by
+El Karoui and Kösters (2011), Rubio et al. (2012), and Zhang et al. (2013). The
+limits are then combined with results on concentration of quadratic forms.
+The above result can also be extended to RDA with uneven sampling proportions. Since the limit error rates get more verbose, this is the only place where
+we discuss uneven sampling. Suppose that the conditions of Theorem 3.1 hold,
+except now we have unequal underlying class probabilities P(yi = +1) = π+ ,
+P(yi = −1) = π− , and our training set is comprised of n±1 samples with
+label yi = ±1 such that p/n±1 → γ±1 > 0. We do not assume that
+n−1 /(n−1 + n+1 ) → π− . Consider a general regularized classifier sign(fˆλ (x)),
+b c + λIp×p )−1 [µ̂+1 − µ̂−1 ] + c for some
+where fˆλ (x) = [x − (µ̂+1 + µ̂−1 )/2]> (Σ
+b c , µ̂±1 are defined in the usual way. We prove in the supplement
+c ∈ R, where Σ
+that
+Theorem 3.2. Under the conditions of Theorem 3.1, and with unequal sampling, the classification error of RDA converges almost surely:
+P(sign(fˆλ (x) 6= y)) →a.s. π− Φ (−Θ− ) + π+ Φ (−Θ+ ) ,
+
+(11)
+
+where the effective classification margins have the form
+
+1
++1 1
+±α2 m(−λ) + γ−1 −γ
+4
+γ λv − 1 + c
+√
+Θ± = ∓
+, and
+Q
+v − λv 0
+γ−1 + γ+1 v 0 − v 2
+Q = α2
++
+.
+2
+γ(λv)
+4
+λ2 v 4
+In this section we assumed Gaussianity, but by a Lindeberg–type argument
+it should be possible to extend the result to non-Gaussian observations with
+17
+
+matching moments. It should also be interesting to study how sensitive the
+results are to the particular assumptions of our model, such as independence
+across samples.
+It is worth mentioning that the regression and classification problems are
+very different statistically. In the random effects linear model, ridge regression
+b + λIp×p of the cois a linear Bayes estimator, thus the ridge regularization Σ
+variance matrix is justified statistically. However, for classification, the ridge
+regularization is merely a heuristic to help with the ill-conditioned sample covariance. It is thus interesting to know how much this heuristic helps improve
+upon un-regularized LDA, and how close we get to the Bayes error. We now turn
+to this problem, which can be studied equivalently from a geometric perspective.
+
+3.2
+
+The Geometry of RDA
+
+The asymptotics of RDA can be understood in terms of a simple picture. The
+angle between the Bayes decision boundary hyperplane and the RDA discriminating hyperplane tends to an asymptotically deterministic value in the metric
+of the covariance matrix, and the limiting risk of RDA can be described in terms
+of this angle.
+Recall that, in the balanced π+ = π− and n+ = n− case, the estimated
+b c + λIp×p )−1 δ̂, while the Bayes weight vector is
+RDA weight vector is ŵλ = (Σ
+∗
+−1
+w = Σ δ. Writing ha, biΣ = a> Σb for the inner product in the Σ-metric, the
+cosine of the angle—in the same metric—between the two is
+cos Σ (w, ŵλ ) =
+
+ŵλ , Σ−1 δ Σ
+ŵλ> δ
+=q
+√
+−1
+kŵλ kΣ kΣ δkΣ
+ŵ> Σŵ δ > Σ−1 δ
+λ
+
+λ
+
+As discussed earlier, the Bayes error rate√ for the two-class Gaussian
+p problem
+is ErrBayes = Φ (−∆n,p ), with ∆n,p = δ > Σ−1 δ →a.s. ∆ = α EH [T −1 ].6
+Therefore, from Theorem 3.1 it follows that the cosine of the angle cos Σ (w, ŵλ )
+has a deterministic limit, denoted by Γ(H, γ, α2 , λ), given by
+
+
+Γ H, γ, α2 , λ = Θ H, γ, α2 , λ ∆ ∈ [0, 1] ,
+
+where Θ H, γ, α2 , λ is the classification margin of RDA with the dependence on
+each parameter made explicit. The limit of the cosine quantifies the inefficiency
+of the RDA estimator relative to the Bayes one.
+We gain some insight into this angle for two special cases: when H = δ1 , and
+by taking the limit α2 → ∞. First, with H = δ1 , or equivalently Σ = Ip×p , we
+curiously find that the effects of the signal strength α2 and regularization rate
+λ decouple completely, as shown in Corollary 3.3 below. See the supplement for
+a proof of the following result.
+6 To show this, we observe that the quantity δ > Σ−1 δ converges almost surely to
+
+
+α2 EH T −1 under the conditions of Theorem 3.1. This follows by a concentration of quadratic
+forms argument stated in the supplement, and because
+ the
+ spectrum of Σ converges to H, so
+in particular E δ > Σ−1 δ = α2 p−1 tr Σ−1 → α2 EH T −1 .
+
+18
+
+Corollary 3.3. Under the conditions of Theorem 3.1, let Σ = Ip×p for all p.
+Then, the limiting cosine Γ of the angle between the Bayes and RDA hyperplanes
+is
+s
+1 + γλ m2I (−λ; γ)
+α
+2
+Γ(δ1 , γ, α , λ) = p
+,
+1 + γ mI (−λ; γ)
+α2 + γ
+where the Stieltjes transform mI (−λ; γ) for Σ = Ip×p is given in (7). For γ = 1,
+this expression simplifies further to
+Γ(δ1 , 1, α2 , λ) = √
+
+α
+
+2 [λ (λ + 4)]
+
+1/4
+
+α2 + 1 λ1/2 + (λ + 4)1/2
+
+.
+
+Examining Γ(δ1 , γ, α2 , λ), we canpattribute the suboptimality to two sources
+of noise: We need to pay a price α/ α2 + γ for estimating µ±1 , while the cost
+of estimating Σ is ([1 + γλ m2I (−λ; γ)]/[1 + γ mI (−λ; γ)])1/2 . If we knew that
+Σ = I, we could send λ → ∞. It is easy to verify
+p that this would eliminate the
+second term, leading to a loss of efficiency α/ α2 + γ.
+In the case of a general covariance matrix Σ we get a similar asymptotic
+decoupling in the strong-signal limit α2 → ∞. The following claim follows
+immediately from Theorem 3.1.
+Corollary 3.4. Under the conditions of Theorem 3.1, the cosine of the angle
+between the optimal and learned hyperplanes has the limit as α2 → ∞:
+τ (λ)
+lim Γ(H, γ, α2 , λ) = p
+.
+η (λ) EH [T −1 ]
+
+α→∞
+
+Thus, RDA is in general inconsistent for the Bayes hyperplane in the case of
+strong signals. Corollary 3.4 also implies that, in the limit α → ∞, the optimal
+λ for RDA converges to a non-trivial limit that only depends on the spectral
+distribution H. No such result is true for ridge regression, where λ∗ = α−2 γ → 0
+as α → ∞, regardless of Σ. This contrast arises because ridge regression is a
+linear Bayes estimator, while RDA is a heuristic which is strictly suboptimal to
+the Bayes classifier.
+We illustrate the behavior of the cosine Γ for the AR-1(0.9) model in Figure
+4, which displays Γ for values of α ranging from α = 0.1 to α = 2. We see
+that the Γ-curve converges to its large-α limit fairly rapidly. Moreover, somewhat strikingly, we see that the optimal regularization parameter λ∗ , i.e., the
+maximizer of Γ, increases with the signal strength α2 .
+Finally, we note that Efron (1975) studies the angle Γ in detail for lowdimensional asymptotics where p is fixed while n → ∞; in this case, Γ converges
+in probability to 1, and the sampling distribution of n(1 − Γ) converges to
+a (scaled) χ2p−1 distribution. Establishing the sampling distribution in high
+dimensions is interesting future work.
+
+19
+
+0.25
+0.20
+0.15
+0.10
+0.00
+
+0.05
+
+Relative Margin
+
+0.0
+
+0.5
+
+1.0
+
+1.5
+
+λ
+
+Figure 4: The cosine Γ(H, γ, α2 , λ) for the AR-1(0.9) model, with α ∈ [0.1, 2].
+The values of α used for each curve are evenly spaced, with a gap of 0.05 between
+each curve. The cosine quickly converges to a limit as α increases.
+
+3.3
+
+Do existing theories explain the behavior of RDA?
+
+Theorems 3.1 and 3.2 give precise information about the error rate of RDA. It
+is of interest to compare this to classical theories, such as Vapnik-Chervonenkis
+theory or Rademacher bounds, to if they explain the qualitative behavior of
+RDA. In this section, we study a simple simulation example, and conclude that
+existing theory does not precisely explain the behavior of RDA.
+We consider a setup with n = p = 500, Σ an auto-regressive (AR-1) matrix
+such that Σij = ρ|i−j| , and µ±1 ∼ N (0, α2 p−1 Ip×p ). This is a natural model
+when the features can be ordered such that correlations decay with distance;
+for instance in time series and genetic data. We run experiments for different
+values of ρ in two different settings: q
+once with constant effect size α2 = 1,
+and once with constant oracle margin E[∆2n,p ] = 2.3. Given α ≥ 0 and ρ ∈
+[0, 1) one can verify using the description of the limit population spectrum
+(Grenander and Szegő, 1984), and by elementary calculations,
+p that the limiting
+oracle classification margin in the AR-1 model is ∆ = α (1 + ρ2 ) / (1 − ρ2 );
+thus, with constant α2 the oracle classifier improves as ρ increases.
+Existing results give us some intuition about what to expect. Since n = p,
+classical heuristics based on the theory of Vapnik and Chervonenkis (1971) as
+well as more specialized analyses (Saranadasa, 1993; Bickel and Levina, 2004)
+
+20
+
+q 
+
+E ∆2n,p = 2.3
+
+0.5
+
+0.5
+
+0.4
+
+0.4
+
+test error
+
+test error
+
+ρ = 0.1
+
+α2 = 1
+
+0.3
+0.2
+0.1
+0
+
+0.3
+0.2
+0.1
+
+0
+
+0.5
+
+1 p 1.5
+
+2
+
+0
+
+2.5
+
+0
+
+1
+
+0.5
+
+0.5
+
+0.4
+
+0.4
+
+0.3
+0.2
+0.1
+0
+
+4
+
+5
+
+2 p
+
+3
+
+4
+
+5
+
+2 p
+
+3
+
+4
+
+5
+
+0.2
+0.1
+
+0
+
+0.5
+
+1 p 1.5
+
+2
+
+0
+
+2.5
+
+0
+
+1
+
+6
+
+0.5
+
+0.5
+
+0.4
+
+0.4
+
+test error
+
+test error
+
+ρ = 0.9
+
+3
+
+0.3
+
+6
+
+0.3
+0.2
+0.1
+0
+
+2 p
+
+6
+
+test error
+
+test error
+
+ρ = 0.5
+
+6
+
+0.3
+0.2
+0.1
+
+0
+
+0.5
+
+1 p 1.5
+
+2
+
+2.5
+
+6
+
+0
+
+0
+
+1
+
+6
+
+Figure 5: Classification error of RDA in an AR-1 model. The theoretical formula
+(red, dashed) is overlaid with the results from simulations (blue, solid; we also
+display the oracle error (yellow, dotted). In the first column, we keep the signal
+strength fixed at α2 = 1, whereas in the second column we picked α such as
+to fix the oracle error at ErrBayes = 0.01. We test on 10,000 new samples, and
+report the average classification error.
+
+21
+
+predict that unregularized LDA will not work. As we will see, this matches
+our simulation results. Meanwhile, Bickel and Levina (2004) study worst-case
+performance of the independence rule relative to the Bayes rule. In our setting, it
+can be verified that their results imply ΘIR ≥ (1−ρ2 )/(1+ρ2 ) ∆, where the error
+rate of the independence rule is Φ(−ΘIR ). This predicts that independence rules
+will work better for small correlation ρ, which again will match the simulations.
+The existing theory, however, is much less helpful for understanding the
+behavior of RDA for intermediate values of λ. A learning theoretic analysis
+based on Rademacher complexity suggests that p
+the generalizationp
+performance
+of RDA should depend on terms that scale like kŵλ k22 tr Σ/n  λ−2 p/n for
+large values of λ (e.g., Bartlett and Mendelson, 2003). In other words, based on
+a classical approach, we might expect that mildly regularized RDA should not
+work, but using a large λ may help. Rademacher theory is not tight enough to
+predict what will happen for λ ≈ 1.
+Given this background, Figure 5 displays the performance of RDA for different values of ρ, along with our theoretically derived error from Theorem 3.1. In
+the α2 = 1 case, we find that—as predicted—unregularized LDA does poorly.
+However, when ρ is large, mildly regularized RDA does quite well.
+Strikingly, RDA is able to benefit from the growth of the oracle classification
+margin with ρ, but only if we use a small positive value of λ. The analyses based
+on unregularized LDA or “infinitely regularized” independence rules do not cover
+this case. Moreover, this phenomenon is not predicted by Rademacher theory,
+which requires λ  1 to improveq
+over basic Vapnik-Chervonenkis bounds. Results from constant margin case E[∆2n,p ] = 2.3 reinforce the same interpretations. Finally, our formulas for the error rate are accurate despite the moderate
+sample size n = p = 500.
+
+3.4
+
+Linear Discriminant Analysis vs. Independence Rules
+
+Two points along the RDA risk curve that allow for particularly simple analytic
+expressions occur as λ → 0 and λ → ∞: the former is just classical linear
+discriminant analysis while the latter is equivalent to an independence rule (or
+“naı̈ve Bayes”). In this section, we show how taking these limits we can recover
+known results about the high-dimensional asymptotics of linear discriminant
+analysis and naı̈ve Bayes. Further, we compare these two methods over certain
+parameter classes.
+Note that λ → ∞ leads to a linear discriminant rule with weight vector
+b c )−1 δ̂. We will
+δ̂ = µ̂+1 − µ̂−1 . Usual independence rules take the form diag(Σ
+assume that all features are normalized to have equal variance, Σii = σ > 0.
+In this case the λ → ∞ rule corresponds to an independence rule with oracle
+information about the equality of variances; which we still call “indpendence
+rule” for simplicity.
+Extending our previous notation, we define the asymptotic margin of LDA
+
+22
+
+and independence rules, by taking the limits of Θ(λ) at 0 and ∞:
+ΘLDA = lim p
+λ→0
+
+α2 τ
+
+α2 τ
+and ΘIR = lim p
+.
+λ→∞
+α2 η + θ
+α2 η + θ
+
+Both limits are well-defined and admit simple expressions, as given below.
+Theorem 3.5. Let H be the limit population spectral distribution of the covariance matrices Σ; and let T be a random variable with distribution H. Under
+the conditions of Theorem 3.1, the margins of LDA and independence rules are
+equal to
+
+
+√
+α2 1 − γ EH T −1
+α2
+ΘLDA = p
+and ΘIR = p
+.
+α2 EH [T −1 ] + γ
+α2 EH [T ] + γEH [T 2 ]
+The formula for LDA is valid for γ < 1 while that for IR is valid for any γ.
+This result is proved in the supplement. The formulas are simpler than
+Theorem 3.1, as they involve the population spectral distribution H directly
+through its moments. For RDA, the error rate depends on H implicitly through
+the Stieltjes transform of the ESD F .
+These formulas are equivalent to known results, some of which were obtained
+under slightly different parametrization. In particular, Serdobolskii (2007) attributes the IR formula with H = δ1 to unpublished work by Kolmogorov in
+1967, while the Raudys and Young (2004) attributes it to Raudys (1967). The
+LDA formula was derived by Deev (1970) and Raudys (1972); see Section 3.5.
+Here, our goal was to show how these simple formulas can be recovered from
+the more powerful Theorem 3.1.
+Saranadasa (1993) also obtains closed form expressions for the limit risk of
+two classification methods, the D-criterion and the A-criterion. One can verify
+that these are asymptotically equivalent to LDA and IR, respectively. Our
+results are consistent with those of Saranadasa (1993); but they differ slightly
+in the modeling assumptions. In our notation,
+p his results
+√ (as stated in his
+S
+−1 ] 1 − γ and ΘS =
+Theorem
+3.2
+and
+Corollary
+3.1)
+are:
+Θ
+=
+α
+E
+[T
+H
+LDA
+IR
+p
+α/ EH [T ]. These results are nearly identical to Theorem 3.5, but our equations
+have an extra term involving γ in the denominator: γ for LDA and γEH [T 2 ]
+for IR. The reason is that we consider µ±1 as random, whereas Saranadasa
+(1993) considers them as fixed sequences of vectors; this extra randomness yields
+additional variance terms.
+Theorem 3.5 enables us to compare the worst-case performance of LDA and
+IR over suitable parameter classes of limit spectra. For 0 < k1 ≤ 1 ≤ k2 we
+define the class
+H(k1 , k2 ) = {H : PH ([k1 , k2 ]) = 1, EH [T ] = 1} .
+The bounds k1 , k2 control the ill-conditioning of the population covariance matrix. We normalize such that the average population eigenvalue is 1, to ensure
+23
+
+that the scaling of the problem does not affect the answer. This parameter
+space is somewhat similar to the one considered by Bickel and Levina (2004).
+Perhaps surprisingly, however, a direct comparison over these natural problem
+classes appears to be missing from the literature, and so we provide it below
+(see the supplement for a proof).
+Corollary 3.6. Under the conditions of Theorem 3.5, consider the behavior of
+LDA and independence rules for H ∈ H(k1 , k2 ).
+1. The worst-case margin of LDA is:
+√
+α2 1 − γ
+p
+.
+Θ̄LDA (γ; α ) :=
+inf
+ΘLDA (H, γ; α ) =
+H∈H(k1 ,k2 )
+α2 + γ
+2
+
+2
+
+The least favorable distribution for LDA from the class H(k1 , k2 ) is the
+point mass at 1: H = δ1 , i.e., Σ = I.
+2. The worst-case margin for independence rules is:
+Θ̄IR (H, γ; α2 ) :=
+
+α2
+ΘIR (H, γ; α2 ) = p
+.
+H∈H(k1 ,k2 )
+α2 + γ(k1 + k2 − k1 k2 )
+inf
+
+If k1 < k2 the least favorable distribution is the mixture H = w1 δk1 +w2 δk2 ,
+where the weights are w1 = (k2 − 1)/(k2 − k1 ) and w2 = (1 − k1 )/(k2 − k1 );
+while if k1 = k2 = 1, it is the point mass at 1: H = δ1 .
+This result shows a stark contrast between the worst-case behavior of LDA
+and independence rules: for fixed signal strength, the worst-case risk of LDA
+over H only depends on γ, and is attained with the limit of identity covariances
+Σ = Ip×p regardless of the values of k1 , k2 . In contrast, the worst-case behavior of IR occurs for a least favorable distribution H that is as highly spread
+as possible. This highlights the sensitivity of IR to ill-conditioned covariance
+matrices. For 0 < γ < 1, we see that IR are better than LDA in the worst case
+over H, i.e. Θ̄LDA (γ; α2 ) < Θ̄IR (H, γ; α2 ), if and only if
+α2 + 1 > (1 − γ)(k1 + k2 − k1 k2 ).
+In particular IR performs better than LDA for strong signals α; with weaker
+signals, LDA can sometimes have an edge, particularly if the covariance is poorly
+conditioned, quantified by a large measure of spread k1 +k2 −k1 k2 = (k2 −1)(1−
+k1 ) + 1.
+
+3.5
+
+Literature Review for High-Dimensional RDA
+
+There has been substantial work in the former Soviet Union on high-dimensional
+classification; references on this work include Raudys and Young (2004), Raudys
+
+24
+
+(2012), and Serdobolskii (2007). Raudys (1967)7 derived the n, p → ∞ asymptotic error rate of independence rules in identity-covariance case Σ = Ip×p , while
+Deev (1970) and Raudys (1972) obtained the error rate of un-regularized linear
+discriminant analysis (LDA) for general covariance Σ, again in the n, p → ∞
+regime.8 As shown in the previous section, these results can be obtained as
+special cases of our more general formulas.
+For RDA, Serdobolskii (1983) (see also Chapter 5 of Serdobolskii (2007))
+considered a more general setting than this paper: classification with a weight
+b c )−1 δ̂ instead of just (Σ
+b c + λIp×p )−1 δ̂, where the scalar
+vector of the form Γ(Σ
+R
+function Γ admits the integral representation Γ(x) = (x + t)−1 dη(t) for a
+suitable measure η, and is extended to matrices in the usual way. He derived
+a limiting formula for the error rate of this classifier under high-dimensional
+asymptotics. However, due to their generality, his results are substantially more
+involved and much less explicit than ours. In some cases it is unclear to us how
+one could numerically compute his formulas in practice. Furthermore, his results
+are proved when γ < 1, and show convergence in probability, not almost surely.
+We also note the work of Raudys and Skurichina (1995), who derived results
+about the risk of usual RDA with vanishingly small regularization λ = o(1), and
+for the special case γ < 1.
+In another line of work, a Japanese school (e.g., Fujikoshi et al., 2011, and
+references therein) has studied the error rates of LDA and RDA under highdimensional asymptotics, with a focus on obtaining accurate higher-order expansions to their risk. For instance Fujikoshi and Seo (1998) obtained asymptotic expansions for the error rate of un-regularized LDA, which can be verified
+to be equivalent to our results in the λ → 0 limit. More recently, Kubokawa
+et al. (2013) obtained a second-order expansion of the error rate of RDA with
+vanishingly small regularization parameter λ = O(1/n) in the case γ < 1.
+Finally, in the signal processing and pattern recognition literature, Zollanvari et al. (2011) provided asymptotic moments of estimators of the error rate
+of LDA, under an asymptotic framework where n, p → ∞; however, this paper assumes that the covariance matrix Σ is known. More recently, Zollanvari
+and Dougherty (2015) provide consistent estimators for the error rate of RDA
+in a doubly asymptotic framework, using deterministic equivalents for random
+matrices. The goal of our work is rather different from theirs, in that we do
+not seek empirical estimators of the error rate of RDA, but instead seek simple
+formulas that help us understand the behavior of RDA.
+
+Acknowledgment
+We are grateful to everyone who has provided comments on this manuscript, in
+particular David Donoho, Jerry Friedman, Iain Johnstone, Percy Liang, Asaf
+7 Raudys (1967) is in Russian; see Raudys and Young (2004) for a review.
+8 Serdobolskii (2007) attributes some early results on independence rules with identity covariance to Kolmogorov in 1967, and calls the framework n, p → ∞, p/n → γ the Kolmorogov
+asymptotic regime. However, Kolmogorov apparently never published on the topic.
+
+25
+
+Weinstein, and Charles Zheng. E. D. is supported in part by NSF grant DMS1418362.
+
+References
+T. W. Anderson. An Introduction to Multivariate Statistical Analysis. Wiley New
+York, 2003.
+Z. Bai and J. W. Silverstein. Spectral Analysis of Large Dimensional Random Matrices.
+Springer, 2010.
+P. L. Bartlett and S. Mendelson. Rademacher and Gaussian complexities: Risk bounds
+and structural results. J. Mach. Learn. Res., 3:463–482, 2003.
+M. Bayati and A. Montanari. The LASSO risk for Gaussian matrices. IEEE Trans.
+Inform. Theory, 58(4):1997–2017, 2012.
+D. Bean, P. J. Bickel, N. El Karoui, and B. Yu. Optimal M-estimation in highdimensional regression. Proc. Natl. Acad. Sci. USA, 110(36):14563–14568, 2013.
+C. Bernau, M. Riester, A.-L. Boulesteix, G. Parmigiani, C. Huttenhower, L. Waldron,
+and L. Trippa. Cross-study validation for the assessment of prediction algorithms.
+Bioinformatics, 30(12):i105–i112, 2014.
+P. J. Bickel and E. Levina. Some theory for Fisher’s linear discriminant function,
+“naive Bayes”, and some alternatives when there are many more variables than
+observations. Bernoulli, pages 989–1010, 2004.
+E. Candès and T. Tao. The Dantzig selector: Statistical estimation when p is much
+larger than n. Ann. Statist., 35(6):2313–2351, 2007.
+L. S. Chen, D. Paul, R. L. Prentice, and P. Wang. A regularized Hotelling’s T 2 test
+for pathway analysis in proteomic studies. J. Amer. Statist. Assoc., 106(496), 2011.
+R. Couillet and M. Debbah. Random Matrix Methods for Wireless Communications.
+Cambridge University Press, 2011.
+A. Deev. Representation of statistics of discriminant analysis and asymptotic expansion when space dimensions are comparable with sample size. In Sov. Math. Dokl.,
+volume 11, pages 1547–1550, 1970.
+L. Dicker. Ridge regression and asymptotic minimax estimation over spheres of growing
+dimension. Bernoulli, to appear, 2014.
+E. Dobriban. Efficient computation of limit spectra of sample covariance matrices.
+arXiv preprint arXiv:1507.01649, 2015.
+D. L. Donoho and A. Montanari. Variance breakdown of Huber (M)-estimators: n/p →
+m ∈ (1, ∞). arXiv preprint arXiv:1503.02106, 2015.
+B. Efron. The efficiency of logistic regression compared to normal discriminant analysis. J. Amer. Statist. Assoc., 70(352):892–898, 1975.
+N. El Karoui. Asymptotic behavior of unregularized and ridge-regularized highdimensional robust regression estimators: rigorous results.
+arXiv preprint
+arXiv:1311.2445, 2013.
+N. El Karoui and H. Kösters. Geometric sensitivity of random matrix results: consequences for shrinkage estimators of covariance and related statistical methods.
+arXiv preprint arXiv:1105.1404, 2011.
+J. Fan, Y. Fan, and Y. Wu. High dimensional classification. In T. Cai and X. Shen,
+editors, High-dimensional Data Analysis, pages 3–37. World Scientific, New Jersey,
+2011.
+J. H. Friedman. Regularized discriminant analysis. J. Amer. Statist. Assoc., 84(405):
+165–175, 1989.
+
+26
+
+Y. Fujikoshi and T. Seo. Asymptotic aproximations for EPMCs of the linear and the
+quadratic discriminant functions when the sample sizes and the dimension are large.
+Random Oper. Stoch. Equ., 6(3):269–280, 1998.
+Y. Fujikoshi, V. V. Ulyanov, and R. Shimizu. Multivariate Statistics: High-dimensional
+and Large-sample Approximations. John Wiley & Sons, 2011.
+U. Grenander and G. Szegő. Toeplitz forms and their applications, 1984.
+W. Hachem, P. Loubaton, and J. Najim. Deterministic equivalents for certain functionals of large random matrices. The Annals of Applied Probability, 17(3):875–930,
+2007.
+W. Hachem, O. Khorunzhiy, P. Loubaton, J. Najim, and L. Pastur. A new approach
+for mutual information analysis of large dimensional multi-antenna channels. IEEE
+Trans. Inform. Theory, 54(9):3987–4004, 2008.
+T. Hastie, R. Tibshirani, and M. Wainwright. Statistical Learning with Sparsity: The
+Lasso and Generalizations. CRC Press, 2015.
+A. E. Hoerl and R. W. Kennard. Ridge regression: Biased estimation for nonorthogonal
+problems. Technometrics, 12(1):55–67, 1970.
+D. Hsu, S. M. Kakade, and T. Zhang. Random design analysis of ridge regression.
+Found. Comput. Math., 14(3):569–600, 2014.
+J. Kleinberg, J. Ludwig, S. Mullainathan, Z. Obermeyer, et al. Prediction policy
+problems. American Economic Review, 105(5):491–95, 2015.
+T. Kubokawa, M. Hyodo, and M. S. Srivastava. Asymptotic expansion and estimation
+of EPMC for linear classification rules in high dimension. J. Multivariate Anal.,
+115:496–515, 2013.
+O. Ledoit and S. Péché. Eigenvectors of some large sample covariance matrix ensembles. Probab. Theory Related Fields, 151(1-2):233–264, 2011.
+P. Liang and N. Srebro. On the interaction between norm and dimensionality: Multiple
+regimes in learning. In ICML, 2010.
+V. A. Marchenko and L. A. Pastur. Distribution of eigenvalues for some sets of random
+matrices. Mat. Sb., 114(4):507–536, 1967.
+A. Ng and M. Jordan. On discriminative vs. generative classifiers: A comparison of
+logistic regression and naive Bayes. In NIPS, 2001.
+J. K. Pickrell and J. K. Pritchard. Inference of population splits and mixtures from
+genome-wide allele frequency data. PLoS genetics, 8(11):e1002967, 2012.
+Š. Raudys. On determining training sample size of linear classifier. Comput. Systems
+(in Russian), 28:7987, 1967.
+Š. Raudys. On the amount of a priori information in designing the classification
+algorithm. Technical Cybernetics (in Russian), 4:168–174, 1972.
+Š. Raudys. Statistical and Neural Classifiers: An integrated approach to design.
+Springer Science & Business Media, 2012.
+Š. Raudys and M. Skurichina. Small sample properties of ridge estimate of the covariance matrix in statistical and neural net classification. New Trends in Probability
+and Statistics, 3:237–245, 1995.
+Š. Raudys and D. M. Young. Results in statistical discriminant analysis: A review of
+the former Soviet Union literature. J. Multivariate Anal., 89(1):1–35, 2004.
+S. Rifai, Y. Dauphin, P. Vincent, Y. Bengio, and X. Muller. The manifold tangent
+classifier. Advances in Neural Information Processing Systems, 24:2294–2302, 2011.
+F. Rubio, X. Mestre, and D. P. Palomar. Performance analysis and optimal selection of
+large minimum variance portfolios under estimation risk. IEEE Journal of Selected
+Topics in Signal Processing, 6(4):337–350, 2012.
+
+27
+
+O. Russakovsky, J. Deng, H. Su, J. Krause, S. Satheesh, S. Ma, Z. Huang, A. Karpathy,
+A. Khosla, M. Bernstein, et al. ImageNet large scale visual recognition challenge.
+International Journal of Computer Vision, pages 1–42, 2014.
+H. Saranadasa. Asymptotic expansion of the misclassification probabilities of D-and
+A-criteria for discrimination from two high dimensional populations using the theory
+of large dimensional random matrices. J. Multivariate Anal., 46(1):154–174, 1993.
+V. I. Serdobolskii. On minimum error probability in discriminant analysis. In Dokl.
+Akad. Nauk SSSR, volume 27, pages 720–725, 1983.
+V. I. Serdobolskii. Multiparametric Statistics. Elsevier, 2007.
+J. W. Silverstein. Strong convergence of the empirical distribution of eigenvalues of
+large dimensional random matrices. J. Multivariate Anal., 55(2):331–339, 1995.
+J. W. Silverstein and S.-I. Choi. Analysis of the limiting spectral distribution of large
+dimensional random matrices. J. Multivariate Anal., 54(2):295–309, 1995.
+J. W. Silverstein and P. L. Combettes. Signal detection via spectral theory of large
+dimensional random matrices. IEEE Trans. Signal Process., 40(8):2100–2105, 1992.
+P. Y. Simard, Y. A. Le Cun, J. S. Denker, and B. Victorri. Transformation invariance
+in pattern recognition: Tangent distance and propagation. International Journal of
+Imaging Systems and Technology, 11(3):181–197, 2000.
+C. Sutton and A. McCallum. An introduction to conditional random fields for relational learning. Introduction to statistical relational learning, pages 93–128, 2006.
+K. Toutanova, D. Klein, C. D. Manning, and Y. Singer. Feature-rich part-of-speech
+tagging with a cyclic dependency network. In NAACL, 2003.
+A. M. Tulino and S. Verdú. Random matrix theory and wireless communications.
+Communications and Information theory, 1(1):1–182, 2004.
+V. N. Vapnik and A. Y. Chervonenkis. On the uniform convergence of relative frequencies of events to their probabilities. Theory Probab. Appl., 16(2):264–280, 1971.
+S. Wang and C. D. Manning. Baselines and bigrams: Simple, good sentiment and
+topic classification. In Proceedings of the 50th Annual Meeting of the Association
+for Computational Linguistics: Short Papers-Volume 2, pages 90–94. Association
+for Computational Linguistics, 2012.
+N. R. Wray, M. E. Goddard, and P. M. Visscher. Prediction of individual genetic
+risk to disease from genome-wide association studies. Genome research, 17(10):
+1520–1528, 2007.
+J. Yao, Z. Bai, and S. Zheng. Large Sample Covariance Matrices and High-Dimensional
+Data Analysis. Cambridge University Press, 2015.
+M. Zhang, F. Rubio, D. P. Palomar, and X. Mestre. Finite-sample linear filter optimization in wireless communications and financial systems. IEEE Trans. Signal
+Process., 61(20):5014–5025, 2013.
+A. Zollanvari and E. R. Dougherty. Generalized consistent error estimator of linear
+discriminant analysis. IEEE Trans. Signal Process., 63(11), 2015.
+A. Zollanvari, U. M. Braga-Neto, and E. R. Dougherty. Analytic study of performance
+of error estimators for linear discriminant analysis. IEEE Trans. Signal Process., 59
+(9):4238–4255, 2011.
+
+4
+
+Supplement
+
+The supplement is organized as follows: Section 5 describes the efficient computation of the risk formulas, Section 6 has the proofs for ridge regression,
+28
+
+and Section 7 has the proofs for regularized discriminant analysis. At several
+locations we refer to equation numbers from the main text.
+
+5
+
+Efficient computation of the risk formulas
+
+b = n−1 XX > .
+Consider the spectral distribution of the companion matrix Σ
+Since its spectral distribution FΣ
+b differs from FΣ
+b by |n − p| zeros, it follows
+b has a limit ESD F , given by F = γF + (1 − γ)I[0,∞) . The companion
+that Σ
+Stieltjes transform satisfies the Silverstein equation (Silverstein and Combettes,
+1992; Silverstein and Choi, 1995):
+Z
+1
+t dH(t)
+−
+=z−γ
+.
+(12)
+v(z)
+1 + tv(z)
+It is known that for z ∈ S := {u + iv : v 6= 0, or v = 0, u > 0}, v(z) is the unique
+solution of the Silverstein equation with v(z) ∈ S such that sign(Imag{v(z)}) =
+sign(Imag(z)).
+We now explain how to compute the key quantities m, v, m0 , v 0 that will
+come up in our risk formulas. On the interval v ∈ [0, ∞), Silverstein and Choi
+(1995) prove that the functional inverse of z → v := v(z) has the explicit form:
+Z
+1
+t dH(t)
+z(v) = − + γ
+.
+(13)
+v
+1 + tv
+This result enables the efficient computation of the function z → v(z) for z < 0.
+Indeed, assuming one can compute the corresponding integral against H, one
+can tabulate (13) on a dense grid of vi > 0, to find pairs (vi , zi ), where zi = z(vi ).
+Then for the values zi < 0, the Silverstein and Choi (1995) result shows that
+v(zi ) = vi . Further, the Silverstein equation can be differentiated with respect
+to z to obtain an explicit formula for v 0 in terms of v, H:
+dv
+=
+dz
+
+
+
+1
+−γ
+v2
+
+Z
+
+t2 dH(t)
+(1 + tv)2
+
+−1
+
+Therefore, once v(z) is computed for a value z, the computation of v 0 (z) can
+be done conveniently in terms of v(z) and H, assuming again that the integral
+involving H can be computed. This is one of the main steps in the Spectrode
+method for computing the limit ESD (Dobriban, 2015). Finally, m(z) can be
+computed from v(z) via the equation (4),
+m0 (z) can be computed from v 0 (z)
+ and
+0
+2
+0
+by differentiating (4): γ m (z) − 1/z = v (z) − 1/z 2 .
+
+29
+
+6
+
+Proofs for Ridge Regression
+
+6.1
+
+Proof of Theorem 2.1
+
+The risk rλ (X) equals
+
+
+rλ (X) = E (x · ŵλ − x · w − ε0 )2 X
+h
+i
+
+
+>
+= 1 + E {x · (ŵλ − w)}2 X = 1 + E (ŵλ − w) Σ (ŵλ − w) X
+where ε0 is the noise in the new observation. Now ŵλ = (X > X +λ n Ip×p )−1
+X Y , and Y = Xw + ε, where ε is the vector of noise terms in the original
+data. Hence
+>
+
+ŵλ − w = (X > X + λ n Ip×p )−1 X > (Xw + ε) − w
+= −λ n(X > X + λ n Ip×p )−1 w + (X > X + λ n Ip×p )−1 X > ε.
+When we plug this back into the risk formula rλ (X), and use that w, ε are
+conditionally independent given X, we see that the cross-term involving w, ε
+cancels. The risk simplifies to
+
+
+rλ (X) = 1 + (λ n)2 E w> (X > X + λ n Ip×p )−1 Σ(X > X + λ n Ip×p )−1 w X
+
+
++ E ε> X(X > X + λ n Ip×p )−1 Σ(X > X + λ n Ip×p )−1 X > ε X .
+Now using that the components of w and ε are each uncorrelated conditional
+on X, we obtain the further simplification
+−2 
+α2 
+rλ (X) = 1 + (λ n)2
+tr Σ X > X + λ n Ip×p
+p
+
+−1 >
+−1 
++ tr Σ X > X + λ n Ip×p
+X X X > X + λ n Ip×p
+.
+b = n−1 X > X and γp = p/n, and splitting the last term in two
+Introducing Σ
+>
+by using X X = X > X + λ n Ip×p − λ n Ip×p this yields
+ 
+ 
+−1 
+−2 
+γp
+λ
+2
+b
+b
+tr Σ Σ + λIp×p
+rλ (X) = 1 +
++ (λα − γp ) tr Σ Σ + λIp×p
+.
+p
+p
+(14)
+For the particular choice λ∗ = γp α−2 , we obtain the claimed formula rλ∗ (X).
+Next, we show the convergence of rλ (X) for arbitrary fixed λ. First, by assumption we have γp → γ. Therefore, it is enough to show the almost sure
+convergence of the two functionals:
+ 
+ 
+−1 
+−2 
+1
+1
+b + λIp×p
+b + λIp×p
+tr Σ Σ
+and tr Σ Σ
+.
+p
+p
+The convergence of the first one follows directly from the theorem of Ledoit
+and Péché (2011), given in (5). The second is shown later in the proof of Lemma
+30
+
+7.4 in Section 7.1.4. In that section it is assumed that the eigenvalues of Σ are
+bounded away from 0 an infinity; but one can check that in the proof of Lemma
+7.4 only the upper bound is used, and that holds in our case. Therefore the risk
+rλ (X) converges almost surely for each λ.
+Next we find
+ the fomulas
+ the limits of the two functionals. The
+−1for
+−1
+b
+limit of p tr Σ Σ + λIp×p
+equals κ(λ) = γ −1 (1/[λv(−λ)] − 1) by (5).
+In theproof of Lemma 7.4 in Section 7.1.4, it is shown that the limit of
+
+−2
+b + λIp×p
+p−1 tr Σ Σ
+is −κ0 (λ) = [v(−λ) − λv 0 (−λ)]/[γ(λv(−λ))2 ].
+Simplified expression for Rλ : Putting together the results above, we
+obtain (with v = v(−λ), v 0 = v 0 (−λ)) the desired claim:
+Rλ = 1 + γκ(−λ) + (λα2 − γ)λ[−κ0 (−λ)]
+
+ 2
+
+
+v − λv 0
+1
+λα
+λv 0
+1
++ (λα2 − γ)λ
+=
+1
++
+−
+1
+1
+−
+.
+=
+λv
+γ(λv)2
+λv
+γ
+v
+Second part: Convergence:
+finite sample risk equals by (14)
+
+First, we note that for λ∗p = γp α−2 , the
+
+ 
+−1 
+γp
+b + γp Ip×p
+tr Σ Σ
+.
+p
+α2
+ 
+−1 
+1
+b
+Introduce the function kp (λ, X) = p tr Σ Σ + λIp×p
+. We need to
+rλ∗p (X) = 1 +
+
+show kp (λ∗p , X) → κ(λ∗ ). First, we notice that λ∗p → λ∗ , and kp (λ, X) → κ(λ)
+almost surely. Second, we verify the equicontinuity of kp as a function of λ, by
+proving the stronger claim that the derivatives of kp are uniformly bounded:
+ 
+−2 
+1
+tr Σ
+b + λIp×p
+|kp0 (λ, X)| =
+tr Σ Σ
+≤
+≤ K.
+p
+p
+The last inequality holds for some finite constant K because EFΣ X = p−1 tr Σ →
+EH X < ∞ by the convergence and boundedness of the spectral distribution of
+Σ.
+Therefore, by the equicontinuity of the family kp (λ, X) as a function of λ,
+we obtain kp (λ∗p , X) → κ(λ∗ ). Further, the explicit form of rλ∗p shows that the
+limit equals 1 + γκ(λ∗ ) = 1/(λ∗ v(−λ∗ )) by (5), as desired.
+Optimality of λ∗ : The limiting risk Rλ is the same if we assume Gaussian
+observations. In this case, the finite sample Bayes-optimal choice for λp is
+λ∗p = γp α−2 . We will use the following classical lemma to conclude that the
+limit of the minimizers λ∗p is the minimizer of the limit.
+Lemma 6.1. Let fn (x) : I → I be an equicontinuous family of functions on
+an interval I, converging pointwise to a continuous function, fn (x) → f (x).
+Suppose yn is a minimizer of fn on I, and yn → y. Then y is a minimizer of
+f.
+
+31
+
+Proof. Since yn is a minimizer of fn , we have
+fn (yn ) ≤ fn (x),
+
+(15)
+
+for all x ∈ I. But fn (yn ) = fn (yn ) − fn (y) + fn (y) − f (y) + f (y). As n → ∞,
+fn (yn ) − fn (y) → 0 by the convergence of yn → y and by the equicontinuity of
+the family {fn }; and fn (x) − f (x) → 0 for all x by the convergence of fn → f .
+Therefore, taking the limit as n → ∞ in (15), we obtain f (y) ≤ f (x) for any
+x ∈ I, showing that y is a minimizer of f .
+We use the notation rλ,p (X) = rλ (X) for the risk, showing that it depends
+on p. Fix an arbitrary sequence of X matrices on the event having probability
+one where rλ,p (X) → Rλ . By an argument similar to the one given above, the
+sequence of functions fp (λ) = rλ,p (X) equicontinuous in λ on the set λ ≥ 0.
+Since fp (λ) converges to Rλ for each λ > 0, and λ∗p is a sequence of minimizers
+of fp (λ) that converges to λ∗ , by Lemma 6.1 λ∗ is a minimizer of Rλ .
+
+6.2
+
+The Risk of Ridge Regression with Identity Covariance
+
+From Theorem 2.1 it follows that the risk equals the limit rλ (X) (14). Since
+Σ = I this simplifies to
+
+
+−1 
+−2 
+λ
+γp
+2
+b
+b
+Σ + λIp×p
+Σ + λIp×p
+tr
++ (λα − γp ) tr
+.
+rλ (X) = 1 +
+p
+p
+By
+
+the
+theorem, Eq.
+(3),
+ Marchenko-Pastur
+−1 
+b + λIp×p
+Σ
+p−1 tr
+→ mI (−λ; γ) is defined in (7).
+
+it
+
+follows
+
+that
+
+In the proof of Lemma 7.4 in Section 7.1.4, it is shown that
+
+−2
+b + λIp×p
+Σ
+p−1 tr
+→ −κ0 (λ). For an identity covariance matrix κ(λ) =
+mI (−λ; γ) by definition of κ(λ). Therefore, the limit of the second term
+γ). We obtain the desired formula: Rλ = 1 + γmI (−λ; γ) +
+equals m0I (−λ;
+
+λ λα2 − γ m0I (−λ; γ). For λ∗ = γα−2 , we obtain R∗ = 1 + γmI (−λ∗ ; γ). It is
+a matter of simple algebra to verify the formula (8) for the risk.
+
+6.3
+
+Proof of strong-signal limit of ridge
+
+We will first show the results for the strong-signal limit. We start by verifying
+the following lemma.
+Lemma 6.2. Suppose the limit population eigenvalue distribution H has support
+contained in a compact set bounded away from 0. Let v(z) be the companion
+Stieltjes transform of the ESD. Then
+1. If γ < 1, limλ↓0 λv(−λ) = 1 − γ.
+2. If γ > 1, limλ↓0 v(−λ) = v(0).
+32
+
+3. If γ = 1, limλ↓0 λv(−λ)2 = EH [T −1 ].
+Proof. Let F be the ESD of the companion matrix n−1 XX > . It is related to F
+via F = (1−γ)δ0 +γF . It is well known (e.g., Bai and Silverstein, 2010, Chapter
+6), that for H whose support is contained in a compact set bounded away from
+0, the following hold for F and F : if γ < 1, then F has support contained in a
+compact set bounded away from 0, and F has a point mass of 1 − γ at 0; while
+if γ > 1, then F has support contained in a compact set bounded away from 0,
+and F has a point mass of 1 − γ −1 at 0.
+If γ < 1, we let Y be distributed according to F . Since Y > c > 0 for some
+c, we have by the dominated convergence theorem
+
+
+λ
+lim λm(−λ) = lim EF
+= 0.
+λ↓0
+λ↓0
+λ+Y
+Since λv(−λ) = 1 − γ + γλm(−λ), this shows limλ↓0 λv(−λ) = 1 − γ.
+Similarly, if γ > 1, we let Y be distributed according
+h
+i to F .h Since
+i Y >c>0
+1
+for some c, we have limλ↓0 λv(−λ) = limλ↓0 EF λ+Y
+= EF Y1 = v(0). This
+shows limλ↓0 v(−λ) = v(0). Further, we can find the equation for v(0) by
+taking the limit as z → 0 in the Silverstein equation (12). We see that v is
+well-defined, bounded away from 0, and has positive imginary part for z ∈ C+
+in a neighborhood of 0, so the limit is justified by the dominated convergence
+theorem. This leads to the equation that was claimed:
+Z
+t dH(t)
+1
+=γ
+.
+v(0)
+1 + tv(0)
+Finally, for γ = 1, the Silverstein equation (12) is equivalent to
+Z
+dH(t)
+zv(z) = −
+.
+1 + tv(z)
+h
+i
+1
+Therefore the real quantity limλ↓0 v(−λ) = limλ↓0 EF λ+Y
+is not finite; otherwise, we could take the limit
+z ∈ C+ , similarly to above, and obtain
+R as z → 0, −1
+the contradiction that 0 = (1 + tv(0)) dH(t) 6= 0. Since v(−λ) is increasing as λ ↓ 0, it follows that limλ↓0 v(−λ) = +∞. Multiplying the Silverstein
+equation above with v(z)
+Z
+dH(t)
+.
+zv(z)2 = −
+1/v(z) + t
+We can take the limit in this equation as λ R= −z ↓ 0 similarly to above, and
+note that the right hand side converges to − t−1 dH(t) = −EH [T −1 ] by the
+dominated convergence theorem. This shows limλ↓0 λv(−λ)2 = EH [T −1 ].
+Consequently, using the formula for the optimal risk from Theorem 2.1, we
+have for γ < 1, limα2 →∞ R∗ (H, α2 , γ) = (1 − γ)−1 . For γ > 1,
+lim α−2 R∗ (H, α2 , γ) = 2lim
+
+α2 →∞
+
+1
+
+1
+
+.
+=
+γ
+γ
+γv(0)
+α →∞ α2 v(− α2 )α2
+33
+
+Finally, for γ = 1,
+lim α−1 R∗ (H, α2 , γ) = 2lim
+
+α2 →∞
+
+1
+
+= 2lim
+α →∞ 12 v(− 12 )α
+α →∞
+α
+α
+
+1
+
+1
+1 2 1/2
+α2 v(− α2 )
+
+=
+
+1
+.
+EH [T −1 ]1/2
+
+The explicit formula for R∗ (α2 , 1) is obtained by plugging in the expression (7)
+into the formula for the optimal risk.
+Next we argue about the weak-signal limit. Using the above notations,
+λv(−λ) = EF [λ/(λ + Y )], so by the dominated convergence theorem, limλ→∞
+λv(−λ) = 1, and consequently limα2 →0 R∗ (H, α2 , γ) = 1. Furthermore, λ[1 −
+λv(−λ)] = γEF [Y λ/(λ + Y )], leading to limλ→∞ λ[1 − λv(−λ)] = γEF [Y ] =
+γEH [T ], and consequently limα2 →0 (R∗ (H, α2 , γ) − 1)/α2 = EH T .
+
+7
+
+Proofs for Regularized Discriminant Analysis
+
+7.1
+
+Proof of Theorem 3.1
+
+We will first outline the high-level steps to prove our main result for classification, Theorem 3.1. We break down the proof into several lemmas, whose proof
+is deferred to later sections. These lemmas are then put together to prove the
+theorem in the final part of the proof outline.
+We start with the well-known finite-sample formula for the expected test
+error of an arbitrary linear classifier hw,b (x) = sign(w · x + b) in the Gaussian
+model (2), conditional on the weight parameters w, b and the means µ±1 :
+ >
+
+
+
+w µ−1 + b
+w> µ1 + b
+√
+√
+Err0 (w, b) = π− Φ
++ π+ Φ −
+.
+(16)
+w> Σw
+w> Σw
+
+−1
+b c + λIp×p
+In RDA the weight vector is ŵλ = Σ
+δ̂ and the offset is b̂ =
+
+−1
+b c + λIp×p
+δ̂ > Σ
+µ̂. The first simplification we notice is that b̂ →a.s. 0.
+Lemma 7.1. Under the conditions of Theorem 3.1, we have b̂ →a.s. 0.
+Lemma 7.1 is proved in Section 7.1.1. Since the denominator in the error rate
+(16) converges almost surely to a fixed, strictly positive constant (see Lemmas
+7.4 and 7.5), this will allow us to use the following simpler formula - that does
+not involve b̂ - in evaluating the limit of the error rate.
+
+
+
+ >
+w> µ1
+w µ−1
++ π+ Φ − √
+.
+(17)
+Err1 (w) = π− Φ √
+w> Σw
+w> Σw
+Recall that µ−1 = µ̄ − δ, µ+1 = µ̄ + δ. The second simplification we notice
+is that ŵλ> µ̄ →a.s. 0.
+Lemma 7.2. Under the conditions of Theorem 3.1, we have ŵλ> µ̄ →a.s. 0.
+
+34
+
+Lemma 7.2 is proved in Section 7.1.2. By the same argument as above,
+this Lemma allows us to use the following even simpler formula - that does not
+involve µ̄ - in evaluating the limit of the error rate:
+
+
+w> δ
+Err2 (w) = Φ − √
+.
+(18)
+> Σw
+w
+
+
+q
+To show the convergence of Φ −ŵλ> δ/ ŵλ> Σŵλ , we argue that the linear
+and quadratic forms involving ŵλ concentrate around their means, and then
+apply random matrix results to find the limits of those means. We start with
+the numerator.
+Lemma 7.3. We have the limit ŵλ> δ →a.s. α2 m(−λ), where m(z) is the Stieltjes transform of the limit empirical eigenvalue distribution F of the covariance
+b c.
+matrix Σ
+Lemma 7.3 is proved in Section 7.1.3. To prove the convergence of the
+denominator, we decompose it as:
+
+−1 
+−1
+b c + λIp×p
+b c + λIp×p
+ŵλ> Σŵλ = δ̂ > Σ
+Σ Σ
+δ̂ = Ã + 2B̃ + C̃
+
+(19)
+
+
+−1 
+−1
+b c + λIp×p
+b c + λIp×p
+where M := Σ
+Σ Σ
+and
+Ã := δ > M δ,
+
+
+
+B̃ := δ > M δ̂ − δ ,
+
+
+> 
+
+C̃ := δ̂ − δ M δ̂ − δ .
+
+One can show B̃ →a.s. 0 similarly to the analysis of the error terms in the
+proof of Lemmas 7.1 and 7.3; we omit the details. The two remaining terms
+will converge to nonzero quantities. First we show that:
+Lemma 7.4. We have the convergence Ã := δ > M δ →a.s. α2 |κ0 (λ)|, where
+
+
+1
+1
+−1 ,
+κ(λ) =
+γ λv(−λ)
+with v the companion Stieltjes transform of the ESD of the covariance matrix,
+defined in (4). Expressing the derivative explicitly, we have the limit Ã →a.s.
+(v − λv 0 )/[γ(λv)2 ]. The limit is strictly positive.
+Lemma 7.4 is proved in Section 7.1.4, using Ledoit and Péché (2011)’s result
+and a derivative trick similar to that employed in a similar context by El Karoui
+and Kösters (2011); Rubio et al. (2012); Zhang et al. (2013). Finally, the last
+statement that we need is:
+Lemma 7.5. We have the limit
+
+> 
+
+v0 − v2
+,
+C̃ := δ̂ − δ M δ̂ − δ →a.s.
+λ2 v 4
+where v the companion Stieltjes transform of the ESD of the covariance
+matrix, defined in (4).
+35
+
+Lemma 7.5 is proved in Section 7.1.5, as an application of the results of
+Hachem et al. (2008) and Chen et al. (2011). With all these results, we can now
+prove Theorem 3.1.
+Final proof of Theorem 3.1. By the decomposition (19) and Lemmas 7.4 and
+7.5, we have the convergence
+ŵλ> Σŵλ →a.s. α2
+
+v − λv 0
+v0 − v2
++
+.
+γ(λv)2
+λ2 v 4
+
+By Lemma 7.5, the second term is strictly positive. Therefore, combining
+with Lemma 7.3 and the continuous mapping theorem, we have
+ŵ> δ
+α2 m(−λ)
+q λ
+→a.s. h
+i1/2 .
+0
+2
+0
+ŵλ> Σŵλ
+α2 v−λv2 + v −v
+2 4
+γ(λv)
+
+(20)
+
+λ v
+
+Denote by Θ the parameter on the right hand side. After algebraic simplification, we obtain that Θ has exactly the form stated in the theorem for the
+margin of RDA. To finish the proof, we show that the error rate is indeed determined by Θ. From (20) and the continuous mapping theorem, recalling the
+error rate Err2 (w) from (18), we have Err2 (ŵλ ) →a.s. Φ(−Θ).
+From Lemma 7.2 and the definition of the error rate Err1 (w) from (17), we
+can move from Err2 to Err1 : Err2 (ŵλ ) − Err1 (ŵλ ) →a.s. 0.
+Finally, from Lemma 7.1 and the definition of the error rate Err0 (w) in
+Equation (16), we
+ can discard the offset b̂, and move from Err1 to Err0 :
+Err1 (ŵλ ) − Err0 ŵλ , b̂ →a.s. 0.
+
+
+The last three statements imply that Err0 ŵλ , b̂ →a.s. Φ(−Θ), which finishes the proof of Theorem 3.1.
+
+In the proofs of the lemmas we will use the following well-known statement
+repeatedly:
+Lemma 7.6 (Concentration of quadratic forms, consequence of Lemma B.26
+in Bai and Silverstein (2010)). Let x ∈ Rp be a random vector with i.i.d.
+√
+√
+entries and E [x] = 0, for which E ( pxi )2 = σ 2 and supi E ( pxi )4+η
+< C for some η > 0 and C < ∞. Moreover, let Ap be a sequence of
+random p × p symmetric matrices independent of x, with uniformly bounded
+eigenvalues. Then the quadratic forms x> Ap x concentrate around their means:
+x> Ap x − p−1 σ 2 tr Ap →a.s. 0.
+Lemma 7.6 requires a small proof, which is provided in Section 7.1.6. The
+rest of this section contains the proofs of the lemmas.
+7.1.1
+
+Proof of Lemma 7.1
+
+We start by conditioning on the random variables µ̄, δ, or equivalently on µ±1 .
+Conditional on µ̄, δ, we have that µ̂+1 ∼ N (µ+1 , 2Σ/n), independently of µ̂−1 ∼
+36
+
+N (µ−1 , 2Σ/n). Therefore, δ̂ ∼ N (δ, Σ/n), and independently µ̂ ∼ N (µ̄, Σ/n).
+b c and µ̂±1 are independent
+Further - still conditionally on µ̄, δ - it holds that Σ
+by Gaussianity. This shows that conditionally on µ̄, δ, the random variables
+b c , µ̂, δ̂ are independent.
+Σ
+Hence there exist two standard normal random vectors Z, W ∈ Rp indepenb c conditionally on µ̄, δ, such that we can represent
+dent of Σ
+1
+1
+δ̂ = δ + √ Σ1/2 Z, µ̂ = µ̄ + √ Σ1/2 W.
+n
+n
+
+(21)
+
+Crucially, this representation has the same form regardless of the value of
+δ, µ̄, therefore the random variables Z, W are unconditionally independent of
+b c . The unconditional indepdendence of δ, µ̄, Σ
+b c , Z, W will lead to conveδ, µ̄, Σ
+nient simplifications.
+We decompose b̂ according to (21) into the four terms that arise from expanding δ̂, µ̂:
+
+−1
+b c + λIp×p
+b̂ = δ̂ > Σ
+µ̂ = T1 + T2 + T3 + T4 ,
+
+−1
+b c + λIp×p
+where L = Σ
+and
+T1 := δ > Lµ̄
+
+(22)
+
+T2 := n
+
+−1/2
+
+>
+
+1/2
+
+T3 := n
+
+−1/2 >
+
+1/2
+
+Z Σ
+
+δ LΣ
+
+Lµ̄
+
+(23)
+
+W
+
+(24)
+
+T4 := n−1 Z > Σ1/2 LΣ1/2 W.
+
+(25)
+
+The proof proceeds by showing that each of the Ti converge to zero.
+The first term: T1 . Let us denote l = Lµ̄. Then by the independence and
+the zero-mean property of the coordinates of δ
+p
+
+ X
+ 
+E (δ > l)4 |l =
+li4 E δi4 +
+i=1
+
+X
+
+   
+li2 lj2 E δi2 E δj2 .
+
+1≤i6=j≤p
+
+
+√
+C 0 by the increasing
+Note that we have E ( pδi )4 ≤ C 0for some constant
+
+√
+4+η
+relation between Lp norms and by E ( pδi )
+≤ C. Therefore, with C
+denoting some constant whose meaning may change from line to line
+p
+ > 4 
+C X 4 α4
+E (δ l) |l ≤ 2
+l + 2
+p i=1 i
+p
+
+X
+1≤i6=j≤p
+
+li2 lj2 ≤
+
+C
+klk4 .
+p2 2
+
+By the boundedness of the operator norm of L, we see klk2 ≤ kµ̄k2 /λ. By
+1/4−η/2
+almost surely for sufficiently large p. Therefore
+assumption,
+2 ≤ Cp
+ > 4  kµ̄k−(1+2η)
+E (δ l) ≤ Cp
+almost surely for sufficiently large p; and this bound is
+summable in p. Using the Markov inequality for the fourth moment, P(|δ > l| ≥
+37
+
+
+
+c) ≤ E (δ > l)4 /c4 , and by the Borel-Cantelli lemma, it follows that δ > l → 0
+almost surely.
+The second term: T2 . This term differs from T1 because n−1/2 Z replaces
+δ. To show the convergence T1 →a.s. 0 we only used the properties of the first
+four moments of δ. The moments of n−1/2 Z scale in the same way with p as
+the moments of δ. Therefore, the same proof shows T2 →a.s. 0.
+The last two terms: T3 and T4 . The convergence of these terms follows
+directly from a well-known lemma, which we cite from Couillet and Debbah
+(2011):
+Lemma 7.1 (Proposition 4.1 in Couillet and Debbah (2011)). Let xn ∈ Rn and
+yn ∈ Rn be independent sequences of random vectors, such that for each n the
+coordinates of xn and yn are independent random variables. Moreover, suppose
+that the coordinates of xn are identically distributed with mean 0, variance C/n
+for some C > 0 and fourth moment of order 1/n2 . Suppose the same conditions
+hold for yn , where the distribution of the coordinates of yn can be different from
+those of xn . Let An be a sequence of n × n random matrices such that kAn k is
+uniformly bounded. Then x>
+n An yn →a.s. 0.
+While this lemma was originally stated for complex vectors, it holds verbatim
+for real vectors as well. The lemma applied with xn = δ, yn = n−1/2 W and
+An = LΣ1/2 shows convergence of T3 →a.s. 0; and similarly it shows T4 →a.s. 0.
+This finishes the proof of Lemma 7.1.
+7.1.2
+
+Proof of Lemma 7.2
+
+This follows from the proof of Lemma 7.2 by noting ŵλ> µ̄ = δ̂ > Lµ̄ = T1 + T2 ,
+
+−1
+b c + λIp×p
+where L = Σ
+, and with Ti from Equation (25).
+7.1.3
+
+Proof of Lemma 7.3
+
+Proof. We decompose
+
+−1
+
+> 
+−1
+
+−1
+b c + λIp×p
+b c + λIp×p
+b c + λIp×p
+ŵλ> δ = δ̂ > Σ
+δ = δ> Σ
+δ + δ̂ − δ
+Σ
+δ.
+(26)
+We will analyze the two terms separately, and show that the second term converges to 0.
+
+−1
+b c + λIp×p
+The first term in (26): δ > Σ
+δ. Let us denote by m b (z) =
+Σc
+
+b c − zIp×p )−1 } the Stieltjes transform of the empirical spectral distrip−1 tr{(Σ
+b c . We compute expectations using the assumption Eδi δj =
+bution (ESD) of Σ
+2
+δij α /p (where δij is the Kronecker symbol that equal 1 if i = j and 0 otherwise),
+b c:
+and using that δ is independent of Σ
+ 
+−1 
+h
+i
+−1  α2  
+> b
+b
+E tr Σc + λIp×p
+= α 2 E mΣ
+E δ Σc + λIp×p
+δ =
+b c (−λ)
+p
+38
+
+h
+i
+We now argue that E mΣ
+b c (−λ) → m(−λ), where m(−λ) is the Stieltb =
+jes transform of the limit ESD F of sample covariance matrices Σ
+−1 1/2 >
+1/2
+n Σ E EΣ , where E has i.i.d. entries of mean 0 and variance 1, and
+the spectrum of Σ converges to H. Indeed,
+from the Marchenko this follows
+
+Pastur theorem, given in Equation (3): E mΣ
+b (−λ) → m(−λ); in addition we
+need to argue that centering the covariance matrix does not change the limit.
+Since our centered covariance matrix differs from the usual centered sample
+covariance matrix, for completeness we state this result as a lemma below:
+b c be the centered and rescaled covariance matrix used in
+Lemma 7.7. Let Σ
+RDA. Then
+b c equals, with
+1. Under the conditions of Theorem 3.1, the limit ESD of Σ
+b =
+probability 1, the limit ESD F of sample covariance matrices Σ
+n−1 Σ1/2 V > V Σ1/2 , where V is n × p with i.i.d. entries of mean 0 and
+variance 1. Therefore centering the covariance does not change the limit.
+b c , m b (z) converges almost surely and in ex2. The Stieltjes transform of Σ
+Σc
+pectation to m(z), the Stieltjes transform of F . For each z ∈ C \ R+ ,
+mΣ
+b c (z) →a.s m(z); and EmΣ
+b c (z) → m(z).
+Proof of Lemma 7.7. Let ui be the centered data points, ui = xi − µ+1 for the
+positive training examples, and ui = xi −µ−1 for the negative training examples.
+The ui have mean 0 and covariance matrix Σ. Let further ν̂+1 = µ̂+1 − µ+1 be
+the centered mean of the positive training examples; and define ν̂−1 = µ̂−1 −µ−1
+analogously. We observe that
+
+
+X
+X
+1
+bc =
+
+(xi − µ̂+1 )(xi − µ̂+1 )> +
+(xi − µ̂−1 )(xi − µ̂−1 )> 
+Σ
+n − 2 i:y =1
+i:yi =−1
+i
+
+
+X
+1 X
+(ui − ν̂+1 )(ui − ν̂+1 )> +
+(ui − ν̂−1 )(ui − ν̂−1 )> 
+=
+n − 2 i:y =1
+i:yi =−1
+i
+
+
+X
+1 X
+n
+>
+> 
+=
+ui u>
+ui u>
+(ν̂+1 ν̂+1
++ ν̂−1 ν̂−1
+)
+i +
+i −
+n − 2 i:y =1
+2
+i:yi =−1
+i
+
+
+n
+1 1/2 >
+=
+Σ V P V Σ1/2 .
+n−2 n
+
+where V is the n × p matrix with each row equal to Σ−1/2 ui , which are i.i.d.
+Gaussian vectors with i.i.d. entries of mean 0 and variance 1. Also, P is the
+>
+projection matrix P = Ip×p −2n−1 (e+1 e>
++1 +e−1 e−1 ), where the vectors e±1 are
+the indicator vectors of the training examples with labels ±1. Recalling that
+
+39
+
+b = n−1 Σ1/2 V > V Σ1/2 is the uncentered, 1/n-normalized covariance matrix,
+Σ
+b and Σ
+b c is
+the difference between Σ
+
+
+1 1/2 >
+b −Σ
+b c = 1 Σ1/2 V > V Σ1/2 − n
+Σ
+Σ V P V Σ1/2
+n
+n−2 n
+1
+2
+Σ1/2 V > V Σ1/2 +
+Σ1/2 V > (Ip×p − P )V Σ1/2 = Γ1 + Γ2 .
+=
+n(n − 2)
+n−2
+It is easy to check that the two error terms Γ1 and Γ2 are small. Specifically,
+we can verify that the Frobenius norm kΓ1 k2Fr → 0. Therefore, By Corollary
+A.41 in Bai and Silverstein (2010) it follows that Γ1 can be ignored when computing the limit ESD. Further, Ip×p − P is of rank at most two by the definition
+of P . Therefore, by Theorem A.44 in Bai and Silverstein (2010), Γ2 does not afb c has the same ESD
+fect the limit ESD. Putting these together, it follows that Σ
+b
+as Σ; the latter exists due to the Marchenko-Pastur theorem given in Equation
+b c converges, with probability 1, to F . This finishes
+(3). Therefore, the ESD of Σ
+the first claim in the Lemma.
+Claim 2 then follows immediately by the properties of weak convergence of
+probability measures, because the Stieltjes transform is a bounded continuous
+functional of a probability distribution.
+Therefore, going back to the proof of Lemma 7.3, we obtain using Lemma 7.7,
+h
+i
+
+−1
+b
+that E mΣ
+b c (−λ) → m(−λ). Now note that each eigenvalue of Σc + λIp×p
+b c , and the 4 + η-th mois uniformly bounded in [0, 1/λ], δ is independent of Σ
+√
+ment of pδi is uniformly bounded, so by the concentration of quadratic forms,
+Lemma 7.6:
+ 
+
+−1
+−1 
+b c + λIp×p
+b c + λIp×p
+δ> Σ
+δ − E δ> Σ
+δ →a.s. 0.
+Putting everything together, we have shown that the first term converges
+almost surely to α2 m(−λ).
+The second term in (26) converges to zero:
+Using the decomposition (21) from the proof of Lemma 7.1 in Section 7.1.1, and the nota
+−1
+
+−1 
+
+b c + λIp×p
+b c + λIp×p
+tion L = Σ
+we can write ε2 := δ > Σ
+δ̂ − δ =
+√1 δ > LΣ1/2 Z.
+n
+
+This has the same distribution as T3 = n−1/2 δ > LΣ1/2 W , because Z, W
+b c . In Lemma 7.1, we showed
+are identically distributed, independently of δ, Σ
+T3 →a.s. 0, so ε2 →a.s. 0.
+7.1.4
+
+Proof of Lemma 7.4
+
+In this proof it will be helpful to use some properties of smooth complex functions. Let D be a domain, i.e. a connected open set of C. A function f : D → C
+40
+
+is called analytic on D if it is differentiable as a function of the complex variable z on D. The following key theorem, sometimes known as Vitali’s theorem,
+ensures that the derivatives of converging analytic functions also converge.
+Lemma 7.8 (see Lemma 2.14 in Bai and Silverstein (2010)). Let f1 , f2 , . . . be
+analytic on the domain D, satisfying |fn (z)| ≤ M for every n and z in D.
+Suppose that there is an analytic function f on D such that fn (z) → f (z) for
+all z ∈ D. Then it also holds that fn0 (z) → f 0 (z) for all z ∈ D.
+We can now prove Lemma 7.4.
+Proof of Lemma 7.4. We need to prove the convergence of Ã = δ > M δ,
+
+−1 
+−1
+b c + λIp×p
+b c + λIp×p
+where M =
+Σ
+Σ Σ
+.
+Using the assumption
+h i
+b c are indpendent, we get E Ã
+Eδi δj = δij α2 /p, and that δ, Σ
+=
+  
+
+
+−2
+α2
+b
+.
+p E tr Σ Σc + λIp×p
+Now, the eigenvalues of Σ are bounded above by B, and those of
+−1
+b
+Σc + λIp×p
+are bounded above by 1/λ; this shows the eigenvalues of L
+are uniformly bounded above. Further, δ, L are independent, and δ has 4 + η-th
+moments, so wehcan
+i use the concentration of quadratic forms,
+h iLemma 7.6, to
+conclude Ã − E Ã →a.s. 0. It remains to get the limit of E Ã .
+To do this we use a derivative trick; this technique is similar to those employed in a similar context by El Karoui and Kösters (2011); Rubio et al. (2012);
+Zhang et al. (2013). We will
+a function with two properties: (1) its
+i
+h construct
+
+
+derivative is the quantity E Ã that we want, and (2) its limit is convenient to
+obtain. Basedhoni these two properties, Vitali’s theorem will allow us to obtain
+the limit of E Ã .
+Accordingly, consider two general p × ppositive definite matrices
+D, E and
+
+−1
+1
+introduce the function fp (λ; D, E) = p tr D (E + λIp×p )
+. Note that the
+
+
+−2
+1
+derivative of f with respect to λ is fp0 (λ; D, E) = − p tr D (E + λIp×p )
+.
+This suggests that the function we should use in
+trick iis
+h the
+i derivative
+h
+0
+b
+b c) .
+fp (λ; Σ, Σc ); indeed the limit we want to compute is E Ã = −E fp (λ; Σ, Σ
+Conveniently, the limit of fp is known by the Ledoit-Peche result (5):
+
+
+1
+b c ) →a.s. κ(λ) = 1
+fp (λ; Σ, Σ
+−1 ,
+γ λv(−λ)
+for all λ ∈ S := {u + iv : v 6= 0, or v = 0, u > 0}.
+Next we check the conditions for applying Vitali’s theorem, Lemma 7.8.
+b c ) is an analytic function of λ on S with
+By inspection, the function fp (λ; Σ, Σ
+derivative
+∂κ
+v − λv 0
+= κ0 (λ) = −
+.
+∂λ
+γ(λv)2
+
+41
+
+b c ) is bounded in absolute value: |fp (λ; Σ, Σ
+b c )| ≤
+Furthermore, fp (λ; Σ, Σ
+kΣk2
+≤B
+λ
+λ.
+
+b is a bounded sequence. Therefore, we can apply
+This shows that fp (λ; Σ, Σ)
+Lemma 7.8 to the sequence of analytic functions fp on the domain S, on the set
+of full measure on which fp converges, to obtain that the derivatives also conb →a.s. κ0 (λ). Finally, since the functions fp are bounded,
+verge on S: fp0 (λ; Σ, Σ)
+b → κ0 (λ). Since
+the dominated convergence theorem implies that Efp0 (λ; Σ, Σ)
+h i
+h
+i
+h i
+b c ) , this shows that E Ã → −α2 κ0 (λ), as required.
+E Ã = −E fp0 (λ; Σ, Σ
+h i
+Finally, to see that the limit of E Ã > 0, we use that by assumption
+bc =
+the eigenvalues of Σ are lower bounded by some b > 0, and those of Σ
+n−1 Σ1/2 V > P V Σ1/2 are upper bounded by B n−1 kV > V k2 , hence
+−2 
+h i α2   
+α2 b
+b c + λIp×p
+E tr Σ Σ
+.
+E Ã =
+≥
+−1
+p
+B n kV > V k2
+Since V has i.i.d. standard normal entries, it is well known that the operator
+norm of n−1 kV > V k2 is bounded above almost surely (see Theorem 5.8 in (Bai
+and Silverstein, 2010), which
+h i requires only a fourth moment on the entries of
+V ). Therefore, lim inf p E Ã ≥ c > 0 for some fixed constant c > 0.
+
+7.1.5
+
+Proof of Lemma 7.5
+
+
+> 
+
+We want to find the limit of C̃ = δ̂ − δ M δ̂ − δ , where M =
+
+−1 
+−1
+b c + λIp×p
+b c + λIp×p
+Σ
+Σ Σ
+. By the decomposition (21) we have δ̂ − δ =
+n−1/2 Σ1/2 Z, so C̃ = n1 Z > Σ1/2 M Σh1/2iZ. Since Z ∼ N (0, Ip ) independently of
+
+
+b c (and thus of M ), we can write E C̃ = 1 tr Σ1/2 M Σ1/2 = γ tr Q2 , where
+Σ
+λ
+n
+p
+−1
+h i
+
+b c + λI
+. By the concentration lemma 7.6, C̃ − E C̃ →a.s. 0, so
+Qλ := Σ Σ
+
+all that remains is to find the limit of x0 = p−1 tr Q2λ .
+Lemma 1 in Hachem et al. (2008) states that, under the assumptions of
+Theorem 3.1, one has Var [x0 ] = O(1/n2 ), and also E [x0 ] = L + O(1/n2 ) for a
+certain deterministic quantity L. These results imply that x0 →a.s. L. However,
+the form of the limit L given in that paper is not convenient for our purposes.
+A convenient form for the limit is obtained in Chen et al. (2011). Their
+convergence result holds in probability, which is weaker than what we need;
+this explains why we also need the results of Hachem et al. (2008). Chen et al.
+(2011) consider sequences of problems of the form vi ∼iid N (µp , Σp ), where Σp
+is a sequence of covariance matrices that obeys the same conditions we assumed
+in the statement of Theorem 3.1, and the µp are arbitrary fixed vectors. They
+−1 Pn
+>
+form the sample covariance matrix Sn = (n − 1)
+i=1 (vi − v̄)(vi − v̄) , where
+
+42
+
+Pn
+v̄ = n−1 i=1 vi . In√addition to the above conditions, they also assume the
+additional condition n|p/n − γ| → 0. Then their result states:
+Lemma 7.9 (Lemma 2 of Chen et al. (2011), pp 1357). Under the above conditions, we have the convergence in probability
+h
+i2 
+1
+−1
+tr Σp (Sn + λI)
+→p Θ2 (λ, γ),
+p
+where Θ2 (λ, γ) is defined in the statement of Theorem 1 of Chen et al. (2011),
+on pp 1348
+Θ2 (λ, γ) =
+
+m(−λ) − λm0 (−λ)
+1 − λm(−λ)
+−
+λ
+.
+(1 − γ + γλm(−λ))3
+(1 − γ + γλm(−λ))4
+
+Lemma 7.9 is stated for the usual centered covariance matrix Sn . In Lemma
+b c = (n − 2)−1 Σ1/2 V > P V Σ1/2 , where
+7.5, the covariance matrix of interest is Σ
+>
+P is the projection matrix P = Ip×p − 2n−1 (e+1 e>
++1 + e−1 e−1 ). Similarly to
+what we already argued several times in this paper (e.g. in Lemma 7.7), the
+two covariance matrices have identical limit ESD. Therefore Lemma 7.9 applies
+to our setting. Combining this with Lemma 1 in Hachem et al. (2008), we have
+the convergence:
+!
+ 
+−1 2
+1
+b c + λI
+tr Σ Σ
+→a.s. Θ2 (λ, γ).
+p
+Next, we notice by the definition of v in (4) that 1 − γ + γλm(−λ) = λv(λ),
+as well as 1 − λm(−λ) = γ −1 (1 − λv(−λ)); and by taking derivatives m(−λ) −
+λm0 (−λ) = γ −1 (v(−λ) − λv 0 (−λ)). We rewrite the limit Θ2 in terms of v:
+Θ2 (λ, γ) =
+
+1 − λv
+v − λv 0
+v0 − v2
+−λ
+=
+.
+3
+4
+γ(λv)
+γ(λv)
+γλ2 v 4
+
+Therefore, the limit of C̃ equals γΘ2 , as stated in Lemma 7.5.
+7.1.6
+
+Proof of Lemma 7.6
+
+We will use the following Trace Lemma quoted from Bai and Silverstein (2010).
+Lemma 7.10 (Trace Lemma, Lemma B.26 of Bai and Silverstein (2010)). Let
+y be a p-dimensional
+random vector of i.i.d. elements with mean 0. Suppose
+
+that E yi2 = 1, and let Ap be a fixed p × p matrix. Then
+n  
+h i
+o
+
+
+q/2
+q/2
+E |y > Ap y − tr Ap |q ≤ Cq E y14 tr[Ap A>
++ E y12q tr[(Ap A>
+] ,
+p]
+p)
+for some constant Cq that only depends on q.
+43
+
+Under the conditions of Lemma 7.6, the operator norms kAp k2 are bounded
+q/2
+2
+by a constant C, thus tr[(Ap A>
+] ≤ pC q and tr[Ap A>
+p)
+p ] ≤ pC . Consider
+now a random vector x with the properties
+in the present lemma. For
+h assumed
+i
+√
+2q
+y = px/σ and q = 2+η/2, using that E yi ≤ C and the other the conditions
+in Lemma 7.6, Lemma 7.10 thus yields
+
+
+n
+o
+q/2
+pq
+σ2
+q
+>
+q
+E
+|x
+A
+x
+−
+tr
+A
+|
+≤ C pC 2
++ (pC) ,
+p
+p
+2q
+σ
+p
+i
+h
+2
+or equivalently E |x> Ap x − σp tr Ap |2+η ≤ Cp−(1+η/4) . Since this bound
+is summable in p, Markov’s inequality applied to the 2 + η-th moment of
+2
+εp = x> Ap x − σp tr Ap and the Borel-Cantelli lemma yield the almost sure
+convergence εp →a.s. 0.
+
+7.2
+
+Proof of Theorem 3.2: Unequal sampling
+
+This proof is very similar to that of Theorem 3.1, so we will omit some details.
+Suppose that the classes have unequal probabilities P(yi = +1) = π+ , P(yi =
+−1) = π− , and the conditional model x|y ∼ N (µy , Σ) holds. The Bayes optimal
+classifier is sign(f (x)), where f (x) = (x − (µ+1 + µ−1 )/2)> Σ−1 (µ+1 − µ−1 ) +
+log(π+ /π− ). Using the same notation as before, f (x) equals f (x) = x> Σ−1 δ −
+µ̄> Σ−1 δ + log(π+ /π− ). The error rate of a generic linear classifier sign(x> w + b)
+conditional on w, b equals (16).
+We observe n+1 samples with label yi = 1, and n−1 samples with label
+yi = −1. We consider a general regularized classifier sign(fˆλ (x)), where fˆλ (x) =
+b c + λIp×p )−1 δ̂, b̂ = −µ̂> ŵλ + c.
+x> ŵλ + b̂, and ŵλ = (Σ
+As usual, we have δ̂ = (µ̂+1 − µ̂−1 )/2, µ̂ = (µ̂+1 + µ̂−1 )/2 and µ̂±1 =
+P
+b
+{i:yi =±1} xi /n±1 . The centered sample covariance matrix Σc retains its original definition.
+We evaluate the limits of the linear and quadratic forms in the error rate,
+arising when we replace w and b by ŵ and b̂, respectively. We assume that
+the same regularity conditions as in Theorem 3.1 hold, with the additional
+requirement that the ratios p/n±1 each converge to positive constants: p/n±1 →
+γ±1 > 0. For two independent p-dimensional standard normal random variables
+Z±1 , which are also independent of δ, µ̄, we have the stochastic representation
+1
+µ̂ = µ̄ + Σ1/2
+2
+
+Z1
+1/2
+
+n1
+
++
+
+Z2
+1/2
+
+n2
+
+!
+
+1
+, δ̂ = δ + Σ1/2
+2
+
+Z1
+1/2
+
+n1
+
+−
+
+Z2
+1/2
+
+!
+.
+
+n2
+
+The limit of b̂ = −µ̂> ŵλ + c: To evaluate this limit, we expand the inner
+product −µ̂> ŵλ using the stochastic representation of δ̂. As in the proof of
+Theorem 3.1, most terms in the expansion tend to 0 due to independence.
+Denote by An ≈ Bn that two random variables are asymptotically almost surely
+
+44
+
+equivalent, i.e. |An − Bn | →a.s. 0. We have by arguments similar to those in
+Theorem 3.1 that
+1
+b c + λIp×p )−1 Σ1/2 Z−1 − 1 Z > Σ1/2 (Σ
+b c + λIp×p )−1 Σ1/2 Z1
+−µ̂> ŵλ ≈
+Z > Σ1/2 (Σ
+4n−1 −1
+4n1 1
+  
+
+−1 
+1
+1
+b + λIp×p
+−
+tr Σ Σ
+≈
+4n−1
+4n1
+γ−1 − γ+1
+≈
+κ(λ).
+4
+>
+> b
+−1
+The limit of µ>
+δ̂, and
+±1 ŵλ : We write µ1 ŵλ = (µ̄ + δ) (Σc + λIp×p )
+>
+> b
+−1
+2
+>
+2
+µ1 ŵλ ≈ δ (Σc + λIp×p ) δ ≈ α m(−λ). Similarly µ−1 ŵλ ≈ −α m(−λ).
+The limit of ŵλ> Σŵλ : On expanding this expression using the stochastic
+bc +
+representation, the cross-terms vanish asymptotically. Denoting M = (Σ
+−1
+−1
+b
+λIp×p ) Σ(Σc + λIp×p ) , we obtain
+1 >
+1
+>
+Z−1
+M Z−1 +
+Z M Z1
+ŵλ> Σŵλ ≈ δ > Σ1/2 M Σ1/2 δ +
+4n−1
+4n1 1
+
+
+1
+1
+α2
+tr(ΣM ) +
++
+tr(M )
+≈
+p
+4n−1
+4n1
+γ−1 + γ+1 v 0 − v 2
+v − λv 0
++
+.
+≈ α2
+γ(λv)2
+4
+λ2 v 4
+Let us denote by Q the limit obtained.
+Putting everything together:
+Using the above formulas, we see that as
+
+claimed in Eq. 11, Err0 ŵλ , b̂ →a.s. U :
+!
+!
++1
++1
+−α2 m(−λ) + γ−1 −γ
+κ(λ) + c
+α2 m(−λ) + γ−1 −γ
+κ(λ) + c
+4
+4
+√
+√
+U = π− Φ
++ π+ Φ −
+.
+Q
+Q
+
+7.3
+
+Proof of Corollary 3.3
+
+From Theorem
+3.1, the limit error rate is Φ(−Θ), where Θ =
+p
+α2 m(−λ)/ α2 r(λ) + γq(λ), and
+!
+ 
+ 
+−2 
+−1 2
+1
+1
+b
+b
+r(λ) = lim E tr Σ Σc + λI
+; q(λ) = lim E tr Σ Σc + λI
+.
+p→∞ p
+p→∞ p
+ Since
+Σ = Ip×p, we
+have r(λ) = q(λ), and both are equal to the limit of
+−2
+1
+b c + λI
+E p tr Σ
+. Analogously to the proof of Lemma 7.5, this limit
+2
+
+equals m0I (−λ; γ). Therefore Θ simplifies to √ α2
+
+α +γ
+
+√mI (−λ;γ)
+.
+0
+mI (−λ;γ)
+
+The quantity m0I (−λ; γ) can be expressed in terms of mI by differentiating
+the Marchenko-Pastur equation: mI (z; γ) = 1/(1 − z − γ − γzmI (z; γ)). We get
+m0 = m2 (1 + γm)/(1 − γzm2 ), which leads to the claimed expression for Θ. For
+γ = 1 we get the required formula from Eq. (7) after some calculations.
+45
+
+7.4
+
+Note on the Ledoit-Peche result (5)
+
+Ledoit and Péché (2011) prove (5) in their Lemma 2. Our notation differs from
+b here
+theirs: γ here is equal to their γ −1 (because the role of n, p is reversed); Σ
+is SN , and −λ here corresponds to z. Their limit is given in terms of m, but
+simplifies to
+
+
+1 − λm(−λ)
+1
+1
+κ(λ) =
+=
+−1 .
+1 − γ(1 − λm(−λ))
+γ λv(−λ)
+Their theorem requires a finite 12th moment on Σ−1/2 xi , which holds in our
+case. Their results are stated for uncentered covariance matrices, but it is well
+b so
+known that centering does not affect limit of the eigenvalue distribution of Σ,
+the result still holds (see, e.g., p. 39 of Bai and Silverstein, 2010). Furthermore,
+the normalization factor 1/n in front of the covariance matrix can be replaced
+by 1/(n − 2), as needed by Regularized Discriminant Analysis. This follows by
+standard perturbation inequalities in the Frobenius norm (see Corollary A.42 in
+Bai and Silverstein, 2010). The calculation is fleshed out in detail in the proof
+of Lemma 7.5. Finally, their convergence is stated for z ∈ C+ , but by standard
+arguments it can be extended to real z < 0.
+
+7.5
+
+Proof of Theorem 3.5
+
+We will use the representation of the margin from theorem 3.1. To evaluate
+the necessary limits, it is helpful to represent the Stieltjes transforms and their
+derivatives as expectations with respect to the ESD. Thus, let Y be a random
+variable distributed according to the ESD F , and let Y be a random variable
+distribued according to the companion ESD F . Then m, v are the Stieltjes
+transforms of Y, Y , respectively. Hence
+
+
+
+
+
+
+1
+1
+Y
+0
+, m0 (−λ) = E
+,
+m(−λ)−λm
+(−λ)
+=
+E
+.
+m(−λ) = E
+Y +λ
+(Y + λ)2
+(Y + λ)2
+(27)
+i
+h
+Further λv(−λ) = 1 + γ (λm(−λ) − 1), so λv(−λ) = 1 − γE Y Y+λ .
+The error rate of LDA: As explained in Section 6.3, for γ < 1, Y is supported on a compact set bounded away from 0, so Y > c > 0 for some c. This
+will allow us to take the limits as λ ↓ 0 inside the expectation, using the dominated convergence theorem;
+equation (27), we
+ −1we
+ will not repeat this 0fact. Using
+−1
+have limλ↓0 m(−λ)
+=
+E
+Y
+,
+lim
+[v(−λ)
+−
+λv
+(−λ)]γ
+=
+limλ↓0 m(−λ) −
+λ↓0
+
+
+λm0 (−λ) = E Y −1 , and by the formula for λv, limλ↓0 λv(−λ) = 1 − γ (which
+was already shown in Section 6.3).
+Differentiating the formula for
+ the companion Stieltjes transform, we see
+λ2 v 0 (−λ) = 1 + γ λ2 m0 (−λ) − 1 . Hence,
+
+
+
+limλ↓0 1 + γ λ2 m0 (−λ) − 1
+1 + γ λ2 m0 (−λ) − 1
+1
+v 0 (−λ)
+lim 2
+= lim
+=
+=
+,
+2
+2
+2
+λ↓0 v (−λ)
+λ↓0
+λ v (−λ)
+(1 − γ)
+1−γ
+46
+
+where we have used that limλ↓0 λ2 m0 (−λ) = limλ↓0 E
+
+h
+
+λ2
+(Y +λ)2
+
+i
+
+= 0. We con-
+
+clude that limλ↓0 v 0 (−λ)/v 2 (−λ) − 1 = γ/(1 − γ). Putting everything together,
+we find
+
+
+α2 E Y −1 (1 − γ)
+α2 τ
+.
+ΘLDA = lim p
+=q
+γ
+λ↓0
+α2 η + θ
+α2 E [Y −1 ] + 1−γ
+Let T be a random variable distributed according to the PSD H. By taking
+the limit as z → 0, z ∈ C+ in the Marchenko-Pastur equation below, (the
+validity of the limit is justified by arguments similar to those in Section 6.3),
+Z ∞
+dH(t)
+m(z) =
+.
+t
+(1
+−
+γ
+−
+γzm (z)) − z
+t=0
+
+
+
+
+R 1
+dH(t), or equivalently E Y −1 = E T −1 /(1 − γ).
+we find m(0) = t(1−γ)
+This leads to the formula for ΘLDA .
+h
+i
+The error rate of IR: We have λm(−λ) = E Y λ+λ . As explained in
+Section 6.3, Y is a bounded random variable, so limλ→∞ λm(−λ) = 1. Similarly
+limλ→∞ λv(−λ) = 1. Next, we note
+"
+2 #
+λ
+2
+0
+lim λ [m(−λ) − λm (−λ)] = lim E
+Y = E [Y ] .
+λ→∞
+λ→∞
+Y +λ
+
+ 0
+Finally, we evaluate the limit of λ2 vv2(−λ)
+(−λ) − 1 . Noting that λv tends to
+1, it is enough to find the limit of λ4 (v 0 (−λ) − v 2 (−λ)). We compute
+2 #
+
+2
+λ
+λ
+−E
+=
+λ (v (−λ) − v (−λ)) = E
+Y +λ
+Y +λ
+"
+"
+2 # 
+
+2
+2 #
+
+2
+Y
+Y
+Y
+Y
+E
+1−
+− 1−E
+=E
+−E
+.
+Y +λ
+Y +λ
+Y +λ
+Y +λ
+2
+
+0
+
+"
+
+2
+
+Therefore,
+( "
+4
+
+0
+
+2
+
+lim λ (v (−λ) − v (−λ)) = lim
+
+λ→∞
+
+λ→∞
+
+E Y
+
+2
+
+
+
+λ
+Y +λ
+
+2 #
+
+
+−E Y
+
+λ
+Y +λ
+
+2 )
+
+ 
+2
+= E Y 2 − E [Y ] .
+F = γF + (1 − γ)δ0 , we can write E [Y ] = γE [Y ] and
+ Using
+ the relationship
+
+E Y 2 = γE Y 2 . Putting everything together, we find
+ΘIR = lim p
+λ→∞
+
+α2 τ λ
+α2 ηλ2 + θλ2
+
+=q
+
+α2
+
+.
+
+2
+α2 E [Y ] + γ(E [Y 2 ] − γE [Y ] )
+
+ 
+ 
+2
+Finally, it is known that E [Y ] = E [T ], E Y 2 = E T 2 + γE [T ] (see, e.g.,
+Lemma 2.16 in Yao et al. (2015)). This leads to the claimed formula.
+47
+
+7.6
+
+Proof of Corollary 3.6
+
+From Theorem 3.5, minimizing ΘLDA is equivalent to minimizing EH [T −1 ] for
+H ∈ H(k1 , k2 ). By Jensen’s inequality, EH [T −1 ] ≥ 1/EH [T ] = 1; with equality
+if H = δ1 . This shows the first claim.
+Again by Theorem 3.5, minimizing ΘIR over H ∈ H(k1 , k2 ) amounts to
+maximizing EH [T 2 ] over that class. For this, note that k1 ≤ T ≤ k2 for a random
+variable T distributed according to H ∈ H(k1 , k2 ). Therefore (T −k1 )(T −k2 ) ≤
+0, and taking expectations we get the upper bound
+EH [T 2 ] ≤ (k1 + k2 )EH [T ] − k1 k2 = k1 + k2 − k1 k2 .
+This upper bound is achieved for any H = w1 δk1 + w2 δk2 . It is now easy to
+check that there exists a unique set of weights wi such that a distribution of the
+above form has unit mean, so that it belongs to H(k1 , k2 ); and those are the
+weights given in the corollary.
+
+48
+
+

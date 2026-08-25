@@ -1,0 +1,2401 @@
+Spectral Deconfounding
+
+Spectral Deconfounding via Perturbed Sparse Linear Models
+Domagoj Ćevid
+
+cevid@stat.math.ethz.ch
+
+Seminar für Statistik
+ETH Zürich
+8092 Zürich, Switzerland
+
+arXiv:1811.05352v3 [stat.ME] 17 Aug 2020
+
+Peter Bühlmann
+
+peter.buehlmann@stat.math.ethz.ch
+
+Seminar für Statistik
+ETH Zürich
+8092 Zürich, Switzerland
+
+Nicolai Meinshausen
+
+meinshausen@stat.math.ethz.ch
+
+Seminar für Statistik
+ETH Zürich
+8092 Zürich, Switzerland
+
+Editor:
+
+Abstract
+Standard high-dimensional regression methods assume that the underlying coefficient vector
+is sparse. This might not be true in some cases, in particular in presence of hidden,
+confounding variables. Such hidden confounding can be represented as a high-dimensional
+linear model where the sparse coefficient vector is perturbed. For this model, we develop
+and investigate a class of methods that are based on running the Lasso on preprocessed
+data. The preprocessing step consists of applying certain spectral transformations that
+change the singular values of the design matrix. We show that, under some assumptions,
+one can achieve the usual Lasso `1 -error rate for estimating the underlying sparse coefficient
+vector, despite the presence of confounding. Our theory also covers the Lava estimator
+(Chernozhukov et al., 2017) for a special model class. The performance of the methodology
+is illustrated on simulated data and a genomic dataset.
+Keywords: confounding, data transformation, Lasso, latent variables, principal components
+
+1. Introduction
+Many datasets nowadays include measurements from many variables. The corresponding
+models are typically high-dimensional with many more parameters than the sample size.
+For statistical estimation and inference, there is a vast literature which assumes sparsity.
+For example, see the monographs by Bühlmann and van de Geer (2011), Giraud (2014) or
+Hastie et al. (2015).
+However, the performance of many high-dimensional regression methods might suffer
+in presence of unobserved confounding variables which affect both the predictors and the
+response. Confounding is a severe issue when interpreting regression parameters, often,
+but not necessarily, in connection with causal inference. A prime example are genetic
+studies where unobserved confounding can easily lead to spurious correlations and partial
+1
+
+Ćevid, Bühlmann and Meinshausen
+
+dependencies (Novembre et al., 2008). Even when one is concerned with only prediction, the
+causal parameter leads to predictive robustness against perturbations of the confounding
+variables.
+Adjusting for unobserved confounding variables is very important in practice and several
+deconfounding methods have been suggested for various settings (Gerard and Stephens, 2017;
+Leek and Storey, 2007; Gagnon-Bartsch and Speed, 2012; Wang and Blei, 2018; Paul et al.,
+2008). Often, the methods try to estimate the confounding variables directly from the data,
+usually by using some factor analysis technique. There are not many theoretical results
+justifying the methods, especially since some of them are quite complicated and therefore
+difficult to analyze.
+Our focus is on linear models. In absence of confounding variables, when the response
+is affected only by a small number of predictors, i.e. the coefficient vector is sparse, one
+can efficiently estimate the active set and the corresponding coefficients with the Lasso and
+related methods and thus achieve the minimax optimal `1 -norm estimation error rate, see,
+for example, Bickel et al. (2009) or the monographs by Bühlmann and van de Geer (2011)
+or Wainwright (2019). However, these methods are not adequate in presence of confounding
+in linear model, since in addition to just a few predictors that indeed affect the response,
+we have additional association of the response with many other predictors, as they contain
+information about the confounding variables.
+Some approaches for relaxing the sparsity assumption are (i) the notion of weak sparsity
+(Van de Geer, 2016), where the regression parameter β fulfills the condition that kβkq is
+small for some 0 < q < 1 or (ii) assuming the structure that the regression parameter can
+be represented as a sum of a sparse and a dense vector. The case (i) does not call for a
+new method or algorithm: in fact, the Lasso still exhibits optimal convergence rate if kβkq
+is sufficiently small (Van de Geer, 2016). On the other hand, case (ii) requires a different
+method such as, for example, Lava (Chernozhukov et al., 2017).
+Here we investigate how to deal with the confounding by analyzing the second case where
+the parameter is a sum of a sparse and a dense part. If many predictors are affected by the
+confounding variables, the true underlying regression vector will be changed by some small,
+dense perturbation. We propose left multiplying the response Y and the design matrix
+X consisting of the values of the predictors by a carefully chosen spectral transformation
+matrix F which transforms the singular values of X. The transformed response and design
+matrix can then be used as the input for a high-dimensional sparse regression technique:
+we consider the Lasso as a prime example. We investigate the theoretical properties and
+empirical performances for the class of spectral transformations. As a result, we conclude
+that certain spectral transformations that shrink the large singular values, such as the Trim
+transform which we introduce in this paper, perform well over a range of scenarios, pointing
+out also some advantages over other techniques and approaches.
+1.1 Relation to other work and our contribution
+For adjusting for the effect of unobserved confounding, the most prominent method
+in practice is to adjust for the top several principal components of the predictors, see
+for example (Novembre et al., 2008). Such PCA adjustment is also a special case of the
+FarmSelect estimator (Fan et al., 2020) for the linear model, which considers the problem
+2
+
+Spectral Deconfounding
+
+of high-dimensional variable selection where the latent variables cause the correlations of
+the predictors, but do not directly affect the response. PCA adjustment is a special case
+of a spectral transformation. Our presented theory explains when and why this method
+works well and proposes an alternative transformation, called Trim transform, which has an
+advantage that one does not need to estimate the number of principal components to adjust
+for.
+The Puffer transform, which maps all singular values to 1, has also been suggested for
+improving the variable selection properties of the Lasso for a sparse high-dimensional linear
+model (Jia et al., 2015). Our theory gives a more precise result about the Puffer transform
+for the estimation problem: the Trim transform is at least as good as Puffer transform and
+substantially better when the sample size is close to the number of predictors. In Shah and
+Meinshausen (2018), the Puffer transform in combination with bootstrap aggregation is
+used in order to estimate the covariance matrix in presence of confounding variables, a very
+different quantity than the precision matrix or regression coefficients.
+Chandrasekaran et al. (2012) address the problem of estimating the precision matrix in
+presence of a few hidden confounding variables. Then the observed precision matrix can
+be represented as a sum of the initial sparse precision matrix and a low-rank perturbation
+due to the confounding variables. Their model is similar to the one we consider, but the
+assumptions and the goals differ. We aim to estimate just the regression coefficients instead
+of the whole precision matrix and the method we propose is much simpler. Furthermore,
+the theoretical conclusions are substantially different: we establish the convergence rates in
+terms of the `1 -norm estimation error, while they consider support recovery and `∞ -norm
+bounds for the low-dimensional setting, assuming strong conditions. Also Fan et al. (2013)
+have considered low rank plus sparse problems from the viewpoint of factor models: their
+contribution provides a rich source of references from an area which is vaguely related to
+our current work.
+The Lava estimator (Chernozhukov et al., 2017) is the most similar to our Trim transform.
+The theory we develop, covering also the Lava, gives a result for the `1 -norm estimation
+error rate for the sparse coefficient vector. This goes well beyond the theory given by
+Chernozhukov et al. (2017) for justifying the original and interesting Lava method. There,
+the authors mostly consider the Gaussian sequence model but also provide general bounds
+for high-dimensional regression whose (e.g. asymptotic) behavior is not further analyzed
+in terms of restricted eigenvalues and the sparse and dense component of the underlying
+unknown parameter vector. Our presented theory exploits the specific structure of a hidden
+confounding model which provides a different motivation than the one in Chernozhukov
+et al. (2017), where no confounding was considered. In addition, our developments suggest a
+simple rule for the choice of the `2 -norm regularization parameter for the Lava estimator,
+leaving only the `1 -norm regularization parameter as the single parameter to be tuned by
+cross-validation.
+Our contribution can be seen as threefold. We describe a class of spectral transformations
+and propose a simple spectral transformation called Trim transform, which is perhaps slightly
+easier to use than the Lava or the PCA adjustment estimator. Furthermore, for the linear
+model where the underlying sparse parameter has been perturbed, we provide novel theory
+establishing for a certain class of spectral transformations a fast convergence rate for the
+`1 -norm estimation error of the true underlying sparse parameter. Finally, and as our
+3
+
+Ćevid, Bühlmann and Meinshausen
+
+primary goal, we use these results to show how the issue of hidden confounding can be
+addressed by using a wisely chosen spectral transformation, such as e.g. Trim transform,
+with the Lasso afterwards: we establish under certain assumptions the same convergence
+rate as the one of the Lasso for a linear model without confounding and illustrate the
+empirical performance of our method on simulated and real genomic data. Our method is
+entirely modular and can be used not only in conjunction with the Lasso, but also any other
+reasonable high-dimensional linear regression method.
+
+2. The models
+In this section we consider a linear model with additional confounding. We also introduce
+a perturbed linear model and show how it relates to the confounding model. Our theoretical
+results apply to the perturbed linear model as well and it is useful for better understanding
+of the confounding model.
+2.1 Confounding model
+Consider a standard (high-dimensional) linear model with n observations and p predictors
+X1 , . . . , Xp linearly affecting the response Y . Suppose further that q additional unobserved
+confounding variables linearly affect the response as well. The confounding variables are
+correlated with the predictors, introducing additional spurious correlations between the
+response and the predictors.
+The model for n i.i.d. observations is given by:
+Y = Xβ + Hδ + ν
+
+(2.1)
+
+where X ∈ Rn×p is the matrix of predictors and H ∈ Rn×q represents the hidden confounding
+variables, which exhibit correlation with X, i.e., Cov(H, X) 6= 0 (with a slight abuse of
+notation, we write Cov(H, X) as the covariance of any row of H and X). We assume
+that X and H have i.i.d. rows that are jointly Gaussian and that ν ∈ Rn is a vector of
+sub-Gaussian errors with mean zero and standard deviation σν , independent of X and
+H. The vectors β ∈ Rp and δ ∈ Rq are fixed coefficients; we additionally assume that
+β is sparse with exactly s non-zero components. Since the model does not change under
+the transformation H ← HCov(H)−1/2 , δ ← Cov(H)1/2 δ, we can assume without loss of
+generality that Cov(H) = Iq , i.e. the confounding variables are uncorrelated.
+Note that by L2 projection, X can also be written as
+X = HΓ + E,
+
+(2.2)
+
+where we choose Γ ∈ Rq×p such that Cov(H, E) = 0:
+Γ = Cov(H)−1 Cov(H, X) = Cov(H, X).
+The matrix Γ ∈ Rq×p describes the linear effect of confounding variables on X. The
+random term E ∈ Rn×p can be seen as the unconfounded design matrix; without confounding,
+i.e. when H = 0, it equals X. The columns of E are allowed to be correlated and we
+denote its covariance matrix by ΣE ; if the components of E are (weakly) uncorrelated,
+4
+
+Spectral Deconfounding
+
+X is generated from an (approximate) factor model (Anderson, 1958; Chamberlain and
+Rothschild, 1982). Here the hidden variables do not encode a factor structure for X alone,
+but also in addition generate confounding effects.
+A main example of the above model is a structural equation model (SEM)
+X ← HΓ + E,
+Y ← Xβ + Hδ + η
+and thus β is the direct causal effect of X on Y . In a standard SEM with no further hidden
+variables, the components of E would be assumed independent.
+We will show in Section 4 that one can recover the coefficient β if the confounding is
+dense in a certain sense, e.g. when the rows or columns of Γ = Cov(H, X) are realizations
+of independent and identically distributed random variables with mean zero.
+2.2 Perturbed linear model
+The confounding model (2.1) is related to the perturbed linear model
+Y = X(β + b) + ,
+
+(2.3)
+
+where the sparse coefficient vector β has been perturbed by the perturbation vector b ∈ Rp
+and  ∈ Rn is the vector of sub-Gaussian errors independent of X with standard deviation
+σ. Here we assume that the rows of X are i.i.d. sub-Gaussian vectors with mean zero and
+covariance matrix Σ = Cov(X).
+The relationship between models arises by rewriting (2.1) as
+Y = X(β + b) + (Hδ − Xb) + ν,
+where b satisfies that Cov(X, Hδ − Xb) = 0, i.e., Xb is the L2 -projection of Hδ onto X.
+This gives us the formula
+b = Cov(X)−1 Cov(X, H)δ
+−1
+= Cov(X, H)Cov(H)−1 Cov(H, X) + Cov(E)
+Cov(X, H)δ
+
+(2.4)
+
+The error is given by  = (Hδ − Xb) + ν, which by construction of b is uncorrelated
+with X and thus independent of X, because the rows of X and H are assumed to be
+jointly Gaussian in the confounding model. We require such independence (induced by joint
+Gaussianity) in the proof of Theorem 2, although  being uncorrelated with X might be
+sufficient. The variance of the error is given by
+σ 2 = Var(Hδ − Xb + ν) ≤ kδk22 + σν2 .
+One can think of Hδ − Xb as the part of the confounding that can not be explained
+by X and which just increases the variance of the additive error. Xb is the part of the
+confounding effect Hδ that is correlated with X and, as is well known, the bias b due to the
+confounding makes the estimation of β more difficult.
+5
+
+Ćevid, Bühlmann and Meinshausen
+
+In conclusion, the confounding model (2.1) can be thought of as a special case of the
+perturbed linear model (2.3), but with additional relationship between the design matrix X,
+the perturbation vector b, given by (2.4), and the additive error .
+The perturbed linear model is in general unidentifiable since we can only infer β + b
+from the data generating distribution. This makes the estimation of β impossible, unless
+b has a certain structure; we will be able to asymptotically retrieve the sparse coefficient
+vector β, by assuming, for example, that b converges to 0 in some norm. In Section 4, we
+investigate under which conditions we are able to infer the sparse part β and how efficiently
+in terms of statistical accuracy.
+It could be interesting to estimate the coefficient vector β + b rather than just β, but
+it is impossible to do in general in the high-dimensional case; even if we knew β exactly,
+estimating b would mean estimating p coefficients from n < p data points, which is impossible
+without additional assumptions about the structure of b.
+2.3 Relationship with the factor model literature
+Even though the confounding variables are hidden, we are able to infer some of their
+properties if they affect many of the observed predictors X. This is the essence of factor
+analysis, where a lot of interesting work has been done. If the latent factors H linearly
+affect the covariates, as it is the case in the confounding model (2.1), they can be estimated
+well (up to a rotation) from the principal components of the design matrix X = HΓ + E
+(Chamberlain and Rothschild, 1982; Bai, 2003), especially if one additionally imposes certain
+assumptions on the factor loadings Γ (Bing et al., 2017).
+There are several related models considered in the literature. In certain cases (Paul
+et al., 2008; Bing et al., 2019) we assume that only the latent factors affect the response and
+the observed covariates are only used to obtain information about the latent factors:
+Y = Hδ + ν,
+
+X = HΓ + E.
+
+In Bai and Ng (2006) one has an additional contribution of some other known low-dimensional
+covariates W :
+Y = W β + Hδ + ν,
+X = HΓ + E.
+Another line of work assumes that the latent factors do not directly affect the response:
+Y = Xβ + ν,
+
+X = HΓ + E,
+
+but that they only cause the predictors to be correlated (Huang and Jojic, 2011; Fan et al.,
+2020). Such correlation makes the analysis much more difficult, especially for the problem
+of variable selection, and one can use the factor analysis to address this issue.
+In this paper we allow the latent confounders to affect both the predictors and the
+response and focus on the estimation of the sparse coefficient vector β, which has a causal
+interpretation as it describes the direct effect of the predictors on the response. The key
+difficulty is to handle the bias b in the observational data caused by the latent confounders.
+The assumption of dense confounding, expressed in detail in Section 4, is related to the
+spiked covariance assumptions common in the factor analysis literature (Paul et al., 2008;
+Bai, 2003). It is used to make conclusions about the structure of the coefficient perturbation
+b rather than about the factor identifiability. We avoid estimating the factor variables
+directly, but instead we adjust for them implicitly, by transforming the singular values of X.
+6
+
+Spectral Deconfounding
+
+3. Methodology
+In the following, we propose and motivate some methods based on a class of spectral
+transformations.
+3.1 Spectral transformations
+Let X = U DV T be the singular value decomposition of X, where U ∈ Rn×r , D ∈
+∈ Rp×r , where r = min(n, p) is the rank of X. We write d1 ≥ d2 ≥ . . . ≥ dr for
+the diagonal elements of D. We use the truncated form of SVD, which uses only non-zero
+singular values.
+The idea is to first transform our data by applying some specific linear transformation
+F : Rn → Rn and then perform the Lasso algorithm:
+Rr×r , V
+
+X → X̃ := F X
+Y → Ỹ := F Y
+
+
+1
+2
+β̂ = arg min
+kỸ − X̃βk2 + λkβk1 .
+n
+β
+
+(3.1)
+
+We restrict our attention to the class of spectral transformations, which transform the
+singular values of X, while keeping its singular vectors intact. Let D̃ be an arbitrary r × r
+diagonal matrix with diagonal elements d˜1 , . . . , d˜r . Our spectral transformation matrix is
+given by
+˜
+
+d1 /d1
+0
+...
+0
+ 0
+d˜2 /d2 . . .
+0 
+ T
+
+(3.2)
+F =U .
+..  U
+..
+..
+ ..
+.
+.
+. 
+0
+0
+. . . d˜r /dr
+and then we have
+X̃ = F X = U D̃V T
+In this paper we explore the question of what is a good choice of F for the estimation
+of β. In general, the Lasso performs best when the predictors are uncorrelated and when
+the errors are independent. Therefore, a good choice of F needs to find a good balance
+between a well behaved error term ˜ = F , well behaved design matrix X̃ and well behaved
+perturbation term X̃b.
+One such transformation is the Trim transform which limits all singular values to be
+at most some constant τ :
+d˜i = min(di , τ ).
+(3.3)
+We show in Section 4 that it can, under some assumptions, achieve the same `1 -norm error
+rate for the estimation of the unknown sparse coefficient vector β as the Lasso in the case of
+no confounding. We also show that the median singular value is a good choice of τ :
+τ = dbr/2c
+7
+
+Ćevid, Bühlmann and Meinshausen
+
+3.2 Existing methods and motivation
+We discuss some existing methods which are related to the spectral transformation
+method described above and provide further explanations and relationships between them.
+We also present intuitive explanation why our suggested method should work well against
+dense confounding.
+3.2.1 Examples of spectral transformations
+Several existing methods consist of first transforming the data with a certain matrix
+F (some of which fall into class of spectral transformations (3.2)), and then using some
+regression method, such as the Lasso.
+Lava One such example is the Lava estimator (Chernozhukov et al., 2017), designed for
+the linear model where the coefficient vector can be written as a sum of a dense and a sparse
+vector. It is originally given by (with a slight change of notation)
+
+
+1
+2
+2
+(β̂, b̂) = arg min
+kY − X(β + b)k2 + λ2 kbk2 + λ1 kβk1 ,
+n
+β,b
+which can be seen as a combination of Lasso and Ridge regression. It is shown in Chernozhukov et al. (2017) that the solution of this optimization problem is given by
+F = (Ip − X(X T X + nλ2 Ip )−1 X T )1/2 ,
+
+
+1
+2
+β̂ = arg min
+kỸ − X̃βk2 + λ1 kβk1 ,
+n
+β
+b̂ = (X T X + nλ2 Ip )−1 X T (Y − X β̂).
+From here, one can see that the estimator of the sparse part is just a Lasso estimator applied
+to the transformed data, where
+s
+nλ2 d2i
+d˜i =
+.
+nλ2 + d2i
+This transformation is visualized in Figure 4.1.
+Puffer transform Another example is the Puffer transform introduced in Jia et al. (2015),
+which uses the Lasso after mapping all non-zero singular values di to a constant d˜i = 1. The
+algorithm is analyzed as a preconditioning method for the variable selection problem without
+any coefficient perturbation. This transformation decreases the correlations between the
+columns of the design matrix, but it can inflate the errors, especially when p is close to n. It
+can also be thought of as a special case of the Lava transformation in the case when λ2 → 0,
+ei
+since then √dnλ
+→ 1 (the denominator here is just a scaling factor). The transformation is
+2
+displayed in Figure 4.1.
+PCA adjustment Another example of a spectral transformation is given by PCA-based
+methods for adjusting for hidden confounders (Novembre and Stephens, 2008; Fan et al.,
+2020; Bai, 2003). In the confounding model (2.1), the effect of confounding variables will
+approximately lie in the span of the first few principal components of X (see Figure 3.1).
+8
+
+Spectral Deconfounding
+
+One adjusts for a first few principal components from the columns of the design matrix X
+before further analysis in hope of removing the effect of the confounding variables (Paul et al.,
+2008; Huang and Jojic, 2011). This procedure is in fact analogous to applying a spectral
+transformation, where the matrix D̃ is obtained from D by mapping the first several singular
+values to 0. See also Figure 4.1 for an illustration. The slight difficulty with this approach is
+knowing exactly the number of principal components to remove. Asymptotically, this can
+be done with high probability (Bai, 2003) under certain assumptions on the separation of
+the singular values. However, for finite samples or if there is a slight model misspecification,
+it might not be that easy to estimate q, see e.g. our real data genomic dataset in Figure 5.6.
+3.2.2 Some intuition
+Since our method (3.1) is invariant under transformation F → cF , for arbitrary constant
+c ∈ R, we can assume without loss of generality that the singular values of F are at most
+1, i.e. the transformation F shrinks all vectors, with different shrinkage in directions of its
+singular vectors. Ideally, we would like to shrink in a way such that the perturbation term
+X̃b becomes much smaller compared to the signal X̃β.
+Trim transform has the highest shrinkage along directions of the singular vectors corresponding to large singular values. The more b is aligned with the first few singular vectors
+of X (those corresponding to large singular values), the larger kXbk2 will be. Therefore,
+shrinking those large singular values ensures that kX̃bk stays small regardless of the direction
+b is pointing to. It is especially the case in the confounding model that b approximately lies
+in the span of the first few singular vectors (see Figure 3.1).
+
+Figure 3.1: Size of the projection of b onto Vi for different i, for a random dataset drawn
+from the confounding model with q = 10 confounding variables, as described in
+Section 5.1.1. We see that the projections of b onto the first 10 singular values
+are substantially larger than the rest.
+As can be seen from definition of b, Xb is the part of the confounding effect Hδ which is
+√
+correlated with X. Therefore, kXbk2 can be just as large as kHδk2 = O( nkδk2 ). However,
+9
+
+Ćevid, Bühlmann and Meinshausen
+
+after applying the Trim transform we have that
+
+
+s
+2
+kδk2 
+√
+= O(kδk2 ),
+kX̃bk2 ≤ λmax (X̃)kbk2 = O  p ×
+p
+which is substantially smaller than before. λmax (X̃) is the largest singular value of X̃,
+√
+which will be shown in Lemma 2 to be of order p for the Trim transform and we have
+q
+
+kbk2 = O kδk22 /p under certain model assumptions by Lemma 1.
+On the other hand, the signal Xβ lies in the span of a sparse set of predictors. Therefore,
+the signal X̃β will be approximately of the same size as the signal Xβ before transformation,
+unless β is aligned with the large singular vectors, which are shrunk the most. This is very
+unlikely if they are sufficiently random. This is illustrated in Figure 3.2. Therefore, by
+shrinking large singular values, kXbk2 will decrease much more compared to kXβk2 .
+
+Figure 3.2: Visualisation of the relationship between the perturbation b, signal β and singular
+vectors of X. In the confounding model b will be much more aligned with the
+singular vectors corresponding to large singular values than β.
+
+4. Theoretical Results
+In this section we analyse the behaviour of the `1 -estimation error for the sparse coefficient
+β for an arbitrary spectral transformation F . We derive results for the perturbed linear
+model (2.3) and relate them to the confounding model (2.1) by using the relationship between
+them.
+We show that if our spectral transformation fulfils certain criteria, and the confounding
+is dense in the sense that every confounding variable affects many predictors, we achieve in
+the high-dimensional case the same `1 -error rate as the Lasso in the case when we have no
+confounding, despite the presence of the coefficient perturbation caused by the confounding
+variables. Furthermore, in Section 4.4, we discuss specific choices of spectral transformations
+10
+
+Spectral Deconfounding
+
+and verify that the Trim transform (3.3), as well as Lava and PCA adjustment, can be used
+in order to achieve this error rate.
+We assume first for simplicity that we are in the high-dimensional case, where p ≥ n.
+However, the theory developed in this section also holds for the case n > p with small
+adjustments. We discuss the case n > p in more details in Section 4.5.
+4.1 Notation
+√
+
+φM :=
+
+αT M α
+,
+kαk1 ≤5kαS k1 √1 kαS k1
+s
+inf
+
+where S is the support set of β, s is the size of S and αS is a vector consisting only of the
+components of α which are in S.
+Let us also write Σ̃ := n1 X̃ T X̃, and Σ̂ := n1 X T X. We denote the k-th largest diagonal
+element of the transformed singular values D̃ by d˜(k) . We denote the the largest, the smallest
+and i-th (non-zero) singular value of any rectangular matrix A by λmax (A), λmin (A) and
+(A)
+λi (A) respectively. The condition number is defined as cond(A) = λλmax
+.
+min (A)
+Finally, we use the notation A = Ω(B) if B
+A = O(1), i.e. if A has asymptotically at least
+the same rate as B and A  B if A and B have asymptotically the same rate. A = Op (B)
+means that there exists a constant c > 0 such that P(A > cB) → 0 and Ωp is defined
+analogously.
+4.2 Main result for the confounding model
+We present here the main result for the confounding model (2.1), which we derive below
+by considering the relationship with the corresponding perturbed linear model, as described
+in Section 2.
+Theorem 1 Consider the model in (2.1) with maxi Σii = O(1) and cond(ΣE ) = O(1) and
+suppose that λmin (Σ) is bounded away from zero. Assume that the model satisfies
+√
+(A1) λmin (Γ) = λmin (Cov(X, H)) = Ω( p).
+Assume additionally that a spectral transformation F in (3.1) with λmax (F ) = 1 satisfies
+√
+(A2) λmax (X̃) = Op ( p)
+(A3) φ2Σ̃ = Ωp (λmin (Σ)).
+Then for the penalty level λ  σ
+error has the following rate:
+
+q
+
+log p
+n , despite the confounding variables, the `1 -estimation
+
+kβ̂ − βk1 = Op
+
+σs
+λmin (Σ)
+
+r
+
+log p
+n
+
+!
+.
+
+The assumption (A1) means that the confounding is dense in the sense that each
+√
+confounding variable is correlated with many predictors: The condition λmin (Γ) = Ωp ( p)
+11
+
+Ćevid, Bühlmann and Meinshausen
+
+is satisfied, for example, if pq → 0 and Γ is drawn at random with either rows or columns
+of Γ being independent, identically distributed sub-Gaussian random vectors, as shown in
+Lemma 1.
+We also show in Section 4.4 that certain choices of the spectral transformation, such
+as the Trim transform (3.3) with τ = dbtnc , where t ∈ (0, 1) is an arbitrary constant, or
+the PCA adjustment, which maps first several singular values to zero, satisfy with high
+probability the conditions (A2) and (A3) in the high-dimensional setting under certain
+conditions.
+4.3 `1 -estimation error of β in the perturbed linear model
+In this section we derive an upper bound for the `1 -estimation error of β in the perturbed
+linear model and show that we can achieve the usual Lasso error rate in the high-dimensional
+case, provided the perturbation b is sufficiently small. Then the main theorem for the
+confounding model, Theorem 1, follows from Corollary 1 by using the relationship between
+the models described in Section 2.
+The following result describes the effect of an arbitrary linear transformation F on the
+`1 -estimation error of the Lasso:
+Theorem 2 Assume the model in (2.3) with maxi Σii = O(1). Let F ∈ Rn×n be an arbitrary
+linear transformation and A > 0 an arbitrary fixed constant.
+q Then for the method described
+
+in (3.1) with transformation F and penalty level λ = Aσ
+
+log p
+2
+n λmax (F ) , with probability at
+
+2
+
+least 1 − 2p1−A /(32 maxi Σii ) − pe−n/136 , we have
+kβ̂ − βk1 ≤ C1
+
+sλ
+kX̃bk22
++
+C
+,
+2
+nλ
+φ2Σ̃
+
+where C1 , C2 are constants depending only on A.
+Remark 3 One can get a better bound
+kβ̂ − βk1 ≤ C1
+
+√
+sλ
+s kX̃bk2
+√
++
+C
+2
+φΣ̃
+n
+φ2Σ̃
+
+by taking larger penalty λ than the one above, but then λ depends on the unknown quantity
+kX̃bk2 . For that reason we will use the bound above with standard penalty level λ, since it
+does not matter when kX̃bk2 is small, which holds in our case, as shown later.
+The first term is the standard bound for the `1 -error of the Lasso, with only difference
+T
+T
+that the compatibility constant is for the matrix Σ̃ = X̃ n X̃ rather than the matrix Σ̂ = X n X .
+The second term shows the dependence of the error on the term X̃b. It is also worth noting
+that the penalty λ has standard form up to the scaling correction factor λmax (F )2 , which
+equals 1 for the Trim transform and the PCA adjustment.
+In order to control the error caused by the coefficient perturbation b, we need to make
+kX̃bk2 small by shrinking the singular values enough, e.g. by ensuring that d˜(1) , the largest
+singular value after transformation, is small. On the other hand, we must not shrink the
+12
+
+Spectral Deconfounding
+
+singular values too much, since we need φΣ̃ to stay large. If we have that φ2Σ̃ is bounded
+away from 0 with high probability, as it is the case with φ2Σ̂ (see Bühlmann and van de Geer
+(2011)), and that kX̃bk2 is sufficiently small, we get from Theorem 2 that our estimator
+achieves the usual Lasso error rate:
+Corollary 1 Consider the model in (2.3) with maxi Σii = O(1) and suppose that λmin (Σ)
+is bounded away from zero. For the coefficient perturbation b as in (2.4), assume that
+ 2
+
+(A1’) kbk22 = O sσ plog p .
+Assume additionally that the spectral transformation F in (3.1) with λmax (F ) = 1 satisfies
+√
+(A2) λmax (X̃) = Op ( p)
+(A3) φ2Σ̃ = Ωp (λmin (Σ)).
+Then for the penalty level λ  σ
+error has the following rate:
+
+q
+
+log p
+n , despite the coefficient perturbation, the `1 -estimation
+
+σs
+λmin (Σ)
+
+kβ̂ − βk1 = Op
+
+r
+
+log p
+n
+
+!
+.
+
+We show in the following section that in the perturbed linear model that arises from the
+confounding model (2.1), the induced coefficient perturbation b, given in (2.4), satisfies the
+condition (A1’), provided that the dense confounding assumption (A1) is satisfied. We also
+show that certain spectral transformations, such as the Trim transform (3.3) with τ = dbtnc ,
+where t ∈ (0, 1) is an arbitrary constant, or the PCA adjustment satisfy the conditions (A2)
+and (A3) under certain conditions.
+Remark 4 (Fixed design) The results of Theorem 2 and Corollary 1 can be easily extended to the perturbed linear model with fixed design. One can even relax the assumption
+(A1’) to a weaker condition
+kV
+
+T
+
+bk22 = O
+
+
+
+sσ 2 log p
+p
+
+
+.
+
+It is worth noting that if the perturbation vector b has uniformly random direction, which is
+not the case with the confounding model (2.1),
+much weaker than the condition
+ 2this becomes
+
+2
+sσ log p
+(A1’) above and we only require kbk2 = O
+.
+n
+4.4 Validity of the assumptions
+In this section we will justify the assumptions in Theorem 1 and Corollary 1 for certain
+spectral transformations F , with an emphasis on the Trim transform (3.3) and the PCA adjustment. We also discuss later the performance of other choices of spectral transformations.
+13
+
+Ćevid, Bühlmann and Meinshausen
+
+Assumptions (A1) and (A1’)
+The assumption (A1’) for the perturbed linear model says that the coefficient perturbation must not be too large. It can also be viewed as the condition which makes
+the perturbed linear model identifiable, since in general it is impossible to distinguish the
+true coefficient vector β from the
+p perturbed coefficient vector β + b, unless b has some
+additional structure. The rate O( sσ 2 log p/p) may seem too strict, but this is the rate with
+respect to p
+the `2 -norm, so if the perturbation vector is dense, this becomes approximately
+kbk1 = O( sσ 2 log p).
+The following lemma shows that if the confounding is dense in the confounding model
+(the assumption (A1) holds), then the induced coefficient perturbation in the underlying
+perturbed linear model is small (the assumption (A1’) holds). It is important to note that
+certain dense confounding assumption is necessary. The term Xb can be thought of as the
+part of the confounding Hδ that can be explained by X and if, as an extreme example, the
+confounder Hi is correlated with only the predictor Xj , only the j-th component of X will
+be useful for describing the effect of Hi on Y and thus bj will be very large and we will not
+be able to estimate βj .
+Lemma
+1 Assume that the confounding model (2.1) satisfies λmin (Γ) = λmin (Cov(H, X)) =
+√ 
+Ω p and cond(ΣE ) = O(1). Then we have:
+kδk22
+=O
+kbk22 = kCov(X)−1 Cov(X, H)δk22 ≤ cond(ΣE ) ·
+λmin (Γ)2
+
+kδk22
+p
+
+!
+
+
+=O
+
+σ2
+p
+
+
+
+√
+The condition λmin (Γ) = Ωp ( p) is satisfied, for example, if pq → 0 and Γ is drawn at random
+with either its rows or columns being independent, identically distributed sub-Gaussian random
+variables with expectation 0 and covariance matrix ΣΓ , with λmin (ΣΓ ) bounded away from
+zero.
+From this we see that it is important that the effect of the latent variables is spread out
+over many predictors. If this is not true, λmin (Γ) will be too small and thus kbk2 will be too
+large.
+Assumption (A2)
+We investigate quickly the behaviour of singular values of X in order to see whether the
+assumption (A2) holds for the transformed matrix X̃. This assumption says that after the
+transformation, the largest singular value is not too large.
+In the confounding model we have Σ = ΓT Γ + ΣE , i.e. the covariance matrix of X has
+additional low-rank component ΓT Γ, which causes the top several singular values of Σ to be
+very large. Since the rows of X are drawn from a distribution with covariance matrix Σ,
+the first few singular values of X will be large as well (Donoho et al., 2013). However, the
+following lemma shows that the bulk of the singular values will never be too large, i.e. they
+√
+will be of order p. The assumption (A2) requires the transformed singular values to be of
+this order.
+
+14
+
+Spectral Deconfounding
+
+Lemma 2 Assume that X ∈ Rn×p is a random matrix whose rows are i.i.d. sub-Gaussian
+vectors with covariance
+p matrix Σ. Let d1 , . . . , dr ≥ 0 be its singular values. Assume also that
+Tr(Σ)  p and that log p/n → 0. We have:
+r
+
+1X 2
+di = Tr(Σ)(1 + op (1)).
+n
+i=1
+
+√
+Furthermore, when p > n, dbtnc = Op ( p) for any t ∈ (0, 1).
+For the Trim transform the largest singular value after transformation d˜(1) equals the
+trimming threshold τ and the above lemma shows that τ = dbtnc for t ∈ (0, 1), e.g. the
+median singular value when t = 0.5, is a good choice and the assumption (A2) holds.
+If we further assume that ΣE has bounded singular values, thus ensuring the gap between
+the q-th and (q + 1)-st eigenvalues of Σ, we get that all but the first q singular values of X
+will not be too large, thus justifying the assumption (A2) for the PCA adjustment, since
+there we have λmax (X̃) = d˜(1) = d˜q+1 = dq+1 .
+Lemma 3 Assume that p > n and that X has i.i.d. sub-Gaussian rows with covariance
+√
+matrix Σ = ΓT Γ + ΣE , where Γ ∈ Rq×p and λmax (ΣE ) = O(1), then we have dq+1 = Op ( p).
+This lemma also shows that in this case the trimming threshold τ for the Trim transform
+can be chosen to be τ = dq+1 , but τ = dbtnc might be a better choice as the number of
+confounders q is unknown.
+Assumption (A3)
+This assumption says that the compatibility constant φΣ̂ does not substantially decrease
+after applying our transformation F . We want to show that by shrinking the singular values
+we have not shrunk our signal Xβ too much. Intuitively, this means that the active set XS
+is not too aligned with the directions along which we substantially shrink, which corresponds
+to the first several singular vectors in the case of Trim transform and PCA adjustment.
+It is difficult to bound φΣ̃ for an arbitrary spectral transformation F , since the distribution
+of the singular vectors V of the design matrix X is complicated. However, one can directly
+exploit the results from the factor analysis literature (Bai, 2003) for the PCA adjustment,
+from which it follows that in a certain asymptotic regime the transformed design matrix X̃
+is close to the unconfounded design matrix E. Using this result, one can directly obtain
+the compatibility condition (A3) for the PCA adjustment by using the standard argument
+(Bühlmann and van de Geer, 2011).
+Lemma 4 Let X be generated from the confounding model (2.1) and let FPbe a spectral
+transformation shrinking the first q singular values of X to 0. If q is fixed, p1 pi,j=1 |(ΣE )ij |
+log p
+upper bounded and n sp
+min(n,p) → 0, we have that, with probability converging to 1, the
+
+compatibility condition holds for the transformed design matrix X̃ = F X:
+φ21
+n
+
+p
+
+X̃ T X̃
+
+→ φ21
+
+T
+nE E
+
+= Ωp (λmin (ΣE )) .
+
+15
+
+Ćevid, Bühlmann and Meinshausen
+
+In the Appendix A.1 the analysis of the compatibility constant φΣ̃ is provided under the
+somewhat restrictive assumption that the singular vectors V have uniformly distributed
+direction, but allowing for a more high-dimensional asymptotic regime than in the Lemma 4.
+Since the ratio of the transformed singular values for the Trim transform and PCA
+τ
+adjustment is bounded from below by dq+1
+, the compatibility constant φTrim for the Trim
+transform can be bounded from below by the compatibility constant φPCA for the PCA
+adjustment:
+d
+
+τ
+φTrim ≥ dq+1
+φPCA = dbtnc
+φPCA
+q+1
+
+and thus the compatibility condition holds for the Trim transform as well if dq+1 and
+√
+d
+τ = dbtnc are of comparable sizes, i.e. dbtnc
+= Ωp (1). By Lemma 3, we have dq+1 = Op ( p)
+q+1
+and by the following lemma it holds that for quite a wide range of settings we also have
+that d2btnc = Ωp (λmin (Σ)p). Therefore, Lemma 4 can be used for showing the compatibility
+condition for the Trim transform as well.
+Lemma 5 Assume that X is a random design matrix with i.i.d. rows with covariance
+matrix Σ and suppose p > n. Assume that any of the following conditions is satisfied:
+i) the rows of X have a sub-Gaussian distribution and np → ∞
+ii) the rows of X have a N (0, Σ) distribution and lim inf np > 1
+iii) the rows of X have N (0, Σ) distribution and lim sup nk < 1
+Then we have
+d2k = Ωp (λmin (Σ)p).
+Performance of various spectral transformations
+The result of Theorem 1 can be applied to any spectral transformation that satisfies
+the assumptions (A2) and (A3). We discuss here which spectral transformations satisfy
+them and what are their possible advantages and disadvantages for the performance of the
+corresponding estimator β̂. The illustration of the spectral transformations discussed below
+is given in Figure 4.1.
+PCA adjustment As shown above, under certain assumptions we get that the spectral
+transformation which maps first q singular values to 0 will satisfy assumptions (A2) and
+(A3). Even though it might seem that one disadvantage of this method is that the number of
+confounding variables q needs to be estimated from the data, one can show that asymptotically
+it can be done accurately with high probability (Bai, 2003). PCA adjustment leaves most of
+the singular values intact, so the increase in the estimator variance will not be large.
+Lasso The simplest option is to take d˜i = di , i.e. the usual Lasso algorithm without any
+transformation. Standard Lasso theory shows that the assumption (A3) is satisfied (see
+Bühlmann and van de Geer (2011)). However, (A2) requires that the largest singular value
+√
+of X is of order O( p), which typically does not hold in presence of confounding variables.
+16
+
+Spectral Deconfounding
+
+Figure 4.1: Singular values of X̃ after applying spectral transformations corresponding to
+different methods to 40 × 60 matrix X with i.i.d. standard normal entries.
+
+Trim transform As shown above, we have that the Trim transform satisfies assumptions
+(A2) and (A3) if we take the trimming threshold to be τ = dbtnc for some t ∈ (0, 1), e.g.
+the median singular value. Compared to the PCA adjustment, it has an advantage that one
+does not need to estimate the number of confounding variables from the data. Moreover,
+it does not shrink first several singular values to 0, but only to the necessary level. This
+more gradual shrinkage might lead to better performance especially if the signal Xβ is more
+aligned with the first few singular vectors.
+q
+√
+Lava The mapping di → nλ2 di / nλ2 + d2i used in the Lava algorithm (Chernozhukov
+et al., 2017) satisfies the conditions (A2) and (A3) as well, since the transformed singular
+values d˜i are quite close to the ones for the Trim transform d˜i = min(di , τ ), for an appropriate
+17
+
+Ćevid, Bühlmann and Meinshausen
+
+choice of τ :
+
+√
+p
+p
+nλ2 di
+1
+≤ min(di , nλ2 ).
+min(di , nλ2 ) ≤ q
+2
+nλ + d2
+2
+
+i
+
+This also reveals how to choose the penalty λ2 in Lava: λ2 = n1 d2bmin(n,p)/2c and λ1 can
+be chosen by cross-validation. This transformation has the property that it is smoother
+than the Trim transform. We note that with this comment and Corollary 1, we have
+established the standard Lasso `1 -error rate for Lava for estimating the sparse parameter
+β in a high-dimensional regression model; such result is not given in Chernozhukov et al.
+(2017).
+Puffer transformation For the Puffer transform (Jia et al., 2015), where we map all
+singular values to a constant dn (because of homogeneity it does not matter to which constant
+we map it, but we have assumed w.l.o.g. that d˜i ≤ di , so we need to map them to dn ), the
+assumption (A2) is easily satisfied. However, for (A3) we need to have d2n = Ωp (λmin (Σ) p).
+From Vershynin (2010), we have that this holds only if lim inf np > 1, i.e. the Puffer transform
+will not work well if n and p are close.
+Step function The justification of the assumptions (A2) and (A3) for Trim transform
+apply as well for the step function d˜i = τ 1(di > τ ) with the same threshold τ . However,
+unnecessarily shrinking singular values might cause worse performance than for the Trim
+transform.
+4.5 Low dimensional case: n > p
+The statement of Theorem 2 still holds in the low-dimensional case n > p. However,
+
+√
+2
+1
+n kX̃bk2 will now be of larger order than λ. We have that λmax (X̃) = Op ( n), compared
+√
+to p before (see Lemma 2), which under the assumption (A1’) gives us that n1 kX̃bk22 =
+2
+O(kbk22 ) = O( sσ plog p ). Therefore, the second term in the bound of Theorem 2 will be too
+
+large in comparison with the first term.
+Fortunately, from the remark below Theorem 2, we see that by taking larger λ, we can
+decrease the rate of the second term. If the perturbation term n1 kX̃bk2 gets larger than the
+standard penalty rate, as it is the case when n > p, it is better to penalize more. One gets
+in this case:
+!
+r
+√
+skbk2
+sσ
+log p
+kβ̂ − βk1 = Op
++p
+λmin (Σ)
+n
+λmin (Σ)
+which by Lemma 1 in the confounding model, under the dense confounding assumption
+(A1), becomes:
+!
+r
+√
+log p
+sσ
+sσ
+kβ̂ − βk1 = OP
++p
+.
+√
+λmin (Σ)
+n
+λmin (Σ) p
+One can not expect the same error rate as in the high-dimensional setting, since this
+would imply that, for fixed p, the error converges to 0 as n → ∞ which can not happen
+because the error is not only due to the randomness of the sample data, but also due to
+the coefficient perturbation b. The perturbation b only depends on how the confounding
+18
+
+Spectral Deconfounding
+
+variables affect the predictors and not on the number of data points and thus one can not
+expect consistency for a fixed p. However, we see that the estimator is consistent when
+n, p → ∞. The more predictors we have, the more is the effect of the confounding variables
+spread out.
+This is also illustrated in Figure 4.2, where we can see that even though the error
+decreases as we increase the number of data points, it still seems to have a nonzero limit.
+However, the error is small, especially in comparison with the standard Lasso, and there is a
+benefit in using our method.
+
+Figure 4.2: Dependence of the estimation error kβ̂ − βk1 on the sample size n for different spectral transformations and data generated from the confounding model,
+including the case p < n, as described in Section 5.1.1.
+
+5. Empirical Results
+We present here some empirical results for simulated and real data.
+5.1 Simulations
+We demonstrate the performance of various spectral transformations for estimating the
+coefficient vector β with a subsequent use of the Lasso: Trim transform, Lava, Puffer and
+PCA adjustment. We investigate the cases when the perturbation b arises from hidden
+confounding and when it is randomly sampled.
+19
+
+Ćevid, Bühlmann and Meinshausen
+
+5.1.1 Setting
+2 I , where
+We generate the data from the confounding model (2.1). We take ΣE = σE
+p
+σE = 2 and β = (1, 1, 1, 1, 1, 0, . . . , 0), so s = 5. For a fixed number q of hidden confounders,
+we sample the coefficients Γij and δi independently as standard normal random variables.
+By default, we take q = 6. Unless stated otherwise, we use the noise level σ = 1 as the
+standard deviation of . Finally, the sample size is set to be n = 200 and the dimensionality
+of the predictors is p = 600 as the default value. All results are based on N = 212 = 4096
+independent simulations.
+It is also interesting to consider the perturbed linear model (2.3). We do not generate
+data from this model directly, but we will modify the underlying perturbation term b which
+is implicit in the confounding model by formula (2.4). This way we can compare the results
+obtained for the confounding model and the perturbed linear model directly with each other.
+We replace b by Qb where Q is a random rotation matrix so that the new perturbation has
+the same size, but with uniformly random direction. We note that the resulting distribution
+is the same as of the perturbed linear model (2.3), where rows of X are drawn from N (0, Σ),
+where Σ = ΓT Γ + Ip , and b is drawn uniformly from a ball of radius k(ΓT Γ + Ip )−1 ΓT δk2 .
+
+5.1.2 Choosing λ
+In practice we encounter the problem of choosing the penalty level λ for the Lasso after
+applying a spectral transformation. The results of Theorem
+q 1 and Corollary 1 give us that
+
+one can use the standard theoretical penalty rate λ  σ logn p to get the desired error rate
+of our estimator. In practice one often resorts to using cross-validation (CV) for choosing
+the penalty parameter rather than using the theoretical value, especially since σ is unknown.
+
+Figure 5.1: Dependence of the estimation error kβ̂ − βk1 on the number of predictors p
+for different spectral transformations and data generated from the confounding
+model (2.1), as described in Section 5.1.1. In the left plot, the penalty is chosen
+by cross-validation, whereas in the right plot we use the oracle value for which
+the estimation error is minimal.
+
+20
+
+Spectral Deconfounding
+
+However, one needs to be careful in presence of confounding variables; in this case the
+coefficient vector β + b describes the data better than β, which we are trying to recover.
+Therefore, cross-validation tends to choose a smaller value of λ than the optimal for recovering
+β. This is illustrated in the Figure 5.1, where we see that, for example, the Puffer transform
+is significantly affected by this choice of λ. For recovering β in practice, it might be better
+to increase slightly the value of λ chosen by cross-validation (Janzing and Schölkopf, 2018).
+But on the other hand, smaller λ gives us a larger set of variables, which might be beneficial
+for variable screening.
+In all simulations, unless stated otherwise, the penalty level is chosen by cross-validation.
+This choice does not seem to worsen the performance of the Trim transform or Lava a lot,
+as one can see in Figure 5.1 and Figure 5.5, and it is of great practical importance since the
+oracle value of λ, i.e. the one for which kβ̂λ − βk1 is smallest, can not be directly determined
+from the data.
+5.1.3 Results
+Here we present the results of the simulations for both the confounding model and the
+perturbed linear model. A fundamental difference between them is that the coefficient
+perturbation arising from the confounding model is pointing towards the singular vectors
+of X corresponding to the large singular values (see Figure 3.1). This makes kXbk2 larger
+for a fixed kbk2 , and in this case the estimation error will be larger. On the other hand, in
+this case we can improve our accuracy more compared to the plain Lasso by shrinking large
+singular values, as will be shown below.
+
+Figure 5.2: Dependence of the estimation error kβ̂ − βk1 on the size of the noise for different
+spectral transformations for confounding model (left) and the perturbed linear
+model (right), as described in Section 5.1.1.
+
+Noise versus perturbation In the left plot in Figure 5.2 we can see how the estimation
+error changes depending on the size of the noise σ in the confounding model. When σ is
+21
+
+Ćevid, Bühlmann and Meinshausen
+
+small, the perturbation b has the biggest effect on the error. On the other hand, if σ is large,
+then the influence of the perturbation b becomes less pronounced.
+We can see that the standard Lasso is affected a lot by the coefficient perturbation,
+whereas the Puffer transform and the PCA adjustment are affected more by the additive
+noise than the Lava and the Trim transform, since the slopes of the corresponding curves
+are steeper. The higher variance of the Puffer transform is most evident in Figure 4.2 and
+Figure 5.1; when n, p are close to each other, some of the singular values of X become quite
+small and thus mapping them to a constant can inflate the error  in the corresponding
+directions by a lot. We can observe that the oracle PCA adjustment, which removes exactly
+the q largest singular values of X, works well, especially when σ is small. For larger σ, we
+see that Trim transform and Lava work slightly better since they do not remove that much
+of the signal.
+In the right plot of Figure 5.2, we have randomized the direction of b while keeping
+everything else constant, as described in Section 5.1.1. This then corresponds to a model
+with random perturbation b, but no specific further structure in terms of confounding. We
+can see a substantial improvement of the standard Lasso: in hindsight this shows that the
+Lasso is very sensitive to confounding variables but much less so to perturbation of sparsity.
+Also, it is worth noting that the PCA adjustment method is now consistently worse than
+the Trim transform or Lava, since the projection of b onto the span of the first q singular
+vectors is not that large anymore.
+
+Figure 5.3: Dependence of the estimation error on the size of the perturbation vector b for
+different spectral transformation for the perturbed linear model, as described in
+Section 5.1.1.
+We can see more clearly the bias-variance tradeoff for different spectral transformations
+in Figure 5.3, where we have taken the rotated coefficient perturbation b, as in the right
+plot of Figure 5.2 and then artificially scaled it by a chosen constant. For a very small b,
+we see that Puffer and PCA adjustment have somewhat worse performance. As b increases,
+Trim transform and Lava reduce the bias caused by b much better than the Lasso. We can
+22
+
+Spectral Deconfounding
+
+also see that the PCA adjustment does not reduce the bias as much, but its performance
+would be significantly better if b was not rotated, but aligned with the top several principal
+components as in the confounding model, see Figure 5.2.
+Number of confounding variables In Figure 5.4 we can see how the estimation error
+depends on the number q of confounding variables. As above, we see that the Lasso is
+severely affected by the presence of confounding variables. The Puffer transform performs
+reasonably well since n and p are different enough and the Trim transform and Lava exhibit
+similar and good performance in all cases.
+PCA adjustment works well for the confounding model if we correctly guess the number
+of confounding variables. In the left plot in Figure 5.4 we can clearly see how the estimation
+error is affected by the misspecification of the number of the principal components we
+remove. The oracle PCA method, which removes exactly q principal components, performs
+reasonably well, particularly for smaller values of q. However, if we overestimate or especially
+if we underestimate the number of confounding variables, the estimation error will become
+significantly worse compared to the Trim transform or Lava.
+
+Figure 5.4: Dependence of the estimation error kβ̂ − βk1 on the number of confounding
+variables for different spectral transformation for confounding model (left) and
+the perturbed linear model (right) as described in Section 5.1.1.
+
+Method robustness We are interested in whether there are any disadvantages in using
+the spectral transformations if we wrongly think that there is some hidden confounding or
+that the sparse coefficient has been perturbed.
+In Figure 5.5 we display the estimation error for the confounding model as in Figure 5.4,
+but where the coefficient bias b has been set to 0, i.e. this is a standard sparse linear model
+with X being generated from the spiked covariance model.
+There is no indication for relevant differences between the performances of the Trim
+transform, Lava and the Lasso. The Lasso performs slightly better for larger values of q and
+slightly worse for smaller q. It is worth noting that on this plot the estimation error starts
+23
+
+Ćevid, Bühlmann and Meinshausen
+
+to decrease as q increases, which is due to a scaling issue. This happens because the variance
+of X increases as q increases, since Σ = ΓT Γ + ΣE , thus effectively increasing the signal to
+noise ratio. PCA adjustment seems to be affected most by the choice of λ, especially for
+larger q since its shrinkage is larger in this case, see Figure 5.5. With the oracle choice of
+the penalty level, its performance is very similar to the performance of the Lasso.
+Our empirical results support theoretical evidence, which showed that it is safe to use
+wisely chosen spectral transformations such as the Trim transform or the Lava. If there are
+any confounding variables present, there is a large improvement over the standard Lasso.
+On the other hand, if there are no confounding variables, the Trim transform or Lava will
+have about the same performance as the Lasso. Therefore, our method can be thought of as
+an easy to use modification of the Lasso which is robust to hidden confounding.
+
+Figure 5.5: Size of the estimation error kβ̂ −βk1 for a sparse linear model where Σ = ΓT Γ+Ip ,
+i.e. the confounding model with the induced perturbation b set to b = 0. The
+penalty level λ is either chosen by cross-validation (left) or taken to be the oracle
+value, which minimizes the `1 -error (right).
+
+5.2 Application to genomic dataset
+In this section we demonstrate the robustness of our method against hidden confounders
+on a real genomic dataset where we have certain knowledge about the confounding variables.
+We inspect various spectral transformations in combination with the Lasso and evaluate the
+differences between the estimates for the original data set and the one where the confounding
+variables have been adjusted for.
+5.2.1 Gene expression dataset
+We have obtained data from the GTEx Portal (http://gtexportal.org). The GTEx
+project provides large-scale data with an aim to help the scientific community to study
+gene expression, gene regulation and their relationship to genetic variation. It provides gene
+24
+
+Spectral Deconfounding
+
+expression data from 11,688 samples collected postmortem from 53 different tissues of 714
+human donors.
+Gene expression is a process in the cell in which the information stored in a certain gene
+is used for the synthesis of gene products such as proteins. In the GTEx Project it was
+quantified by the amount of the mRNA in the cell which was created from this gene. Gene
+expression differs among different people and among different cells within the human body.
+The type of the cells is determined by the gene expression within them; even though the
+DNA in all cell nuclei is the same, cells in different tissues behave and look differently and
+perform significantly different tasks. Gene expression is also affected by the genetic variation
+and determining the expression quantitative trait loci (eQTL), which are parts of genome
+which explain the variation in the gene expression, is a very important problem which will
+help to understand the relationship between genetic variation and different phenotypes.
+5.2.2 Setting
+We use the fully processed, filtered and normalized gene expression matrix for the skeletal
+muscle tissue. We consider the gene expression of p = 140 713 protein-coding genes measured
+from n = 491 samples. For our purpose, an important aspect of this dataset is that there
+are also q = 65 different covariates provided, which are proxies for the hidden confounding
+variables. They include genotyping principal components and PEER factors. We can thus
+obtain the deconfounded data by regressing out these given covariates.
+The left panel of Figure 5.6 displays the singular values of the initial data matrix. We
+see that the first several singular values are substantially larger than the rest which suggests
+a possible existence of hidden confounders. In the right part of Figure 5.6 we can see the
+singular values of the deconfounded data matrix where we have regressed out all of the
+q = 65 covariates which are provided as confounding proxies.
+
+Figure 5.6: Singular values of the gene expression data matrix for skeletal muscle tissue
+before (left) and after (right) regressing out the provided q = 65 confounding
+covariates.
+
+25
+
+Ćevid, Bühlmann and Meinshausen
+
+We are going to explore now the robustness of the Lasso, Trim transform, and Lava
+against hidden confounders by comparing the estimates based on the original and the
+deconfounded data. For a fixed value of k, we regress out first k given confounder proxies
+from the original gene expression data matrix X in order to get the matrix X (k) and we
+randomly choose one column to represent the response Y . We are thus trying to explain the
+expression of one gene by the expressions of other genes.
+For every s = 1, . . . , 20, we apply the given method on X and X (k) with the regularization
+λ chosen as the largest value such that the support size of β̂ equals a prespecified value
+(k)
+s. This leads to estimates β̂s and β̂s . We measure the dissimilarity of the corresponding
+(k)
+supports by J(supp β̂s , supp β̂s ), where J is the Jaccard distance:
+J(A, B) =
+
+A4B
+.
+A∪B
+
+Figure 5.7: Jaccard distance of the supports of the estimates based on the original and
+deconfounded data for one randomly chosen response (top left). Jaccard distance,
+averaged over 500 randomly chosen responses, of the supports of estimates based
+on the original data and data with 5 (top right), 15 (bottom left) and 65 (bottom
+right) confounder proxies removed.
+
+26
+
+Spectral Deconfounding
+
+5.2.3 Results
+In the top left image in Figure 5.7, we can see the difference of the estimates for the
+original and the deconfounded data, where 5 randomly chosen confounding variables have
+been removed and the response Y is the expression of a randomly chosen gene. We can
+see that the Jaccard distance for the Lasso is closer to 1, indicating that the estimated
+support sets are very different and almost disjoint; The Trim transform and Lava are much
+more robust to the hidden confounders and we see that the Jaccard distance between the
+estimates based on confounded and deconfounded data is much smaller.
+In order to make sure that the choice of response Y did not affect the results, we have
+repeated this experiment for 500 randomly chosen genes and averaged the obtained results.
+The results are also displayed in Figure 5.7. We can see that, as we increase the number
+k of confounding variables which we regress out, the Jaccard distance for all methods is
+increasing. This is to be expected since X (k) and X are becoming more different as we
+increase k. However, we can infer that the Trim transform and Lava are consistently better
+than the Lasso, exhibiting also in this real dataset the robustness against confounding
+variables.
+
+6. Discussion
+We propose to add robustness against hidden confounding variables by employing a
+wisely chosen spectral transformation before using the Lasso or other high-dimensional
+sparse regression techniques. There is essentially nothing to lose but much to be gained
+which is in line with the typical argument of robustness (Huber, 2011) We can also take
+directly the viewpoint of deconfounding before performing further analysis: this is the more
+common thinking in many applications where hidden confounding is expected to happen, a
+prime example being genetics (Novembre and Stephens, 2008).
+The confounding issue in the context of linear models can be represented and analyzed as
+a regression problem with coefficient β + b; the coefficient β is the true underlying parameter
+in absence of confounding variables, while the perturbation b is due to the confounding.
+We develop theory for a linear model with regression parameters β + b where β is sparse
+and the perturbation b sufficiently small, a condition satisfied when the confounding is
+sufficiently ’dense’ in the sense that each confounding variable affects many predictors.
+We show that certain spectral transformations, such as the Trim transform or the PCA
+adjustment, in conjunction with using the Lasso afterwards, achieve the same `1 -convergence
+rate of the kβ̂ − βk1 as the Lasso for the linear model without confounding; see Section 4
+and Theorem 1. Such a theoretical result is entirely new and covers also the Lava method
+(Chernozhukov et al., 2017). As a consequence, the theoretical result also establishes spectral
+deconfounding as an excellent method for removing the effect of dense hidden confounders
+in high-dimensional settings.
+Another advantage of our approach is its simplicity: it consists of just one simple pretransformation step before using the Lasso. It requires the computation of the SVD of the
+design matrix which has computational complexity of O(min(n2 p, np2 )) and can be done in
+a few lines of code.
+The topic of deconfounding has not received too much attention, despite its practical
+importance (Greenland et al., 1999; Brookhart et al., 2010). Here we have shown that it is
+27
+
+Ćevid, Bühlmann and Meinshausen
+
+possible and easy to protect against hidden dense confounding in the case of linear regression.
+Similar ideas might be powerful as well for more complicated models.
+
+Acknowledgements
+We would like to thank Gian Thanei and Benjamin Frot for providing processed data for
+our biological applications.
+
+Appendix A.
+A.1 Compatibility condition after transformation
+We discuss here in more detail the assumption (A3), which is the compatibility condition
+(Bühlmann and van de Geer, 2011) for the transformed design matrix X̃.
+This assumption means that the compatibility constant φΣ̂ does not substantially decrease
+after applying our transformation F . Intuitively, we want to show that by transforming the
+singular values, we have not shrunk our signal Xβ too much. For Trim transform and PCA
+adjustment, this means that the active set XS is not aligned too much with the direction of
+the singular vectors corresponding to the large singular values, since those are the directions
+along which we are substantially shrinking.
+In order to proceed, we need to understand how exactly φΣ̃ depends on the transformed
+singular values in D̃. The answer to this question depends delicately on the singular vectors V
+of X as well. The following bound helps us to understand the behaviour of the compatibility
+constant depending on the transformed singular values.
+Lemma 6 Consider an arbitrary spectral transformation F as in (3.2). Let 1 ≤ k < r =
+min(n, p) be an arbitrary integer. Then:
+φ2Σ̃ ≥
+
+r
+X
+1
+i=1
+
+1
+d˜2 (φ2 − φ2Mi−1 ) ≥ d˜2(k) φ2Mk ,
+n (i) Mi
+n
+
+
+
+T
+where Mk = V(1) , . . . , V(k) V(1) , . . . , V(k) .
+We can use Lemma 6 for the Trim transform with k = btnc or the PCA adjustment
+where we map q̂ = o(k) singular values to 0. Then it suffices to show that d˜2(k) and φ2Mk are
+sufficiently large in order to show (A3). This means that certain proportion of the singular
+√
+values is still large (of order p) after shrinking, and that the direction of the corresponding
+singular vectors is not too unfavourable.
+The Lemma 5 from the main part of the paper shows that for quite a wide range of
+settings we have that d2btnc = Ωp (λmin (Σ)p), which means that after applying the Trim
+transform with τ = dbtnc , or the PCA adjustment which shrinks o(n) singular values to zero,
+ 
+we still have d˜2
+= Ωp (λmin (Σ)p). It therefore suffices to show that φ2
+= Ωp n in
+Mbtnc
+
+(btnc)
+
+p
+
+order to show (A3) from Lemma 6. This is not simple to show, as distribution of V is quite
+complicated for general Σ = Cov(X), but this always holds under the uniformity condition
+described in the next lemma.
+28
+
+Spectral Deconfounding
+
+Lemma 7 If p > n and V has a uniform distribution on the Stiefel manifold, then for any
+k = Ω(n), we have
+ 
+n
+2
+.
+φMk = Ωp
+p
+This uniformity assumption is sensible to make since it will be true under any of the two
+following scenarios: the first is that the components of X are i.i.d. normal random variables;
+the second is that the singular vectors of Σ have the uniform distribution on the space of
+orthogonal matrices themselves. This, for example, might happen in the confounding model
+2 I and the rows of Γ have rotationally invariant distribution, i.e.
+(2.1), when Cov(E) = σE
+p
+ΓQ has the same distribution as Γ for any orthogonal matrix Q ∈ Rp×p .
+The uniformity assumption is sufficient, but not necessary for the assumption (A3) to
+hold. In the main part it was shown to hold in a certain asymptotic regime for the Trim
+transform and PCA adjustment. We believe however that the compatibility condition holdS
+in a very broad range of asymptotic regimes.
+A.2 Proofs
+Here we provide the proofs of all results stated in this paper.
+Theorem 2 Assume the model in (2.3) with maxi Σii = O(1). Let F ∈ Rn×n be an arbitrary
+linear transformation and A > 0 an arbitrary fixed constant.
+q Then for the method described
+
+in (3.1) with transformation F and penalty level λ = Aσ
+
+log p
+2
+n λmax (F ) , with probability at
+
+2
+
+least 1 − 2p1−A /(32 maxi Σii ) − pe−n/136 , we have
+kβ̂ − βk1 ≤ C1
+
+sλ
+kX̃bk22
++
+C
+,
+2
+nλ
+φ2Σ̃
+
+where C1 , C2 are constants depending only on A.
+Proof Denote by β 0 the true coefficient vector.
+Since β̂ minimizes n1 kỸ − X̃βk22 + λkβk1 , we have:
+1
+1
+kỸ − X̃ β̂k22 + λkβ̂k1 ≤ kỸ − X̃β 0 k22 + λkβ 0 k1
+n
+n
+1
+2
+0 2
+kX̃(β̂ − β )k2 + λkβ̂k1 ≤ (Ỹ − X̃β 0 )T X̃(β̂ − β 0 ) + λkβ 0 k1
+n
+n
+2
+2
+≤ ˜T X̃(β̂ − β 0 ) + bT X̃ T X̃(β̂ − β 0 ) + λkβ 0 k1
+n
+n
+1
+2 T
+1
+0
+2
+0
+kX̃(β̂ − β − b)k2 + λkβ̂k1 ≤ ˜ X̃(β̂ − β ) + kX̃bk22 + λkβ 0 k1
+n
+n
+n
+2
+
+Let us work on the event {k n2 X̃ T ˜k∞ ≤ τ }, which has probability at least 1−2p1−A /(32 maxi Σii ) −pe−n/136
+q
+1
+2
+for τ = λ/2 = 2 Aσ log(p)
+n λmax (F ) , as it is shown in Lemma 8. On this event we have
+2 T
+2
+˜ X̃(β̂ − β 0 ) ≤ kX̃ T ˜k∞ kβ̂ − β 0 k1 ≤ τ kβ̂ − β 0 k1
+n
+n
+29
+
+Ćevid, Bühlmann and Meinshausen
+
+from Hölder’s inequality. We now have:
+1
+1
+kX̃(β̂ − β 0 − b)k22 + λkβ̂k1 ≤ τ kβ̂ − β 0 k1 + kX̃bk22 + λkβ 0 k1
+n
+n
+By using that βS0 c = 0, we get that
+1
+kX̃(β̂ − β 0 − b)k22 + (λ − τ )kβ̂S c − βS0 c k1
+n
+≤ τ kβ̂S − βS0 k1 + λkβS0 k1 − λkβ̂S k1 +
+≤ (λ + τ )kβ̂S − βS0 k1 +
+Let us now write
+φΣ̃ (L, S) =
+
+1
+kX̃bk22
+n
+
+1
+kX̃bk22
+n
+
+q
+β T Σ̃β
+
+>0
+min
+β∈R(L,S) √1 kβS k1
+s
+
+where R(L, S) = {x : kxS c k1 ≤ LkxS k1 }
+We consider two cases:
+• Case 1: n1 kX̃bk22 ≤ λkβ̂S − βS0 k1
+• Case 2: n1 kX̃bk22 ≥ λkβ̂S − βS0 k1
+In the first case we have
+1
+kX̃(β̂ − β 0 − b)k22 + (λ − τ )kβ̂S c − βS0 c k1 ≤ (2λ + τ )kβ̂S − βS0 k1
+n
+From this we see that the error β̂ − β ∈ R(L, S) = {x : kxS c k1 ≤ LkxS k1 } for L = 2λ+τ
+λ−τ , so
+we have:
+1
+kX̃(β̂ − β 0 − b)k22 + (λ − τ )kβ̂ − β 0 k1 ≤ 3λkβ̂S − βS0 k1
+n
+√
+3λ skX̃(β̂ − β 0 )k2
+√
+≤
+nφΣ̃ (L, S)
+√
+√
+3λ skX̃(β̂ − β 0 − b)k2
+3λ skX̃bk2
+√
+≤
++√
+nφΣ̃ (L, S)
+nφΣ̃ (L, S)
+≤
+
+9λ2 s
+1
+1
++ kX̃(β̂ − β 0 − b)k22 + kX̃bk22
+2
+2φΣ̃ (L, S)
+n
+n
+
+2
+
+by using the inequality xy ≤ x4 + y 2 twice, which finally gives us
+(λ − τ )kβ̂ − β 0 k1 ≤
+
+9λ2 s
+1
++ kX̃bk22
+2
+2φΣ̃ (L, S)
+n
+
+In the second case we have
+1
+3
+kX̃(β̂ − β 0 − b)k22 + (λ − τ )kβ̂ − β 0 k1 ≤ kX̃bk22
+n
+n
+30
+
+Spectral Deconfounding
+
+So, regardless whether we are in the Case 1 or the Case 2, we get that
+(λ − τ )kβ̂ − β 0 k1 ≤
+
+3
+9λ2 s
++ kX̃bk22
+2
+2φΣ̃ (L, S)
+n
+
+By dividing by (λ − τ ) = λ/2 we get the required inequality which is what we wanted.
+It is interesting to note that we might get better rate of the second term in the case
+when kX̃bk2 has larger rate than it will be case in this paper, by taking λ to be larger than
+2τ . Since in this case, as we will now see, the penalty level depends on the unknown b, we
+decided to use the ”standard” rate of λ.
+By dividing by (λ − τ ) and minimizing over λ > τ , we get that the minimum value of
+the RHS of the bound is:
+s
+2
+9sτ
+9sτ
+54skX̃bk22
++
++
+φΣ̃ (L, S)2
+φΣ̃ (L, S)2
+φΣ̃ (L, S)2 n
+which is achieved for
+s
+λ=τ+
+
+τ2 +
+
+2φΣ̃ (L, S)2 kX̃bk22
+3sn
+
+In the case when b = 0 and F = In (the usual Lasso regression), we indeed take λ = 2τ .
+We can see that, when the coefficient perturbation is present, it is better to penalize more
+as this will remove the effect of the perturbation to some extent.
+Since L = 2λ+τ
+λ−τ and λ ≥ λmin ≥ 2τ , we have L ≤ 5 and then
+φΣ̃ (L, S) ≥ φΣ̃ (5, S) = φΣ̃
+Finally, by using this and the inequality
+
+p
+x2 + y 2 ≤ x + y where x, y > 0, we get
+
+18sτ
+kβ̂ − β 0 k1 ≤ 2 +
+φΣ̃
+
+s
+
+54skX̃bk22
+.
+φ2Σ̃ n
+
+Lemma 8 Let A > 0 be arbitrary constant. Let us define
+1
+τ = Aσ
+2
+
+r
+
+log(p)
+λmax (F )2
+n
+
+Let  ∈ Rn be a vector consisting of i.i.d. sub-Gaussian random with mean zero and variance
+σ 2 independent of X. We have
+
+P
+
+2
+kX̃ T ˜k∞ ≤ τ
+n
+
+
+
+2
+
+≥ 1 − 2p1−A /(32 maxi Σii ) − pe−n/136
+31
+
+Ćevid, Bühlmann and Meinshausen
+
+k
+√i 2 ≤ 2 maxi Σii }, where Xi is the i-th
+Proof Let us work on the event Ω2 = {maxi kX
+n
+2
+column of X. Since Xji is a mean zero sub-Gaussian random variable with variance Σii , Xji
+satisfies Bernstein’s condition with parameter (8Σii , 4Σii ). Bernstein’s inequality gives us
+that
+n
+nΣ2ii
+) = e− 136 .
+P( n1 kXi k2 − Σii > Σii ) ≤ exp(−
+2
+2
+2(64Σii + 4Σii )
+
+From here it is easy to see that
+P(Ω2 ) ≥ 1 −
+
+X
+
+n
+
+P( n1 kXi k2 > 2Σii ) = 1 − pe− 136
+
+i
+
+Conditionally on X, the components of ζ = n2 X̃ T ˜ = n2 X T F 2  are sub-Gaussian random
+variables since they are linear combinations of independent sub-Gaussian random variables;
+ζi is sub-Gaussian with mean zero and parameter σi = σk n2 (Xi )T F 2 k2 , where Xi is the i-th
+column of X.
+From the tail bound for sub-Gaussian random variables, we now get:
+
+
+
+
+X
+τ2
+τ2
+P(kζk∞ ≤ τ ) ≥ 1−
+P(|ζi | > τ ) ≥ 1−p max 2 exp − 2 = 1−2 exp −
++ log p
+i
+2σi
+2 maxi σi2
+i
+We also have on event Ω2 :
+2
+2σ
+4σ
+max σi = max σk (Xi )T F 2 k2 ≤
+λmax (F )2 max kXi k2 ≤ √ λmax (F )2 max Σii
+i
+i
+i
+i
+n
+n
+n
+and plugging this and the expression for τ in the expression above gives us
+2
+
+P(kζk∞ ≤ τ ) ≥ 1 − 2p
+
+A
+1− 32 max
+Σ
+i
+
+ii
+
+.
+
+2
+
+Which gives us in general that P(kζk∞ ≤ τ ) ≥ 1 − 2p
+
+A
+1− 32 max
+Σ
+i
+
+n
+
+ii
+
+− pe− 136 , as required.
+
+Corollary 1 Consider the model in (2.3) with maxi Σii = O(1) and suppose that λmin (Σ)
+is bounded away from zero. For the coefficient perturbation b as in (2.4), assume that
+ 2
+
+(A1’) kbk22 = O sσ plog p .
+Assume additionally that the spectral transformation F in (3.1) with λmax (F ) = 1 satisfies
+√
+(A2) λmax (X̃) = Op ( p)
+(A3) φ2Σ̃ = Ωp (λmin (Σ)).
+Then for the penalty level λ  σ
+error has the following rate:
+
+q
+
+log p
+n , despite the coefficient perturbation, the `1 -estimation
+
+kβ̂ − βk1 = Op
+
+σs
+λmin (Σ)
+32
+
+r
+
+log p
+n
+
+!
+.
+
+Spectral Deconfounding
+
+Proof From Theorem 2 we have
+kβ̂ − βk1 ≤ C1
+
+sλ
+kX̃bk22
++
+C
+2
+nλ
+φ2Σ̃
+
+From the assumptions (A1) and (A2) we get
+kX̃bk22 ≤ λmax (X̃)2 kbk22 O(sσ 2 log p)
+which gives the rate of the second term
+kX̃bk22
+= Op
+nλ
+
+r
+sσ
+
+log p
+n
+
+!
+
+The assumption (A3) gives us that the rate of the first term is
+!
+r
+sσ
+log p
+sλ
+= Op
+λmin (Σ)
+n
+φ2
+Σ̃
+
+which is what we wanted to show.
+
+Lemma
+1 Assume that the confounding model (2.1) satisfies λmin (Γ) = λmin (Cov(H, X)) =
+√ 
+Ω p and cond(ΣE ) = O(1). Then we have:
+!
+ 2
+2
+2
+kδk
+kδk
+σ
+2
+−1
+2
+2
+2
+kbk2 = kCov(X) Cov(X, H)δk2 ≤ cond(ΣE ) ·
+=O
+=O
+2
+λmin (Γ)
+p
+p
+√
+The condition λmin (Γ) = Ωp ( p) is satisfied, for example, if pq → 0 and Γ is drawn at random
+with either its rows or columns being independent, identically distributed sub-Gaussian random
+variables with expectation 0 and covariance matrix ΣΓ , with λmin (ΣΓ ) bounded away from
+zero.
+−1/2
+
+Proof Let us write C = ΓΣE
+
+and let C = UC DC VCT be its SVD. Then we can write:
+−1/2
+
+kbk22 = k(ΓT Γ + ΣE )−1 ΓT δk22 = kΣE
+−1/2
+
+= kΣE
+
+(C T C + Ip )−1 C T δk22
+
+T
+VC (DC
+DC + Ip )−1 DC VCT δk22
+
+
+T
+−1
+T 2
+≤ λmax (Σ−1
+kδk22
+E )λmax VC (DC DC + Ip ) DC VC
+2
+
+(DC )ii
+−1
+kδk22
+≤ λmin (ΣE ) max
+i
+(DC )2ii + 1
+1
+≤ λmin (ΣE )−1
+kδk22
+λmin (C)2
+1
+≤ λmin (ΣE )−1
+kδk22
+−1/2 2
+2
+λmin (ΣE ) λmin (Γ)
+!
+ 2
+kδk22
+kδk22
+λmax (ΣE )
+σ
+≤
+·
+=O
+=O
+.
+2
+λmin (ΣE ) λmin (Γ)
+p
+p
+33
+
+Ćevid, Bühlmann and Meinshausen
+
+Now, if the rows or columns of Γ are sub-Gaussian random variables with covariance
+matrix Ω, we can write Γ as ZΩ1/2 or Ω1/2 Z respectively, where the rows or columns of Z are
+sub-Gaussian random variables with covariance I. In both cases we have from Theorems 5.39
+and 5.58 from Vershynin (2016) that there are constants c and C such that with probability
+1 − 2 exp(−ct2 ) we have
+√
+
+√
+√
+√
+p − C q − t ≤ λmin (Z) ≤ λmax (Z) ≤ p + C q + t
+
+and thus since pq → ∞ we have
+
+√
+λmin (Z) = Ωp ( p),
+
+which implies
+
+√
+λmin (Γ) = Ωp ( p)
+
+if λmin (Ω) is bounded from below, as we wanted.
+
+Lemma 2 Assume that X ∈ Rn×p is a random matrix whose rows are i.i.d. sub-Gaussian
+vectors with covariance
+p matrix Σ. Let d1 , . . . , dr ≥ 0 be its singular values. Assume also that
+Tr(Σ)  p and that log p/n → 0. We have:
+r
+
+1X 2
+di = Tr(Σ)(1 + op (1)).
+n
+i=1
+
+√
+Furthermore, when p > n, dbtnc = Op ( p) for any t ∈ (0, 1).
+Proof We have
+
+r
+
+1X 2
+di = Tr( n1 X T X) = Tr(Σ̂)
+n
+i=1
+
+1 T
+Since
+qthe rows
+ of X are sub-Gaussian random vectors, we get that k n X X − Σk∞ =
+log p
+Op
+, as in Lemma 8. This gives us that
+n
+
+r
+| Tr( n1 X T X) − Tr(Σ)| = Op
+
+p
+
+log p
+n
+
+!
+.
+
+Therefore, we have
+r
+
+1X 2
+di − Tr(Σ) = Op
+n
+i=1
+
+r
+p
+
+log p
+n
+
+!
+
+and the result follows since we have assumed that Tr(Σ) = Ω(p).
+
+Lemma 9 Let B ∈ Rp×p be a symmetric positive definite matrix and let A ∈ Rn×p be
+arbitrary matrix, n < p. Let λi (A) and λi (AB) be the i-th largest singular values of A and
+34
+
+Spectral Deconfounding
+
+AB respectively. Assume that the smallest singular value of B is at least 1. For i ≤ n, we
+have
+λi (A) ≤ λi (AB).
+On the other hand, if we assume that the largest singular value of B is at most 1, we have
+for i ≤ n that
+λi (A) ≥ λi (AB).
+Proof Let us first show the first statement. Let e1 , . . . , en i f1 , . . . , fn be the left singular
+vectors of A and AB corresponding to the singular values in a decreasing order. For i = 1,
+since λmin (B) ≥ 1, we have:
+λ1 (AB) ≥ k(AB)T e1 k2 ≥ kBAT e1 k2 ≥ kAT e1 k2 = λ1 (A)
+Let us proceed by induction. Since dim(U ∩ V ) ≥ dim(U ) + dim(V ) − n, we conclude that
+Fk = span {f1 , . . . , fk }⊥ P
+and span {e1 , . . . ek+1 } have a non-trivial intersection, so we can
+T
+choose a unit vector v = k+1
+j=1 αj ej ∈ Fk . Since λk+1 (AB) = max{(AB) x : x ∈ Fk , kxk2 =
+1}, we have:
+v
+uk+1
+uX
+T
+T
+λk+1 (AB) ≥ k(AB) vk2 ≥ kA vk2 = t
+αj2 λj (A)2 ≥ λk+1 (A)
+j=1
+
+P 2
+The second inequality holds because λmin (B) ≥ 1 and the last because
+αj = 1 and λi (A)
+are decreasing.
+We can derive the second statement from the first one by considering B ← B −1 , A ← AB,
+since if B has all singular values below 1, B −1 has all singular values at least equal to 1.
+
+Lemma 3 Assume that p > n and that X has i.i.d. sub-Gaussian rows with covariance
+√
+matrix Σ = ΓT Γ + ΣE , where Γ ∈ Rq×p and λmax (ΣE ) = O(1), then we have dq+1 = Op ( p).
+Proof We can write X = ZΣ1/2 , where the rows of Z are i.i.d. sub-Gaussian random
+variables and Cov(Z) = Ip . From Theorem 5.39 from Vershynin (2016) we now have that
+there exist constants c and C such that
+√
+√
+p + C n + t ≥ λmin (Z)
+√
+with probability at least 1 − 2 exp(−ct2 ). Therefore λmax (Z) = Op ( p).
+From this, the assumption λmax (ΣE ) = O(1) and the second part of Lemma 5, we have
+that:
+√
+λq+1 (X) = λq+1 (X) ≤ λq+1 (Σ1/2 )λmax (Z) ≤ λmax (ΣE )1/2 λmax (Z) = Op ( p),
+as required.
+
+35
+
+Ćevid, Bühlmann and Meinshausen
+
+Lemma 5 Assume that X is a random design matrix with i.i.d. rows with covariance
+matrix Σ and suppose p > n. Assume that any of the following conditions is satisfied:
+i) the rows of X have a sub-Gaussian distribution and np → ∞
+ii) the rows of X have a N (0, Σ) distribution and lim inf np > 1
+iii) the rows of X have N (0, Σ) distribution and lim sup nk < 1
+Then we have
+d2k = Ωp (λmin (Σ)p).
+Proof Let us write X = ZΣ1/2 where Z ∈ Rn×p is a matrix with i.i.d. sub-Gaussian rows
+with covariance matrix Ip . Let ζ1 ≤ . . . ≤ ζn be the singular values of Z.
+Since we can write X = ZΣ1/2 , by Lemma 9, we have dk ≥ λmin (Σ)1/2 ζk , so it suffices
+to show that ζk = Ωp (p1/2 ).
+If we are under the first set of assumptions, we have from Theorem 5.39 from Vershynin
+(2010) that there exist constants c and C such that
+√
+
+√
+p − C n − t ≤ ζn
+
+with probability at least 1 − 2 exp(−ct2 ). Therefore, since np → ∞, we have ζk ≥ ζn =
+Ωp (p1/2 ), as required.
+If we are under the second set of assumptions, we have that the entries of Z are i.i.d.
+N (0, 1) variables. From Corollary 5.35 from Vershynin (2010) that there exists constant c
+such that
+√
+√
+p − n − t ≤ ζn
+with probability at least 1 − 2 exp(−ct2 ). Therefore, since lim inf np > 1, we have ζk ≥ ζn =
+Ωp (p1/2 ), as required.
+If we are under the third set of assumptions, we can assume np → 1, because otherwise
+we would be under the second set of assumptions. The empirical distribution of the nonzero
+singular values of n1 Z T Z converges to the Marchenko-Pastur density supported on [0, 4]
+(Marchenko and Pastur, 1967), which is given by
+r
+4−x
+1
+1{x ∈ [0, 4]}
+2π
+x
+Let t = lim sup nk < 1. Then we can choose 0 < δ < 1 − t and z > 0 such that
+P(ζ > z) = t + δ, where ζ is drawn from the Marchenko-Pastur density given above.
+We have
+T
+# singular values of Z n Z larger than z
+→t+δ
+n
+T
+
+so the number of singular values of Z n Z which are larger than z will eventually be larger
+d2
+
+than nt > k, therefore nk > z > 0 eventually, so ζk = Ωp (n1/2 ) = Ωp (p1/2 ), as required.
+
+36
+
+Spectral Deconfounding
+
+Lemma 4 Let X be generated from the confounding model (2.1) and let FPbe a spectral
+transformation shrinking the first q singular values of X to 0. If q is fixed, p1 pi,j=1 |(ΣE )ij |
+log p
+upper bounded and n sp
+min(n,p) → 0, we have that, with probability converging to 1, the
+
+compatibility condition holds for the transformed design matrix X̃ = F X:
+φ21
+n
+
+p
+
+X̃ T X̃
+
+→ φ21
+
+T
+nE E
+
+= Ωp (λmin (ΣE )) .
+
+Proof Let us denote C = HΓ and let us have C̃ = X − X̃ = U (D − D̃)V T , where (D − D̃) is
+a (r × r)-dimensional diagonal matrix (recall r = min(n, p)) whose first q diagonal elements
+correspond to the first q diagonal elements of X and the remaining r − q elements are zero.
+C̃ corresponds to the first q principal components and is a commonly used estimator of C in
+the factor analysis literature.
+From Theorem 3 in Bai (2003) we have for q fixed that
+√ √
+2
+min( n, p)(C̃ij − Cij ) = N (0, σij
+),
+2 < B is bounded from above. By using the standard union bound argument as in
+where σij
+Lemma 8, we have that
+s
+!
+log p
+kC̃ − Ck∞ = Op
+min(n, p)
+
+Therefore, since we have X = C − C̃ + E, we obtain by triangle inequality, the fact that
+√
+kxk2 ≤ pkxk1 for x ∈ Rp and the Hlder’s inequality that
+1
+1
+1
+√ kXαk2 ≥ √ kEαk2 − √ k(C̃ − C)αk2
+n
+n
+n
+1 √
+1
+pkC̃ − Ck∞ kαk1
+≥ √ kEαk2 − √
+n
+n
+1
+1 √
+≥ √ kEαk2 − √
+pkC̃ − Ck∞ (6kαS k1 ) .
+n
+n
+Therefore, from the definition of the compatibility constant, we now have
+√
+6 ps
+φΣ̃ ≥ φ 1 T − √ kC̃ − Ck∞ → φ 1 T ,
+n
+nE E
+nE E
+in probability, since
+√
+
+r
+pskC̃ − Ck∞ = Op
+
+converges to 0 in probability.
+Finally, one can obtain that φ21
+
+T
+nE E
+
+ps
+n
+
+s
+
+log p
+min(n, p)
+
+!
+
+= Ωp (λmin (ΣE )) from the standard argument as
+
+in Bühlmann and van de Geer (2011), i.e. by using that n1 E T E concentrates around its
+expectation ΣE .
+
+37
+
+Ćevid, Bühlmann and Meinshausen
+
+Lemma 6 Consider an arbitrary spectral transformation F as in (3.2). Let 1 ≤ k < r =
+min(n, p) be an arbitrary integer. Then:
+φ2Σ̃ ≥
+
+r
+X
+1
+i=1
+
+1
+d˜2(i) (φ2Mi − φ2Mi−1 ) ≥ d˜2(k) φ2Mk ,
+n
+n
+
+
+
+T
+where Mk = V(1) , . . . , V(k) V(1) , . . . , V(k) .
+Proof We have
+αT Σ̃α =
+
+X
+
+d˜2i (ViT α)2 =
+
+i≤r
+
+X
+
+(d˜2(i) − d˜2(i+1) )
+
+X
+
+T
+α)2
+(V(j)
+
+j≤i
+
+i≤r
+
+where we define d˜r+1 = 0 for convenience. Now using the fact that the infimum of the sum
+is not smaller than the sum of the infimums, we get
+X1
+X1
+φ2Σ̃ ≥
+(d˜2(i) − d˜2(i+1) )φ2Mi =
+d˜2 (φ2 − φ2Mi−1 )
+n
+n (i) Mi
+i≤r
+
+i≤r
+
+where M0 is defined as the null matrix for convenience. Let us now fix k ≤ r. By using that
+the sequence d˜(i) is decreasing, we have
+X1
+i≤r
+
+n
+
+d˜2(i) (φ2Mi − φ2Mi−1 ) ≥
+
+X1
+i≤k
+
+1
+d˜2 (φ2 − φ2Mi−1 ) = d˜2(k) φ2Mk
+n (k) Mi
+n
+
+which finishes the proof.
+
+Lemma 7 If p > n and V has a uniform distribution on the Stiefel manifold, then for any
+k = Ω(n), we have
+ 
+n
+φ2Mk = Ωp
+.
+p
+i.i.d.
+
+Proof Let Z ∈ Rk×p be a random matrix whose components are Zij ∼ N (0, 1). Let
+Z = UZ DZ VZT be its SVD and let ζ1 ≥ . . . ≥ ζk be its singular values.
+Since V is independent of D, [V(1) , . . . , V(k) ] is uniform on the Stiefel manifold as well.
+This matrix has the same distribution as the matrix VZ and thus Mk has same distribution
+as VZ VZT
+From the Lasso theory (Bühlmann and van de Geer (2011)) we know that φ21 Z T Z ≥ 1/2
+with high probability. On the other hand we have φ21 Z T Z ≤ k1 ζ12 φ2V V T .
+
+k
+
+Z Z
+
+k
+
+From Corollary 5.35. of Vershynin (2016) we know
+p
+√
+√
+ζ1 ≤ p + k + C log p
+√
+2
+with probability at least 1 − 2p−C /2 , for any C > 0.
+that ζ1 = Op ( p). By
+ Thisimplies
+
+combining those results, we have that φ2V V T = Ωp
+Z Z
+
+38
+
+k
+p
+
+= Ωp
+
+n
+p
+
+, which finishes the proof.
+
+Spectral Deconfounding
+
+Acknowledgments. The research of D. Ćevid and P. Bühlmann was supported by the
+European Research Council under the Grant Agreement No 786461 (CausalStats - ERC2017-ADG).
+
+References
+Theodore Wilbur Anderson. An introduction to multivariate statistical analysis, volume 2.
+Wiley New York, 1958.
+Jushan Bai. Inferential theory for factor models of large dimensions. Econometrica, 71(1):
+135–171, 2003.
+Jushan Bai and Serena Ng. Confidence intervals for diffusion index forecasts and inference
+for factor-augmented regressions. Econometrica, 74(4):1133–1150, 2006.
+Peter J Bickel, Yaacov Ritov, Alexandre B Tsybakov, et al. Simultaneous analysis of lasso
+and dantzig selector. The Annals of Statistics, 37(4):1705–1732, 2009.
+Xin Bing, Florentina Bunea, Yang Ning, and Marten Wegkamp. Adaptive estimation in
+structured factor models with applications to overlapping clustering. arXiv preprint
+arXiv:1704.06977, 2017.
+Xin Bing, Florentina Bunea, Marten Wegkamp, and Seth Strimas-Mackey. Essential regression. arXiv preprint arXiv:1905.12696, 2019.
+M Alan Brookhart, Til Stürmer, Robert J Glynn, Jeremy Rassen, and Sebastian Schneeweiss.
+Confounding control in healthcare database research: challenges and potential approaches.
+Medical care, 48(6 0):S114, 2010.
+Peter Bühlmann and Sara van de Geer. Statistics for high-dimensional data: methods, theory
+and applications. Springer Science & Business Media, 2011.
+Gary Chamberlain and Michael Rothschild. Arbitrage, factor structure, and mean-variance
+analysis on large asset markets. Technical report, National Bureau of Economic Research,
+1982.
+Venkat Chandrasekaran, Pablo A Parrilo, and Alan S Willsky. Latent variable graphical
+model selection via convex optimization. Annals of Statistics, 40(4):1935–1967, 2012.
+Victor Chernozhukov, Christian Hansen, Yuan Liao, et al. A lava attack on the recovery of
+sums of dense and sparse signals. The Annals of Statistics, 45(1):39–76, 2017.
+David L Donoho, Matan Gavish, and Iain M Johnstone. Optimal shrinkage of eigenvalues in
+the spiked covariance model. arXiv preprint arXiv:1311.0851, 2013.
+Jianqing Fan, Yuan Liao, and Martina Mincheva. Large covariance estimation by thresholding
+principal orthogonal complements. Journal of the Royal Statistical Society: Series B
+(Statistical Methodology), 75(4):603–680, 2013.
+39
+
+Ćevid, Bühlmann and Meinshausen
+
+Jianqing Fan, Yuan Ke, and Kaizheng Wang. Factor-adjusted regularized model selection.
+Journal of Econometrics, 2020.
+Johann A Gagnon-Bartsch and Terence P Speed. Using control genes to correct for unwanted
+variation in microarray data. Biostatistics, 13(3):539–552, 2012.
+David Gerard and Matthew Stephens. Empirical bayes shrinkage and false discovery rate
+estimation, allowing for unwanted variation. arXiv preprint arXiv:1709.10066, 2017.
+Christophe Giraud. Introduction to high-dimensional statistics. Chapman and Hall/CRC,
+2014.
+Sander Greenland, James M Robins, and Judea Pearl. Confounding and collapsibility in
+causal inference. Statistical science, pages 29–46, 1999.
+Trevor Hastie, Robert Tibshirani, and Martin Wainwright. Statistical learning with sparsity:
+the lasso and generalizations. CRC press, 2015.
+Jim C Huang and Nebojsa Jojic. Variable selection through correlation sifting. In International Conference on Research in Computational Molecular Biology, pages 106–123.
+Springer, 2011.
+Peter J Huber. Robust statistics. Springer, 2011.
+Dominik Janzing and Bernhard Schölkopf. Detecting non-causal artifacts in multivariate
+linear regression models. arXiv preprint arXiv:1803.00810, 2018.
+Jinzhu Jia, Karl Rohe, et al. Preconditioning the lasso for sign consistency. Electronic
+Journal of Statistics, 9(1):1150–1172, 2015.
+Jeffrey T Leek and John D Storey. Capturing heterogeneity in gene expression studies by
+surrogate variable analysis. PLoS genetics, 3(9):e161, 2007.
+Vladimir Alexandrovich Marchenko and Leonid Andreevich Pastur. Distribution of eigenvalues for some sets of random matrices. Matematicheskii Sbornik, 114(4):507–536, 1967.
+John Novembre and Matthew Stephens. Interpreting principal component analyses of spatial
+population genetic variation. Nature genetics, 40(5):646, 2008.
+John Novembre, Toby Johnson, Katarzyna Bryc, Zoltán Kutalik, Adam R Boyko, Adam
+Auton, Amit Indap, Karen S King, Sven Bergmann, Matthew R Nelson, et al. Genes
+mirror geography within europe. Nature, 456(7218):98, 2008.
+Debashis Paul, Eric Bair, Trevor Hastie, and Robert Tibshirani. ”preconditioning” for
+feature selection and regression in high-dimensional problems. The Annals of Statistics,
+pages 1595–1618, 2008.
+Rajen Shah and Nicolai Meinshausen. Rsvp-graphs: Fast high-dimensional covariance matrix
+estimation under latent confounding. arXiv preprint arXiv:1811.01076, 2018.
+40
+
+Spectral Deconfounding
+
+Sara Van de Geer. Estimation and testing under sparsity. Lecture Notes in Mathematics,
+2159, 2016.
+Roman Vershynin. Introduction to the non-asymptotic analysis of random matrices. arXiv
+preprint arXiv:1011.3027, 2010.
+Roman Vershynin. High dimensional probability. An Introduction with Applications, 2016.
+Martin J Wainwright. High-dimensional statistics: A non-asymptotic viewpoint, volume 48.
+Cambridge University Press, 2019.
+Yixin Wang and David M Blei.
+arXiv:1805.06826, 2018.
+
+The blessings of multiple causes.
+
+41
+
+arXiv preprint
+
+

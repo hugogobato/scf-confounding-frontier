@@ -1,0 +1,116 @@
+{
+ "version": "benchmarks_frozen_v1",
+ "ledger_hash": "11b162ac814d",
+ "configs": {
+  "A_main": {
+   "mc95_S2": 2.2519,
+   "coord_scales": [
+    36.6098,
+    4.3991
+   ],
+   "size_s2_analytic_null": 0.8833,
+   "size_s0_null": 1.0,
+   "size_b1_null": 0.9833,
+   "ucm_q95_perm": 0.005647,
+   "js_q95_perm": 0.010433,
+   "se2_bench": 0.013347,
+   "ktop_alarm": 2,
+   "r_inj": 2,
+   "l_hat_used": [
+    141935.775,
+    1755.57
+   ],
+   "g_star": 0.762
+  },
+  "A_sub": {
+   "mc95_S2": 2.0085,
+   "coord_scales": [
+    3.2974
+   ],
+   "size_s2_analytic_null": 0.0,
+   "size_s0_null": 1.0,
+   "size_b1_null": 0.525,
+   "ucm_q95_perm": 0.0,
+   "js_q95_perm": 0.014663,
+   "se2_bench": 0.024114,
+   "ktop_alarm": 1,
+   "r_inj": 1,
+   "l_hat_used": [
+    844.855
+   ],
+   "g_star": 0.511
+  },
+  "B_main": {
+   "mc95_S2": 1.9746,
+   "coord_scales": [
+    9.7228
+   ],
+   "size_s2_analytic_null": 0.0,
+   "size_s0_null": 1.0,
+   "size_b1_null": 0.7983,
+   "ucm_q95_perm": 0.0,
+   "js_q95_perm": 0.0084,
+   "se2_bench": 0.004366,
+   "ktop_alarm": 1,
+   "r_inj": 1,
+   "l_hat_used": [
+    11048.551
+   ],
+   "g_star": 1.012
+  },
+  "B_wide": {
+   "mc95_S2": 1.9353,
+   "coord_scales": [
+    10.085
+   ],
+   "size_s2_analytic_null": 0.0083,
+   "size_s0_null": 1.0,
+   "size_b1_null": 0.795,
+   "ucm_q95_perm": 0.0,
+   "js_q95_perm": 0.008714,
+   "se2_bench": 0.124236,
+   "ktop_alarm": 1,
+   "r_inj": 1,
+   "l_hat_used": [
+    80.485
+   ],
+   "g_star": 1.062
+  },
+  "C_main": {
+   "mc95_S2": 1.8951,
+   "coord_scales": [
+    16.6676
+   ],
+   "size_s2_analytic_null": 0.2,
+   "size_s0_null": 1.0,
+   "size_b1_null": 0.8683,
+   "ucm_q95_perm": 0.0,
+   "js_q95_perm": 0.007241,
+   "se2_bench": 0.002,
+   "ktop_alarm": 1,
+   "r_inj": 1,
+   "l_hat_used": [
+    142844.704
+   ],
+   "g_star": 1.663
+  },
+  "C_wide": {
+   "mc95_S2": 1.8707,
+   "coord_scales": [
+    17.5841
+   ],
+   "size_s2_analytic_null": 0.0,
+   "size_s0_null": 1.0,
+   "size_b1_null": 0.8683,
+   "ucm_q95_perm": 0.0,
+   "js_q95_perm": 0.007513,
+   "se2_bench": 0.001,
+   "ktop_alarm": 1,
+   "r_inj": 1,
+   "l_hat_used": [
+    31665.183
+   ],
+   "g_star": 1.764
+  }
+ }
+}

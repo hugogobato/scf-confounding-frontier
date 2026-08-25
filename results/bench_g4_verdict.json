@@ -1,0 +1,31 @@
+{
+ "G4_question": "credible result on real geometry",
+ "families_pf1_pass": 0,
+ "pf1_by_config": {
+  "A_main": false,
+  "A_sub": false,
+  "B_main": false,
+  "B_wide": false,
+  "C_main": false,
+  "C_wide": false
+ },
+ "pf1_primary_note": "PF-1 requires the straddle on the MAIN config of each family",
+ "pf2_scree_false_alarm_unmodified_and_null": true,
+ "pf3": {
+  "tau_ols_err": 0.4210297459341889,
+  "tau_trim_err": 0.17295744703222235,
+  "tau_trim_sign_ok": 1.0,
+  "ratio_ols_over_trim": 2.4342967195610266,
+  "pf3_pass": true
+ },
+ "go_condition": {
+  "null_rejection_in_[0.02,0.10]_on_geq2_families": false,
+  "positive_power_straddles_predicted_frontier": false,
+  "one_predeclared_finding_survives": true
+ },
+ "surviving_findings": [
+  "PF-2",
+  "PF-3"
+ ],
+ "verdict": "REVIEW"
+}

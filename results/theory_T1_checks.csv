@@ -1,0 +1,7 @@
+rep,l,c,gamma,sim_bias_coef,theory_sqrt_l_over_c_plus_l_times_gamma,dev_pct
+note,r=1 min-norm OLS, Haar q redrawn per rep, loading-conditional mean along q,
+1,4.0,2.0,1.3,+0.4388,+0.4333,1.3
+2,9.0,2.0,1.3,+0.3609,+0.3545,1.8
+3,6.708,5.0,1.3,+0.2896,+0.2876,0.7
+4,0.5,2.0,1.3,+0.3660,+0.3677,-0.5
+5,2.0,1.5,1.3,+0.5243,+0.5253,-0.2

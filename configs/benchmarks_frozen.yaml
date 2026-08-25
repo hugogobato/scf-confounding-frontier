@@ -1,0 +1,81 @@
+# SCF Phase 3 frozen benchmark configuration (WP 3.2).
+# FROZEN 2026-08-24 BEFORE any comparative result was run. Any change after
+# data generation requires a deviation entry (D-B1, D-B2, ...) in
+# docs/benchmark_protocol.md and a version bump of this file.
+#
+# Two-pass order (binding):
+#   pass 1: null arms only -> per-config MC thresholds (mc95 of t_maxz) and
+#           predicted frontier g* via the F12 law -> results/benchmark_freeze.json
+#   pass 2: positive arms, controls, sensitivity, M2 block, evaluated against
+#           the FROZEN thresholds and g* values.
+# No pass-2 output may be generated before benchmark_freeze.json exists.
+
+version: "benchmarks_frozen_v1"
+date: "2026-08-24"
+ledger_hash: "11b162ac814d"
+global_seed: 20260823
+
+inputs_sha256:
+  A_main.npz: 862903337437c3c580c5ba91730288fa7fdd7117a064e6c1364a67ddaaa300fb
+  A_sub.npz: 15cdb9f659c74edcea693f4b8e97f0ea7c279f9ffaf7f076daee2f13ea12609b
+  B_main.npz: 1dbc7a11b9a68d40e087d01381a50414ac8aab5bd65fe224c3375df9c7bba178
+  B_wide.npz: 4aecf5aa40da4398bf318dd76fe5da37ef6f0d69a8ea63505e5721dff48a9775
+  C_main.npz: 442f3bc852982718b4a190ab07cef1975ac8cc93b7d832b0b9921a309a5c8f80
+  C_wide.npz: 7cdbfaaffd07061fc3b598d976f7180a0c1ea6c40d1b5d55f00cdec7f7903c21
+
+conventions:
+  noise_floor_bench: "se2 = max(q25(d), 1e-3 * mean(d)); l_j = d_j/se2 - 1 (exact decomposition)"
+  injection_model: "X_obs = Xc_base + f @ Lam'; Y = X_obs @ beta + f @ gam + eps; beta Haar ||beta||=1; f ~ N(0,I); eps ~ N(0,1)"
+  null_twin: "same seeds with the factor draw removed from BOTH X_obs and Y"
+  loading_geometry: "Lam columns = first r_inj sample eigenvectors of the base design, column sd sqrt(d_j - se2)"
+  default_gamma_dir: "equal mass over the r_inj injected coordinates"
+  m2_block: "D = X_obs pi + f delta + nu; pi sparse kpi=max(3,p//100) coords at 1/sqrt(kpi); ||delta||=0.3; nu~N(0,1); tau_true=1"
+
+configs:
+  A_main: {family: addneuromed, n: 717, p: 2000, c: 2.789, r_inj: 2}
+  A_sub:  {family: addneuromed, n: 388, p: 1800, c: 4.639, r_inj: 1, role: batch_free_sensitivity}
+  B_main: {family: ihdp, n: 747, p: 750, c: 1.004, r_inj: 1}
+  B_wide: {family: ihdp, n: 747, p: 150, c: 0.201, r_inj: 1, role: low_c_sensitivity}
+  C_main: {family: k401k, n: 800, p: 1600, c: 2.000, r_inj: 1, m2: true}
+  C_wide: {family: k401k, n: 800, p: 160, c: 0.200, r_inj: 1, role: low_c_sensitivity}
+
+arms:
+  # pass 1 (calibration: thresholds and g*, frozen before any evaluation)
+  "null":      {type: bench, gamma_zero: true, reps: 600}
+  perm_null:   {type: permute_y_of_null, reps: 400}
+  # pass 2 (comparative)
+  pos_half:    {type: bench, g_scale: 0.5, reps: 400}
+  pos_1:       {type: bench, g_scale: 1.0, reps: 400}
+  pos_2:       {type: bench, g_scale: 2.0, reps: 400}
+  splithalf:   {type: split_half_null, reps: 300}
+  align_top:   {type: bench, g_scale: 1.0, dir: top, reps: 200, skip_if_r_inj_leq: 1}
+  align_weak:  {type: bench, g_scale: 1.0, dir: weak, reps: 200, skip_if_r_inj_leq: 1}
+  rinj_minus:  {type: bench, g_scale: 1.0, r_delta: -1, reps: 200, skip_if_r_inj_leq: 1}
+  rinj_plus:   {type: bench, g_scale: 1.0, r_delta: +1, reps: 200}
+  hetero_eps:  {type: bench, g_scale: 1.0, hetero_eps: true, reps: 200}
+  m2_null:     {type: m2, gamma_zero: true, reps: 300, only: [C_main]}
+  m2_pos:      {type: m2, g_scale: 1.0, reps: 300, only: [C_main]}
+
+thresholds_and_gates:
+  size_band_negative_controls: [0.02, 0.10]
+  pf1_power_at_2x_gstar_min: 0.80
+  pf1_power_at_0p5x_gstar_max: 0.25
+  alarm_primary: "S2-bench gate alarm (raw cross-moment zeta coordinates, per-coordinate EMPIRICAL null scales from matched twins + pooled MC-twin max threshold; deviation D-B0 pre-pass-1); frozen gamma-blind S2 and analytic Bonferroni co-reported"
+  baselines_mandatory: [ucm_strength_permboot, js_asymmetry_permboot, scree_tw99_S0, partial_F_B1]
+  g4_go: "size in band under negative controls on >= 2 families; positive-control power straddles g*; >=1 predeclared finding survives sensitivity"
+
+deviations:
+  D-B0: "2026-08-24, BEFORE any pass-1 data. Two findings from WP 3.2 smoke testing, both fixed in the benchmark alarm before calibration data: (1) the frozen S2 statistic evaluates the F12 law with a gamma-blind MODEL estimate sigma_y2_hat=mean(d)+se2_hat; under an injected link the true response scale inflates and suppresses the statistic by sigma_y_true/sigma_y_hat (Phase-2 Erratum-3 self-normalization, strong on real geometry). First fix attempt: plug the realized sd(Y)^2 into var_cal (exact cancellation). (2) On family A the MP-white-bulk premise itself fails (smooth bulk, top spike tau ~ 1400 relative to floor), so even realized-scale coordinate variances misestimate by a geometry factor ~ 4 and the null max-statistic is heavy-tailed (mc95 ~ 5.7 vs ~ 3 elsewhere). Final amendment: gate alarm T = max_j |zeta_j|/s_j with zeta_j = sqrt(n) v_j' (Xc'Yc/n)_j / sqrt(d_j) computed on the RAW CENTERED response (H1 mean shift v_j'Lambda gamma enters in absolute units, immune to response-scale dilution) and s_j = twin-estimated per-coordinate null scales sqrt(mean(zeta_j^2)) from the pass-1 matched-null pool, frozen before any positive/control arm runs; pooled mc95 of T completes the threshold. The F12 law survives as the FRONTIER PREDICTION layer with slopes standardized by the same s_j, which is exactly what PF-1 tests. Phase 2 code paths untouched."
+
+  D-B1: "2026-08-25, post-freeze bookkeeping. Concurrent worker races during pass-1 (multiple resume-safe grinders active simultaneously on overlapping cells) caused row-count REGRESSIONS by lost-update overwrites (last writer wins over a stale snapshot). Detected via C_main/null dropping to 525 rows after freeze. Handling: (a) all cells audited for counts vs frozen targets before any analysis; (b) C_main/null restored to 600 reps by a dedicated solo worker AFTER the fact; (c) frozen thresholds are NOT recomputed (pass-2 data already generated against them); the gate memo reports mc95 sensitivity to the restore (expected negligible); (d) single-owner rule adopted per cell going forward."
+
+predeclared_findings:
+  PF-1: "the calibrated S2 alarm straddles the benchmark-specific predicted frontier on real geometry (size-calibrated under negative controls, power >= 0.8 at 2x g*, <= 0.25 at 0.5x g*)"
+  PF-2: "naive spectrum-gazing false-alarms: S0/TW99 inspection rejects on every unmodified real design before any confounding is injected"
+  PF-3: "trim-then-regress (Onatski k) recovers tau_true=1 sign/magnitude under 1x-frontier injected confounding on C_main where raw-OLS tau error inflates materially"
+  PF-4_secondary: "response-aware UCM strength proxy tracks injected g monotonically but its permuted threshold is invalid as a calibrated confounding test on real geometry"
+
+give_up_rules:
+  KILL_1: "diagnostic miscalibrated on real geometry (null rejection outside [0.02,0.10] across all robust variants)"
+  KILL_2: "irreconcilable contradiction with trusted benchmark results, or nothing over {scree, UCM, JS-criterion, F} on all families"
+  PIVOT_3: "only one application family works -> restrict applied section to that family"

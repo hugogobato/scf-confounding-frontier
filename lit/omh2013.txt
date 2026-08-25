@@ -1,0 +1,1835 @@
+arXiv:1306.4867v1 [math.ST] 20 Jun 2013
+
+The Annals of Statistics
+2013, Vol. 41, No. 3, 1204–1231
+DOI: 10.1214/13-AOS1100
+c Institute of Mathematical Statistics, 2013
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS FOR
+HIGH-DIMENSIONAL DATA
+By Alexei Onatski, Marcelo J. Moreira1 and Marc Hallin2
+University of Cambridge, FGV/EPGE, and Université libre de Bruxelles
+and Princeton University
+This paper studies the asymptotic power of tests of sphericity
+against perturbations in a single unknown direction as both the dimensionality of the data and the number of observations go to infinity.
+We establish the convergence, under the null hypothesis and contiguous alternatives, of the log ratio of the joint densities of the sample covariance eigenvalues to a Gaussian process indexed by the norm of the
+perturbation. When the perturbation norm is larger than the phase
+transition threshold studied in Baik, Ben Arous and Péché [Ann.
+Probab. 33 (2005) 1643–1697] the limiting process is degenerate, and
+discrimination between the null and the alternative is asymptotically
+certain. When the norm is below the threshold, the limiting process is
+nondegenerate, and the joint eigenvalue densities under the null and
+alternative hypotheses are mutually contiguous. Using the asymptotic theory of statistical experiments, we obtain asymptotic power
+envelopes and derive the asymptotic power for various sphericity tests
+in the contiguity region. In particular, we show that the asymptotic power of the Tracy–Widom-type tests is trivial (i.e., equals the
+asymptotic size), whereas that of the eigenvalue-based likelihood ratio
+test is strictly larger than the size, and close to the power envelope.
+
+1. Introduction. Recently, there has been much interest in testing sphericity in a high-dimensional setting. Various tests have been proposed and analyzed in Ledoit and Wolf (2002), Srivastava (2005), Birke and Dette (2005),
+Received August 2011; revised June 2012.
+Supported by CNPq and NSF Grant SES-0819761.
+2
+Supported by the Sonderforschungsbereich “Statistical modelling of nonlinear dynamic
+processes” (SFB 823) of the Deutsche Forschungsgemeinschaft, the IAP research network
+grant P7/06 of the Belgian Federal Government (Belgian Science Policy), and a Discovery
+grant of the Australian Research Council.
+AMS 2000 subject classifications. Primary 62H15, 62B15; secondary 41A60.
+Key words and phrases. Sphericity tests, large dimensionality, asymptotic power,
+spiked covariance, contiguity, power envelope, steepest descent, contour integral representation.
+1
+
+This is an electronic reprint of the original article published by the
+Institute of Mathematical Statistics in The Annals of Statistics,
+2013, Vol. 41, No. 3, 1204–1231. This reprint differs from the original in
+pagination and typographic detail.
+1
+
+2
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+Schott (2006), Bai et al. (2009), Fisher, Sun and Gallagher (2010), Chen,
+Zhang and Zhong (2010) and Berthet and Rigollet (2012). In many studies,
+a distinct interesting alternative to the null of sphericity is the existence of a
+low-dimensional structure or signal in the data. Detecting such a structure
+has been the focus of recent studies in various applied fields including population and medical genetics [Patterson, Price and Reich (2006)], econometrics [Onatski (2009, 2010)], wireless communication [Bianchi et al. (2011)],
+chemometrics [Kritchman and Nadler (2008)] and signal processing [Perry
+and Wolfe (2010)].
+Most of the existing sphericity tests are based on the eigenvalues of the
+sample covariance matrix, which constitute the maximal invariant statistic with respect to orthogonal transformations of the data. The asymptotic
+power of such tests depends on the asymptotic behavior of the sample covariance eigenvalues under the alternative hypothesis. When the alternative
+is a rank-k perturbation of the null, the corresponding population covariance matrix is proportional to a sum of the identity matrix and a matrix of
+rank k. Johnstone (2001) calls such a situation “spiked covariance.”
+The asymptotic behavior of the sample covariance eigenvalues in “spiked
+covariance” models of increasing dimension is well studied. Consider the
+simplest case, when k = 1. If the largest population covariance eigenvalue is
+above the “phase transition” threshold studied in Baik, Ben Arous and Péché
+(2005), then the largest sample covariance eigenvalue remains separated from
+the rest of the eigenvalues, which are asymptotically “packed together as in
+the support of the Marchenko–Pastur density” [Baik and Silverstein (2006)].
+Since the largest eigenvalue separates from the “bulk,” it is easy to detect a
+signal.
+If the largest population covariance eigenvalue is at or below the threshold, the empirical distribution of the sample covariance eigenvalues still converges to the Marchenko–Pastur distribution, but the largest sample covariance eigenvalue now converges to the upper boundary of its support, both
+under the null of sphericity and the “spiked” alternative [Silverstein and Bai
+(1995) and Baik and Silverstein (2006)]. Hence, the signal detection becomes
+problematic. At the threshold, the null and the alternative hypotheses lead
+to different asymptotic distributions for the centered and normalized largest
+sample covariance eigenvalue [Bloemendal and Virág (2012) and Mo (2012)],
+which implies some asymptotic detection power. However, below the threshold, the difference disappears with the joint distribution of any finite number
+of the centered and normalized largest sample covariance eigenvalues converging to the multivariate Tracy–Widom law under both the null and the
+alternative [Johnstone (2001), Baik, Ben Arous and Péché (2005), El Karoui
+(2007) and Féral and Péché (2009)].
+This similarity in the asymptotic behavior of covariance eigenvalues under
+the null and the alternative prompts Nadakuditi and Edelman (2008) and
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+3
+
+Nadakuditi and Silverstein (2010) to call the transition threshold “the fundamental asymptotic limit of sample-eigenvalue-based detection.” They claim
+that no reliable signal detection is possible below that limit in the asymptotic sense. This asymptotic impossibility is also pointed out and discussed
+in several other recent studies, including Patterson, Price and Reich (2006),
+Hoyle (2008), Nadler (2008), Kritchman and Nadler (2009) and Perry and
+Wolfe (2010).
+In this paper, we analyze the capacity of statistical tests to detect a onedimensional signal with the corresponding population covariance eigenvalue
+below the “impossibility threshold,” showing that the terminology “impossibility threshold” is overly pessimistic. We establish that the eigenvalue region below the threshold actually is the region of mutual contiguity [in the
+sense of Le Cam (1960)] of the joint distributions of the sample covariance
+eigenvalues under the null and under the alternative. We obtain the limit
+in distribution of the log likelihood ratio process inside this contiguity region and derive the asymptotic power envelope for sample-eigenvalue-based
+detection tests.
+The power envelope is larger than size for local alternatives and monotonically tends to one as the signal’s population eigenvalue approaches the
+threshold from below. Hence, the detection of a signal with high asymptotic probability is quite possible even in cases where the largest population
+covariance eigenvalue is smaller than the threshold, especially when the distance from the threshold remains small.
+In the contiguity region, the log likelihood ratio is asymptotically equivalent to a simple statistic related to the Stieltjes transform of the empirical
+distribution of the sample covariance eigenvalues. The reason the asymptotic
+behavior of this statistic differs under the null and under the alternative despite the apparent similarity of eigenvalue behaviors just mentioned is that
+it is not based merely on a contrast between the largest and the rest of the
+eigenvalues. The information about the presence of the signal exploited by
+this statistic is hidden in the small deviations of the empirical distribution
+of the eigenvalues from its Marchenko–Pastur limit.
+Let us examine our setting and our results in more detail. Suppose that
+data consist of n independent observations of p-dimensional real-valued vectors Xt distributed according to the Gaussian law with mean zero and covariance matrix σ 2 (Ip + hvv ′ ), where Ip is the p-dimensional identity matrix,
+σ and h are scalars and v is a p-dimensional vector with Euclidean norm one.
+We are interested in the asymptotic power of the tests of the null hypothesis
+H0 : h = 0 against the alternative H1 : h > 0 based on the eigenvalues of the
+sample covariance matrix of the data when both n and p go to infinity. The
+vector v is an unspecified nuisance parameter indicating the direction of the
+perturbation of sphericity. In contrast to Berthet and Rigollet (2012), who
+
+4
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+study signal detection in a similar setting where the vector v is sparse, we
+do not constrain v in any way except normalizing its Euclidean norm to one.
+We consider the cases of known and unknown σ 2 . For the sake of brevity,
+in the rest of this Introduction, we discuss only the case of unknown σ 2 ,
+which, in practice, is also more relevant. Let λj be the jth largest sample
+covariance eigenvalue, let µj = λj /(λ1 + · · · + λp ) be its normalized version
+and let µ = (µ1 , . . . , µm−1 ), where m = min(n, p). We begin our analysis with
+a study of the asymptotic properties of the likelihood ratio process L(h; µ)
+defined as the ratio of the density of µ when h 6= 0 to that when h = 0. We
+represent L(h; µ) in the form of an integral over a contour in the complex
+plane and use the Laplace approximation method and recent results from
+the large random matrix theory to derive an asymptotic expansion of L(h; µ)
+as p, n → ∞ so that p/n → c ∈ (0, ∞), which we throughout abbreviate into
+p, n →c ∞.
+√
+We show that, for any h̄ such that 0 < h̄ < c, ln L(h; µ) converges in
+distribution under the null to a Gaussian process L(h; µ) on h ∈ [0, h̄] with
+E[L(h; µ)] = 14 [ln(1 − c−1 h2 ) + c−1 h2 ]
+
+and
+Cov(L(h1 ; µ), L(h2 ; µ)) = − 21 [ln(1 − c−1 h1 h2 ) + c−1 h1 h2 ].
+By Le Cam’s first lemma [see van der Vaart (1998), page 88], this implies that
+the joint distributions of the normalized sample covariance eigenvalues under
+the null and under the alternative are mutually contiguous for any h ∈ [0, h̄].
+We also √
+show that these joint distributions are not mutually contiguous for
+any h > c.
+Since L(h; µ), as a likelihood ratio process, is not of the LAN Gaussian
+shift type, local asymptotic normality does not hold, and the asymptotic
+optimality analysis of tests of H0 : h = 0 against H1 : h > 0 is difficult. However, an asymptotic power envelope is easy to construct using the Neyman–
+Pearson lemma along with Le Cam’s third lemma. We show that, for tests of
+asymptotic size α, the maximum achievable
+power against a specific alterq
+native h = h1 is 1 − Φ[Φ−1 (1 − α) − − 12 (ln(1 − c−1 h21 ) + c−1 h21 )], where Φ,
+as usual, denotes the standard normal distribution function.
+Using our result on the limiting distribution of ln L(h; µ) and Le Cam’s
+third lemma, we compute the asymptotic powers of several previously proposed tests of sphericity and of the likelihood ratio (LR) test based on µ.
+We find that the power of the LR test comes close to the asymptotic power
+envelope. The LR test outperforms the test proposed by John (1971) and
+studied in Ledoit and Wolf (2002), as well as Srivastava (2005) and the test
+proposed by Bai et al. (2009). The asymptotic powers of the tests based on
+the largest sample covariance eigenvalue, such as the tests proposed by Bejan
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+5
+
+(2005), Patterson, Price and Reich (2006), Kritchman and Nadler (2009),
+Onatski (2009), Bianchi et al. (2011) and Nadakuditi and Silverstein (2010),
+equals the tests’ asymptotic size for alternatives in the contiguity region.
+The rest of the paper is organized as follows. Section 2 provides a representation of the likelihood ratio in terms of a contour integral. Section 3
+applies Laplace’s method to obtain an asymptotic approximation to the contour integral. Section 4 uses that approximation to establish the convergence
+of the log likelihood ratio process to a Gaussian process. Section 5 provides
+an analysis of the asymptotic power of various sphericity tests and derives
+the asymptotic power envelope. Section 6 concludes. Proofs are given in
+the Appendix; the more technical ones are relegated to the Supplementary
+Appendix [Onatski, Moreira and Hallin (2013)].
+2. Likelihood ratios as contour integrals. Let X be a p × n matrix with
+i.i.d. real Gaussian N (0, σ 2 (Ip + hvv ′ )) columns. Let λ1 ≥ λ2 ≥ · · · ≥ λp
+be the ordered eigenvalues of n1 XX ′ and let λ = (λ1 , . . . , λm ), where m =
+min{n, p}. Finally, let µ = (µ1 , . . . , µm−1 ), where µj = λj /(λ1 + · · · + λp ).
+As explained in the Introduction, our goal is to study the asymptotic
+power of the eigenvalue-based tests of H0 : h = 0 against H1 : h > 0. If σ 2
+is known, the model is invariant with respect to orthogonal transformations, and the maximal invariant statistic is λ. Therefore, we consider tests
+based on λ. If σ 2 is unknown (which, strictly speaking, is what is meant
+by “sphericity”), the model is invariant with respect to orthogonal transformations and multiplications by nonzero scalars, and the maximal invariant
+is µ. Hence, we consider tests based on µ. Note that the distribution of µ
+does not depend on σ 2 , whereas if σ 2 is known, we can always normalize
+λ dividing it by σ 2 . Therefore, in what follows, we will assume that σ 2 = 1
+without loss of generality.
+Let us denote the joint density of λ1 , . . . , λm as p(λ; h) and that of µ1 , . . . ,
+µm−1 as p(µ; h). The following proposition gives explicit formulas for p(λ; h)
+and p(µ; h).
+Proposition 1. Let S(r) be the (r − 1)-dimensional unit sphere, and let
+(dxr ) be the invariant measure on S(r) normalized so that the total measure
+is one. Further, let Λ = diag(λ1 , . . . , λp ) and M = diag(µ1 , . . . , µp ). Then
+Z
+′
+γ(n, p, λ)
+e(n/2)(h/(1+h))xp Λxp (dxp )
+(2.1)
+p(λ; h) =
+n/2
+(1 + h)
+S(p)
+and
+
+p(µ; h) =
+(2.2)
+
+δ(n, p, µ)
+(1 + h)n/2
+Z ∞
+Z
+(np−2)/2 −ny/2
+y
+e
+×
+0
+
+S(p)
+
+′
+
+e(n/2)(yh/(1+h))xp M xp (dxp ) dy,
+
+6
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+Fig. 1.
+
+Contour of integration K in (2.3).
+
+where γ(n, p, λ) and δ(n, p, µ) depend only on n and p, and on λ and µ,
+respectively.
+The spherical integrals in (2.1) and (2.2) can be represented in the form of
+a confluent hypergeometric function 1 F1 of matrix argument [Hillier (2001),
+page 4]. For example, for the integral in (2.1),
+
+
+Z
+1 p n h
+(n/2)(h/(1+h))x′p Λxp
+(dxp ) = 1 F1
+e
+, ;
+Λ .
+2 2 2 1+h
+S(p)
+Butler and Wood (2002) develop Laplace approximations to functions 1 F1
+but do not analyze the asymptotic behavior of the approximation errors. The
+next lemma derives an alternative representation of the spherical integrals
+in Proposition 1. This representation has the form of a contour integral of
+a single complex variable, and our asymptotic analysis will be based on the
+Laplace approximation to such an integral.
+Lemma 2. Let D = diag(d1 , . . . , dr ), where dj are arbitrary complex numbers. Further, let K be a contour in the complex plane starting at −∞, encircling counter-clockwise the points 0, d1 , . . . , dr , and going back to −∞. Such
+a contour is shown in Figure 1. We have
+Z
+I
+r
+Y
+Γ(r/2)
+x′r Dxr
+s
+(dxr ) =
+e
+(2.3)
+(s − dj )−1/2 ds.
+e
+2πi
+S(r)
+K
+j=1
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+7
+
+Proof. The integral on the left-hand side of (2.3) is the expected value
+y 2 d +···+y 2 d
+of exp( 1 y12 +···+yr2 r ), where y1 , . . . , yr are independent standard normal ranr
+
+1
+
+y2
+
+j
+dom variables. The variables uj = y2 +···+y
+2 , j = 1, . . . , r, have Dirichlet disr
+
+1
+
+tribution D(k1 , . . . , kr ) with parameters k1 = · · · = kr = 21 . Denoting the expectation operator with respect to such a distribution as ED , we have
+Z
+′
+(2.4)
+exr Dxr (dxr ) = ED exp(u1 d1 + · · · + ur dr ).
+S(r)
+
+Now, expanding the exponent in the latter expression into power series and
+taking expectations term by term yields
+∞
+X
+ED (u1 d1 + · · · + ur dr )k
+ED exp(u1 d1 + · · · + ur dr ) =
+(2.5)
+.
+k!
+k=0
+
+The Dirichlet average of (u1 d1 + · · · + ur dr )k is well studied. By Theorem 3.1
+of Dickey (1983),
+(2.6)
+
+ED [(u1 d1 + · · · + ur dr )k ]
+=
+
+X
+
+m1 ,...,mr ≥0
+m1 +···+mr =k
+
+(1/2)m1 · · · (1/2)mr m1
+k!
+r
+d1 · · · dm
+r ,
+m1 ! · · · mr !
+(r/2)k
+
+where (k)s = k(k + 1) · · · (k + s − 1) is Pochhammer’s notation for the shifted
+factorial.
+Combining (2.6) with (2.5) and (2.4), we get
+Z
+mr
+1
+X
+′
+(1/2)m1 · · · (1/2)mr dm
+1 · · · dr
+exr Dxr (dxr ) =
+(r/2)m1 +···+mr m1 ! · · · mr !
+S(r)
+m1 ,...,mr ≥0
+(2.7)
+= r Φ(1/2, . . . , 1/2; r/2; d1 , . . . , dr ),
+where the last equality is the definition of the confluent form of the Lauricella FD function, denoted as r Φ(·). The functions r Φ(·) were introduced
+by Erdelyi (1937) and are discussed by Srivastava and Karlsson (1985). In
+probability and statistics, they were recently used to study the mean of a
+Dirichlet process [see Lijoi and Regazzini (2004) and references therein].
+Erdelyi (1937), formula (8,6), establishes the following contour integral
+representation of r Φ(·):
+(2.8)
+
+r Φ(k1 , . . . , kr ; t; d1 , . . . , dr )
+
+Γ(t)
+=
+2πi
+
+I
+
+es s−t+k1 +···+kr
+K
+
+r
+Y
+
+(s − dj )−kj ds.
+
+j=1
+
+Lemma 2 follows from equalities (2.7) and (2.8). 
+
+8
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+The contour integral representation given in Lemma 2 has been derived independently by Mo (2012) and Wang (2012), who use it to study the largest
+sample covariance eigenvalue when the corresponding population eigenvalue
+equals the critical threshold or lies above it. Our proof effectively takes
+advantage of old results of Dickey (1983) and Erdelyi (1937), and thus is
+different from the proofs in the above mentioned papers.
+Using Lemma 2 and Proposition 1, we derive contour integral representations for the likelihood ratios L(h; λ) = p(λ; h)/p(λ; 0) and L(h; µ) =
+p(µ; h)/p(µ; 0). The quantity L(h; λ) is the likelihood ratio based on λ as
+opposed to the entire data X. Similarly, L(h; µ) is the likelihood ratio based
+on µ.
+Lemma 3. Let K be a contour in the complex plane that starts at −∞,
+then encircles counter-clockwise the sample covariance eigenvalues λ1 , . . . , λp ,
+and goes back to −∞. In addition, we require that for any z ∈ K, Re z <
+1+h
+h S, where Re z denotes the real part of z ∈ C and S = λ1 + · · · + λp .
+Then,
+ (p−2)/2
+I
+p
+Y
+1
+2
+(2.9) L(h; λ) = k1
+(z − λj )−1/2 dz
+e(n/2)(h/(1+h))z
+n
+2πi K
+j=1
+
+and
+S (p−2)/2
+2πi
+I
+p
+Y
+−((np−p+2)/2) ln(1−(h/(1+h))(z/S))
+(z − λj )−1/2 dz,
+e
+×
+
+L(h; µ) = k2
+(2.10)
+
+K
+
+j=1
+
+where k1 = h−(p−2)/2 (1 + h)(p−n−2)/2 Γ(p/2) and k2 = k1 Γ((np−p+2)/2)
+.
+Γ(np/2)
+Close inspection of the proof of Lemma 3 reveals that the right-hand side
+of (2.10) depends on λ only through µ. Although it is possible to express
+L(h; µ) as an explicit function of µ, the implicit form given in (2.10) is
+convenient because it allows us to use similar methods for the asymptotic
+analysis of the two likelihood ratios.
+In the next two sections, we perform an asymptotic analysis of L(h; λ) and
+L(h; µ) that relies on the Laplace approximation of the contour integrals in
+Lemma 3 after those contours have been suitably deformed without changing
+the value of the integrals.
+3. Laplace approximation. In this section, we derive the Laplace approximations to the contour integrals in Lemma 3. Laplace’s method for
+contour integrals is discussed, for example, in Chapter 4 of Olver (1997).
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+9
+
+The
+method describes an asymptotic approximation to a contour integral
+H −nf
+(z) g(z) dz as n → ∞, where f (z) and g(z) are analytic functions of
+e
+K
+z. The approximation is usually based on the part of the contour integral
+coming from a neighborhood of some point z0 ∈ K, where z0 is such that
+d
+dz f (z0 ) = 0 and Re f (z0 ) = minz∈K Re f (z). For such a point to exist, one
+might need to deform the contour so that, by Cauchy’s theorem, the value
+of the integral does not change. Typically, the deformation is chosen so that
+Re(−f (z)) declines in the fastest way possible as z goes away from z0 along
+the contour. For this reason, the method is called the method of steepest
+descent.
+The contour integrals in (2.9) and (2.10) can be represented in the Laplace
+form with a deterministic function f (z) and a random function g(z) that
+converges to a log-normal random process on the contour as p, n →c ∞. To
+see this, note
+P that the logarithm of the multiple product in (2.9) and (2.10)
+equals − 12 pj=1 ln(z − λj ). For each z, this expression is a special form of the
+P
+linear spectral statistic pj=1 ϕ(λj ) studied by Bai and Silverstein (2004).
+According to the central limit theorem (Theorem 1.1) established in that
+paper, the random variable
+Z
+p
+X
+(3.1)
+ln(z − λj ) − p ln(z − λ) dFp (λ)
+∆p (z) =
+j=1
+
+converges in distribution to a normal random variable when p, n →c ∞. Here
+Fp (λ) is the cumulative distribution function of the Marchenko–Pastur distribution with a mass of max(0, 1 − c−1
+p ) at zero and density
+q
+1
+ψp (x) =
+(3.2)
+(bp − x)(x − ap ),
+2πcp x
+√
+√
+where cp = p/n, ap = (1 − cp )2 and bp = (1 + cp )2 .
+Such a convergence suggests the following choices of f (z) and g(z) in the
+Laplace forms of the integrals in (2.9) and (2.10):
+
+
+Z
+1
+h
+f (z) = −
+(3.3)
+z − cp ln(z − λ) dFp (λ)
+2 1+h
+and
+
+
+
+
+1
+
+
+for (2.9),
+exp − ∆p (z) ,
+
+
+2
+
+
+
+
+
+h z
+1
+np − p + 2
+n h
+(3.4) g(z) =
+
+ln
+1
+−
+z
+−
+∆
+(z)
+,
+exp
+−
+−
+p
+
+
+2
+1+hS
+2 1+h
+2
+
+
+for (2.10).
+
+As mentioned above, a particularly useful deformation of K passes through
+d
+the point z = z0 (h) where dz
+f (z) = 0. Taking the derivative of the right-hand
+
+10
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+side of (3.3), we see that z0 (h) must satisfy
+h
+(3.5)
++ cp mp (z0 (h)) = 0,
+1+h
+R 1
+where mp (z) = λ−z dFp (λ) is the Stieltjes transform of the Marchenko–
+Pastur distribution with parameter cp . The properties of mp (z) are well
+studied. In particular, the analytic expression for mp (z) is known; see, for
+example, equation (2.3) in Bai (1993). For z 6= 0, which lies outside the
+support of Fp (λ), we have
+p
+−z − cp + 1 + (z − cp − 1)2 − 4cp
+mp (z) =
+(3.6)
+,
+2cp z
+where the branch p
+of the square root is chosen so that the real and the
+imaginary parts of (z − cp − 1)2 − 4cp have the same signs as the real and
+the imaginary parts of z − cp − 1, respectively.
+√
+Substituting (3.6) into (3.5) and solving for z0 (h) when h∈(0, cp ), we get
+(1 + h)(cp + h)
+.
+h
+√
+When h ≥ cp , there are no solutions to (3.5) that lie outside the support of
+√
+√
+Fp (λ). When h = cp , the right-hand side of (3.7) equals (1 + cp )2 , which
+√
+lies exactly on the boundary of the support of Fp (λ). When h > cp , (3.7)
+provides a solution to (3.5) only when the branch of the square root in (3.6)
+is chosen differently. As can be verified using (3.3) and (3.6), in such a case,
+d
+(3.7).
+dz f (z) is strictly negative at z = z0 (h) given by √
+As cp → c, any fixed h that is smaller than c eventually satisfies the
+√
+√
+d
+f (z) = 0 at z = z0 (h). Therefore, for h < c,
+inequality h < cp , so that dz
+we will deform the contour K into a contour K that passes through z0 (h).
+We define K as K = K+ ∪ K− , where K− is the complex conjugate of K+
+and K+ = K1 ∪ K2 with
+(3.7)
+
+(3.8)
+and
+
+(3.9)
+
+z0 (h) =
+
+K1 = {z0 (h) + it : 0 ≤ t ≤ 3z0 (h)}
+
+K2 = {x + 3iz0 (h) : −∞ < x ≤ z0 (h)}.
+
+Figure 2 illustrates the choice of K.
+A proof of the following technical lemma is relegated to the Supplementary
+Appendix [Onatski, Moreira and Hallin (2013)].
+Lemma 4. Suppose that
+√ our null hypothesis is true, and let h̄ be any fixed
+number such that 0 < h̄ < c. Deforming contour K into K leaves the value
+of the integrals (2.9) and (2.10) in Lemma 3 unchanged for all h ∈ (0, h̄]
+with probability approaching one as p, n →c ∞.
+We now derive, uniform (over h ∈ (0, h̄]), Laplace approximations to the
+integrals (2.9) and (2.10) in Lemma 3. First, we introduce additional no-
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+Fig. 2.
+
+11
+
+Deformation K of contour K.
+
+tation. When f (z) and g(z) are analytic at z0 = z0 (h), let fs and gs with
+s = 0, 1, . . . be the coefficients in the power series representations
+(3.10)
+
+f (z) =
+
+∞
+X
+s=0
+
+fs (z − z0 )s ,
+
+g(z) =
+
+∞
+X
+s=0
+
+gs (z − z0 )s .
+
+When f (z) and g(z) are not analytic at z0 , let the coefficients fs and gs be
+arbitrary numbers for all s.
+The following lemma is a generalization of the well-known Watson lemma
+for contour integrals; see Olver (1997), page 118. Theorem 7.1 in Olver
+(1997), page 127, derives a similar generalization for the case when f (z)
+and g(z) are fixed deterministic analytic functions. In contrast to Olver’s
+theorem, our lemma allows g(z) to be a random function, and f (z) to depend
+on parameter h, and obtains a uniform approximation over h ∈ (0, h̄]. The
+proof is relegated to the Supplementary Appendix [Onatski, Moreira and
+Hallin (2013)].
+Lemma 5. Under the conditions of Lemma 4, for any h ∈ (0, h̄] and any
+positive integer m, as p, n →c ∞, we have
+"m−1 
+#
+
+I
+X
+1
+O
+(1)
+a
+p
+2s
+e−nf (z) g(z) dz = 2e−nf0
+Γ s+
+(3.11)
++ m+1/2 ,
+s+1/2
+2
+n
+hn
+K
+s=0
+where Op (1) is uniform in h ∈ (0, h̄]. The coefficients as in (3.11) can be
+expressed through fs and gs defined above. In particular, we have
+
+
+ 
+g0
+6f3 g1
+1
+15f32 6f4
+(3.12) a0 = 1/2 and a2 = 4g2 −
+.
+−
++
+g0
+2
+3/2
+f
+f
+2f
+2
+2
+2f2
+8f2
+2
+
+12
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+As we explained above, z0 (h) is not a critical point of f (z) when h >
+√
+cp . This leads to a situation where the Laplace method for the integral
+H −nf (z)
+g(z) dz delivers a rather crude approximation. Fortunately, our
+Ke
+√
+asymptotic analysis tolerates crude approximations when h > cp . The following lemma, which is proven in the Supplementary Appendix [Onatski,
+Moreira and Hallin (2013)], is sufficient for our purposes.
+√
+Lemma 6. Let h̃ > c, and denote by K(h̃) the corresponding contour,
+as defined in (3.8) and (3.9). Under the null hypothesis, deforming the contour K into K(h̃) leaves the value of the integrals in Lemma 3 unchanged
+for all h ∈ [h̃, ∞) with probability approaching one as p, n →c ∞. Further,
+for any h ∈ [h̃, ∞),
+I
+(3.13)
+e−nf (z) g(z) dz = e−nf (z0 (h̃)) Op (1),
+K(h̃)
+
+where Op (1) is uniform over h ∈ [h̃, ∞).
+Neither Lemma 5√ nor Lemma 6 addresses interesting cases with h in
+a neighborhood of c. In such cases, z0 (h) would be close to the upper
+boundary of the support of the Marchenko–Pastur distribution. This may
+lead to the nonanalyticity of f (z) and g(z) on K and a more complicated
+asymptotic√ behavior of g(z). We leave the analysis of cases where h may
+approach c for future research.
+Guionnet and Maı̈da (2005) study the asymptotic behavior of spherical
+integrals using large deviation techniques. Their Theorems 3 and 6 imply
+Lemma 6 and can be used to obtain the first term in the asymptotic expansion of Lemma 5.
+4. Asymptotic behavior of the likelihood ratios. In this section, we discuss the asymptotic behavior of the likelihood ratios L(h; λ) and L(h; µ).
+First, let us focus on the case where h ≤ h̄. In the Appendix, we use Lemmas 4 and 5 to derive the following theorem.
+Theorem 7. Suppose that the null
+√ hypothesis is true (h = 0). Let h̄ be
+any fixed number such that 0 < h̄ < c and let C[0, h̄] be the space of realvalued continuous functions on [0, h̄] equipped with the supremum norm.
+Then as p, n →c ∞, we have, uniformly in h ∈ (0, h̄]
+(4.1)
+
+2
+
+L(h; λ) = e−[∆p (z0 (h))−ln(1−h /cp )]/2 + Op (n−1 )
+
+and
+2
+
+2
+
+(4.2) L(h; µ) = e−[∆p (z0 (h))−ln(1−h /cp )−h /(2cp )+(h/cp )(S−p)]/2 + Op (n−1 ).
+Furthermore, ln L(h; λ) and ln L(h; µ), viewed as random elements of C[0, h̄],
+converge weakly to L(h; λ) and L(h; µ) with Gaussian finite-dimensional dis-
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+13
+
+tributions such that, for any h1 , . . . , hr ∈ [0, h̄],
+(4.3)
+(4.4)
+(4.5)
+
+E(L(hj ; λ)) = 14 ln(1 − c−1 h2j ),
+
+Cov(L(hj ; λ), L(hk ; λ)) = − 21 ln(1 − c−1 hj hk ),
+
+E(L(hj ; µ)) = 14 [ln(1 − c−1 h2j ) + c−1 h2j ]
+
+and
+(4.6)
+
+Cov(L(hj ; µ), L(hk ; µ)) = − 21 [ln(1 − c−1 hj hk ) + c−1 hj hk ].
+
+The log likelihood ratio processes studied in Theorem 7 are not of the
+standard locally asymptotically normal form. This is because they cannot be
+represented as ϕ1 (h)W + ϕ2 (h), where ϕ1 (h) and ϕ2 (h) are some deterministic functions of h, and W is a standard normal random variable. Indeed, had
+the representation ϕ1 (h)W + ϕ2 (h) been possible, the covariance of the limiting log likelihood process at h1 and h2 would have been
+qϕ1 (h1 )ϕ1 (h2 ). Hence,
+
+− 21 ln(1 − c−1 h2 ) and
+√
+ϕ1 (h1 )ϕ1 (h2 ) √
+= − 12 ln(1 − c−1 h1 h2 ), which cannot be true for all 0 < h1 < c
+and 0 < h2 < c.
+The quantity ∆p (z0 (h)) plays an important role in the limits of experiments. The likelihood ratio processes are well approximated by simple functions of ∆p (z0 (h)) and S, which are easy to compute from the data and are
+asymptotically Gaussian by the central limit theorem of Bai and Silverstein
+(2004). Recalling the definition (3.1) of ∆p (z0 (h)), we see that asymptotically, all statistical information about parameter h is contained in the deviations of the sample covariance eigenvalues λ1 , . . . , λp from limn,p→∞ z0 (h) =
+(1+h)(h+c)
+. Although
+the latter limit does not have an obvious interpretah
+√
+tion √when h < c, it is the probability limit of λ1 under alternatives with
+h > c; see, for example, Baik and Silverstein
+(2006).
+√
+Let us now consider cases where h > . c. We prove the following theorem
+in the Appendix.
+
+for L(h; λ), for instance, we would have had ϕ1 (h) =
+
+Theorem 8. Suppose that the √
+null hypothesis is true (h = 0), and let
+H be any fixed number such that c < H < ∞. Then as p, n →c ∞, the
+following holds. For any h ∈ [H, ∞), the likelihood ratios L(h; λ) and L(h; µ)
+converge to zero; more precisely, there exists δ > 0 that depends only on H
+such that
+(4.7)
+
+L(h; λ) = Op (e−nδ )
+
+and
+
+L(h; µ) = Op (e−nδ ).
+
+Note that Theorem 7 and Le Cam’s first lemma [see van der Vaart (1998),
+page 88] imply that the joint distributions of λ1 , . . . , λm (as well as those of
+µ1 , . . . , µm−1 ) under the null and under the alternative are mutually contigu-
+
+14
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+√
+ous for any h ∈√
+[0, c). In contrast, Theorem 8 shows that mutual contiguity
+is lost for h > c. For such h, consistent tests (as p, n →c ∞) exist at any
+probability level α > 0.
+In a similar setting, Nadakuditi and Edelman (2008) call the number√of
+“signal eigenvalues” of the population covariance matrix that exceed 1 + c
+the “effective number of identifiable signals” [see also Nadakuditi and Silverstein (2010)]. Theorems 7 and 8 shed light on the formal statistical content
+of this concept. The “identifiable signals” are detected with probability approaching one in large samples (irrespective of the probability level α > 0 at
+which identification tests are performed). Other signals still can be detected,
+but the probability of detecting them will never approach one (whatever the
+probability level α < 1).
+5. Asymptotic power analysis. Theorem 7 can be used to study “local”
+powers of the tests for detecting signals in noise. The nonstandard form
+of the limit of log likelihood ratio processes in our setting makes it hard
+to develop tests with optimal local power properties. However, using the
+Neyman–Pearson lemma and Le Cam’s third lemma, we can analytically
+derive the local asymptotic power envelope and compare local asymptotic
+powers of specific tests to this envelope.
+p
+It is convenient to reparametrize our problem
+to θ = − ln(1 − h2 /c).
+√
+As h varies in the region of contiguity [0, c), θ spans the entire half-line
+[0, ∞). Note that the asymptotic mean and autocovariance functions of the
+log likelihood
+p ratios derived in the previous section depend on h only through
+√
+h/ c = 1 − e−θ2 . Therefore, underpthe new√parametrization, they depend
+only on θ. Loosely speaking, θ and p/n ∼ c play the classical roles of a
+“local parameter” and a contiguity rate, respectively.
+Let β(θ1 ; λ) and β(θ1 ; µ) be the asymptotic powers of the asymptotically
+most powerful λ- and µ-based tests of size α of the null θ = 0 against the
+alternative θ = θ1 . The following proposition is proven in the Appendix.
+Proposition 9.
+tion. Then
+(5.1)
+
+Let Φ denote the standard normal distribution func
+
+β(θ1 ; λ) = 1 − Φ Φ
+
+and
+(5.2)
+
+β(θ1 ; µ) = 1 − Φ[Φ
+
+−1
+
+−1
+
+θ1
+(1 − α) − √
+2
+
+(1 − α) −
+
+q
+
+
+
+1 2
+−θ12 )].
+2 (θ1 − 1 + e
+
+Plots of the asymptotic power envelopes β(θ1 ; λ) and β(θ1 ; µ) against
+θ1 for asymptotic size α = 0.05 are shown in the left panel of Figure 3.
+The power loss of the µ-based tests relative to the λ-based tests is due to
+the nonspecification of σ 2 . In contrast to λ-based tests, µ-based tests may
+achieve the corresponding power envelope even when σ 2 is unknown.
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+15
+
+Fig. 3. The maximal asymptotic power of the λ-based tests (dashed lines) and µ-based
+tests (solid lines) of θ = 0 against θ = θ1 . Left panel: θ-parametrization. Right panel:
+h-parametrization.
+
+The right panel of Figure 3 shows
+√ the envelopes as functions of the original parameter h normalized by c. We see that the alternatives that can
+theoretically be detected with high probability are concentrated near the
+√
+threshold h = c. The strong nonlinearity of the θ-parametrization should
+be kept in mind while interpreting the figures that follow.
+It is interesting to compare the power envelopes to the asymptotic powers
+of the likelihood ratio (LR) and weighted average power (WAP) tests. The
+λ-based LR and WAP tests of θ = 0 against the alternative θ ∈ (0, M ], where
+M < ∞, would reject the null if and only if, respectively, 2 supθ∈(0,M ] ln L(θ; λ)
+RM
+and ln 0 L(θ; λ)W (dθ) are sufficiently large. The power of a WAP test
+would, of course, depend on the choice of the weighting measure W (dθ).
+The µ-based LR and WAP tests are defined similarly. Theorem 7 and Le
+Cam’s third lemma suggest a straightforward procedure for the numerical
+evaluation of the corresponding asymptotic power functions.
+Consider, for example, the λ-based LR test statistic. According to Theorem 7, its asymptotic distribution under the null equals the distribution of
+2 supθ∈(0,M ] Xθ , where Xθ is a Gaussian process with E(Xθ ) = −θ 2 /4 and
+q
+2
+2
+1
+Cov(Xθ1 , Xθ2 ) = − 2 ln(1 − (1 − e−θ1 )(1 − e−θ2 )). According to Le Cam’s
+third lemma, under a specific alternative θ = θ1 ≤ M , the asymptotic distribution of the LR statistic equals the distribution of 2 supθ∈(0,M ] X̃θ , where
+X̃θ is a Gaussian process with the same covariance function as that of Xθ ,
+but with a different mean: E(X̃θ ) = E(Xθ ) + Cov(Xθ , Xθ1 ).
+
+16
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+Fig. 4. The asymptotic power envelope (dotted line), the asymptotic power of the LR test
+(solid line), and the asymptotic power of the WAP test with uniform weighting measure on
+θ ∈ [0, 6] (dashed line). Left panel: λ-based tests and envelope. Right panel: µ-based tests
+and envelope.
+
+Therefore, to numerically evaluate the asymptotic power function of the
+λ-based LR test, we simulate 500,000 observations of Xθ on a grid of 1000
+equally spaced points in θ ∈ [0, M = 6], where M = 6 is chosen as the upper
+limit of the grid because it is large enough for the power envelopes to rich the
+value of 99%. For each observation, we save its supremum on the grid, and
+use the empirical distribution of two times the suprema as the approximate
+asymptotic distribution of the likelihood ratio statistic under the null. We
+denote this distribution as F̂0 . Its 95% quantile equals 4.3982.
+For each θ1 on the grid, we repeat the simulation for process X̃θ to obtain
+the approximate asymptotic distribution of the likelihood ratio statistic under the alternative θ = θ1 , which we denote as F̂1 . We use the value of F̂1
+at the 95% quantile of F̂0 as a numerical approximation to the asymptotic
+power at θ1 of the λ-based LR test with asymptotic size 0.05.
+Figure 4 shows the resulting asymptotic power curve of the LR test (solid
+line) along with the asymptotic power envelope (dotted line). It also shows
+the asymptotic power of the WAP test with W (dθ) equal to the uniform
+measure on [0, 6] (dashed line). The left and right panels correspond to λand µ-based tests, respectively.
+The asymptotic powers of the LR and WAP tests both come close to the
+power envelope. The LR and WAP power functions are so close that they
+are difficult to distinguish clearly. The asymptotic power of the WAP test
+appears to be larger than that of the LR test for all θ1 in the [0, 6] range,
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+17
+
+except for relatively large θ1 . Hence, the LR test still may be admissible.
+More accurate numerical analysis is needed to shed further light on this issue.
+In the remaining part of this section, we consider some of the tests that
+have been proposed previously in the literature, and, in Proposition 10,
+derive their asymptotic power functions. We focus on four examples. Three
+of them are inspired by the “classical” fixed-p theory, while the fourth is
+more directly based on results from the large random matrix theory.
+The problem of testing the hypothesis of sphericity has a long history,
+and has generated a considerable body of literature, which we only very
+briefly summarize here. The classical fixed-p Gaussian analysis of the various
+problems considered here goes back to Mauchly (1940), who first derived the
+Gaussian likelihood ratio test for sphericity. The (Gaussian) locally most
+powerful invariant (under shift, scale and orthogonal transformations) test
+was obtained by John (1971, 1972) and by Sugiura (1972), with adjusted
+versions resisting elliptical violations of the Gaussian assumptions proposed
+in Hallin and Paindaveine (2006), where a Le Cam approach is adopted under
+a general elliptical setting. Ledoit and Wolf (2002) propose two extensions
+(for the unknown and known scale problems, resp.) of John’s test, while Bai
+et al. (2009) adapt Mauchly’s (1940) likelihood ratio test.
+Example 1 [John’s (1971) test of sphericity]. John (1971) proposes
+testing the sphericity hypothesis θ = 0 against general alternatives using
+the test statistic U = 1p tr[( (1/p)Σ̂tr(Σ̂) − Ip )2 ], where Σ̂ is the sample covariance matrix of the data. He shows that, when n > p, such a test is locally most powerful invariant. Studying John’s test when p/n → c ∈ (0, ∞),
+d
+
+Ledoit and Wolf (2002) prove that, under the null, nU − p → N (1, 4). Hence,
+the test with asymptotic size α rejects the null hypothesis of sphericity if
+1
+−1
+2 (nU − p − 1) > Φ (1 − α).
+
+Example 2 [The Ledoit and Wolf (2002) test of Σ = I]. Ledoit and Wolf
+(2002) propose using W = p1 tr[(Σ̂ − I)2 ] − np [ 1p tr Σ̂]2 + np as a test statistic for
+testing the hypothesis that the population covariance matrix is a unit matrix.
+d
+Under the null, nW − p → N (1, 4). As in the previous example, the null
+hypothesis is rejected at asymptotic size α if 21 (nW − p − 1) > Φ−1 (1 − α).
+Example 3 [The “corrected” LRT of Bai et al. (2009)]. When n > p,
+Bai et al. (2009) propose a corrected version of the likelihood ratio statistic
+CLR = tr Σ̂ − ln det Σ̂ − p − p(1 − (1 − np ) ln(1 − np )) based on the entire data,
+as opposed to λ or µ only, to test the equality of the population covariance
+matrix to the identity matrix against general alternatives. Under the null,
+d
+CLR → N (− 12 ln(1 − c), −2 ln(1 − c) − 2c). The null hypothesis is rejected
+p
+whenever CLR + 12 ln(1 − c) > −2 ln(1 − c) − 2cΦ−1 (1 − α).
+
+18
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+More directly inspired by the asymptotic theory of random matrices, several authors have recently proposed and studied various tests based on λ1
+or µ1 : see Bejan (2005), Patterson, Price and Reich (2006), Kritchman and
+Nadler (2009), Onatski (2009), Bianchi et al. (2011) and Nadakuditi and
+Silverstein (2010). We refer to these tests, which reject H0 for large values
+of λ1 or µ1 , as Tracy–Widom-type tests.
+Example 4 (Tracy–Widom-type tests). Asymptotic critical values of
+such tests are obtained using the fact, established by Johnstone (2001), that
+under the null,
+√
+√
+d
+(5.3)
+n2/3 c1/6 (1 + c)−4/3 (λ1 − (1 + c)2 ) → TW,
+
+where TW denotes the Tracy–Widom law of the first kind. The null hypothesis is rejected when λ1 or µ1 exceeds the adequate Tracy–Widom quantile.
+
+Consider the tests described in Examples 1, 2, 3 and 4, and denote by
+βJ (θ1 ), βLW (θ1 ), βCLR (θ1 ), and βTW (θ1 ) their respective asymptotic powers at asymptotic level α. The following proposition is established in the
+Appendix.
+2
+
+Proposition 10. Denote 1−e−θ1 as ψ(θ1 ). The asymptotic power functions of the tests described in Examples 1–4 satisfy, for any θ1 > 0,
+(5.4)
+(5.5)
+and
+(5.6)
+
+βTW (θ1 ) = α,
+βJ (θ1 ) = βLW (θ1 ) = 1 − Φ(Φ−1 (1 − α) − 21 ψ(θ1 ))
+p
+p
+
+
+cψ(θ1 ) − ln(1 + cψ(θ1 ))
+−1
+p
+βCLR (θ1 ) = 1 − Φ Φ (1 − α) −
+.
+−2 ln(1 − c) − 2c
+
+With the important exception of Srivastava (2005), (5.4)–(5.6) are the
+first results on the asymptotic power of those tests against contiguous alternatives. Srivastava (2005) analyzes the asymptotic power of tests similar
+to those in Examples 1 and 2. His Theorems 3.1 and 4.1 can be used to
+establish (5.5).
+From Proposition 10, we see that the local asymptotic power of the Tracy–
+Widom-type tests is trivial. As shown by Baik, Ben Arous and Péché (2005)
+in the complex data case and by Féral and Péché (2009) in the real data
+case, the convergence (5.3) holds not
+√ only under the null, but also under
+any alternative of the form h = h0 < c. Under the “local” parametrization
+adopted in this section, such alternatives have the form θ = θ1 > 0. It can
+be shown that the Tracy–Widom-type
+tests are consistent against noncon√
+tiguous alternatives h = h1 > c. However, such a consistency is likely to
+be also a property of the LR tests based on µ or on λ. If this holds true,
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+19
+
+Fig. 5. Asymptotic powers (βJ , βLW , βCLR ) of the tests described in Examples 1 (John),
+2 (Ledoit and Wolf ) and 3 (Bai et al.).
+
+the LR tests asymptotically dominate the Tracy–Widom-type tests. A more
+detailed analysis of the optimality properties of LR tests is the subject of
+ongoing research.
+The asymptotic power functions of the tests from Examples 1, 2 and 3
+are nontrivial. Figure 5 compares these power functions to the corresponding power envelopes. Since John’s test is invariant with respect to orthogonal transformations and scalings, βJ (θ1 ) is compared to the power envelope
+β(θ1 ; µ). The asymptotic power functions βLW (θ1 ) and βCLR (θ1 ) are compared to the power envelope β(θ1 ; λ) because the Ledoit–Wolf test of Σ = I
+and the “corrected” likelihood ratio test are invariant only with respect to
+orthogonal transformations.
+Interestingly, whereas βJ (θ1 ) and βLW (θ1 ) depend only on α and θ1 ,
+βCLR (θ1 ) depends also on c. As c converges to one, βCLR (θ1 ) converges to
+α, which corresponds to the case of trivial power. As c converges to zero,
+βCLR (θ1 ) converges to βJ (θ1 ). In Figure 5, we provide the plot of βCLR (θ1 )
+that corresponds to c = 0.5.
+The left panel of Figure 5 shows that the power function of John’s test
+is very close to the power envelope β(θ1 ; µ) in the vicinity of θ1 = 0. Such
+behavior is consistent with the fact that John’s test is locally most powerful
+invariant. However, for large θ1 , the asymptotic power functions of all the
+tests from Examples 1, 2 and 3 are lower than the corresponding asymptotic
+power envelopes. We should stress here that these tests have power against
+general alternatives as opposed to the “spiked” alternatives that maintain
+the assumption that the population covariance matrix of data has the form
+σ 2 (Ip + hvv ′ ).
+
+20
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+For the “spiked” alternatives, the λ- and µ-based LR tests may be more
+attractive. However, implementing these tests requires some care. A “quickand-dirty” approach would be to approximate ln L(θ; λ) and ln L(θ; µ) by
+the simple but asymptotically equivalent expressions from (4.1) and (4.2),
+compute two times their maxima on a grid over θ ∈ (0, M ], and compare
+them with critical values obtained by simulation as for the construction of
+Figure 4. Unfortunately, in finite samples, this simple approach will lead
+to a numerical breakdown whenever z0 (h(θ)) happens to be less than the
+largest sample covariance eigenvalue for some θ ≤ M . In addition, since the
+asymptotic approximation derived in Theorem 7 is not uniform over entire
+half-line θ ∈ [0, ∞), its quality will depend on the choice of M . For relatively
+large M , the asymptotic behavior of the LR test implemented as above may
+poorly match its finite sample behavior.
+Instead, we recommend implementing the LR tests without using the
+asymptotic approximations. The finite sample log likelihood ratios ln L(θ; λ)
+and ln L(θ; µ) can be computed using the contour integral representations
+(2.9) and (2.10). Choosing the contour of integration so that the sample
+covariance eigenvalues remain to its left will eliminate the numerical breakdown problem associated with the asymptotic tests. Furthermore, under
+the Gaussianity assumption, the finite sample distributions of the log likelihood ratios are pivotal. Hence, the exact critical values can be computed
+via Monte Carlo simulations as follows: simulate many replications of data
+under the null. For each replication, compute the log likelihood ratio and
+store two times its maximum. Use the 95% quantile of the empirical distribution of the stored values as a numerical approximation for the exact
+critical value of the test. The finite sample properties of such a test are left
+as an important topic for future research.
+6. Conclusion. In this paper, we study the asymptotic power of tests for
+the existence of rank-one perturbations of sphericity as both the dimensionality of the data and the number of observations go to infinity. Focusing
+on tests that are invariant with respect to orthogonal transformations and
+rescaling, we establish the convergence of the log ratio of the joint densities of
+the sample covariance eigenvalues under the alternative and null hypotheses
+to a Gaussian process indexed by the norm of the perturbation.
+When the perturbation norm is larger than the phase transition threshold
+studied in Baik, Ben Arous and Péché (2005), the limiting log-likelihood
+process is degenerate and the joint eigenvalue distributions under the null
+and alternative hypotheses are asymptotically mutually singular, so that
+the discrimination between the null and the alternative is asymptotically
+certain. When the norm is below the threshold, the limiting log-likelihood
+process is nondegenerate and the joint eigenvalue distributions under the null
+and alternative hypotheses are mutually contiguous. Using the asymptotic
+theory of statistical experiments, we obtain power envelopes and derive the
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+21
+
+asymptotic size and power for various eigenvalue-based tests in the region
+of contiguity.
+Several questions are left for future research. First, we only considered
+rank-one perturbations of the spherical covariance matrices. It would be
+desirable to extend the analysis to finite-rank perturbations. Such an extension will require a more complicated technical analysis. Second, it would be
+interesting to extend our analysis to the asymptotic regime p, n → ∞ with
+p/n → ∞ or p/n → 0. In the context of sphericity tests, such asymptotic
+regimes have been recently studied in Birke and Dette (2005). Third, a thorough analysis of the finite sample properties of the proposed LR tests would
+clarify the related practical implementation issues. Fourth, our Lemma 5 can
+be used to derive higher-order asymptotic approximations to the likelihood
+ratios, which may improve finite-sample performances of asymptotic tests.
+Finally, it would be of considerable interest to relax the Gaussian assumptions, for example, into elliptical ones, preferably with unspecified radial densities, on the model (in a fixed-p context) of Hallin and Paindaveine (2006).
+APPENDIX
+A.1. Proof of Proposition 1. For the joint density p(λ; h) of λ1 , . . . , λm ,
+we have
+Qm (|p−n|−1)/2 Qm
+i=1 λi
+i<j (λi − λj )
+p(λ; h) = γ̃
+n/2
+(1 + h)
+(A.1)
+Z
+′
+e−(n/2) tr(ΠQ ΛQ) (dQ),
+×
+O(p)
+
+where γ̃ depends only on n and p, Π = diag((1 + h)−1 , 1, . . . , 1), O(p) is the
+set of all p × p orthogonal matrices and (dQ) is the invariant measure on the
+orthogonal group O(p) normalized to make the total measure unity. When
+n ≥ p, (A.1) is a special case of the density given in James (1964), page 483.
+When n < p, (A.1) follows from Theorems 2 and 6 in Uhlig (1994).
+h
+, 0, . . . , 0) be a p × p matrix. Since Π = Ip − Ψ, we have
+Let Ψ = diag( 1+h
+′
+tr(ΠQ ΛQ) = tr Λ − tr(ΨQ′ ΛQ), and we can rewrite (A.1) as
+Qm (|p−n|−1)/2 Qm
+−(n/2) tr Λ
+i=1 λi
+i<j (λi − λj )e
+p(λ; h) = γ̃
+(1 + h)n/2
+(A.2)
+Z
+′
+e(n/2) tr(ΨQ ΛQ) (dQ).
+×
+O(p)
+
+h
+x′p Λxp , where xp is the first colNote that tr(ΨQ′ ΛQ) = tr(QΨQ′ Λ) = 1+h
+umn of Q. When Q is uniformly distributed over O(p), its first column xp
+
+22
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+is uniformly distributed over S(p). Therefore, we have
+Qm (|p−n|−1)/2 Qm
+−(n/2) tr Λ
+i=1 λi
+i<j (λi − λj )e
+p(λ; h) = γ̃
+(1 + h)n/2
+(A.3)
+Z
+′
+e(n/2)(h/(1+h))xp Λxp (dxp ),
+×
+S(p)
+
+which establishes (2.1). Now, let y = λ1 + · · · + λp so that µj = λj /y. Note
+that tr Λ = y, tr M = µ1 + · · · + µp = 1, and that the Jacobian of the coordinate change from λ1 , . . . , λm to µ1 , . . . , µm−1 , y equals y m−1 . Changing
+variables in (A.3), and integrating y out, we obtain (2.2).
+A.2. Proof of Lemma 3. Using (2.3) in the ratio of the right-hand side of
+(2.1) with h > 0 to that with h = 0, and changing the variable of integration
+2
+from s to z = 1+h
+h n s, we get (2.9). Further, from (2.2), we have
+Z ∞
+y np/2−1 e−ny/2 dy
+p(µ; 0) = δ(n, p, µ)
+0
+
+(A.4)
+
+ np/2  
+np
+2
+Γ
+.
+= δ(n, p, µ)
+n
+2
+
+For h > 0, using (2.3) in (2.2), we get
+p(µ; h) =
+
+δ(n, p, µ) Γ(p/2)
+(1 + h)n/2 2πi
+−1/2
+Z ∞I
+p 
+Y
+n yh
+(np−2)/2 s−ny/2
+×
+y
+e
+s−
+µj
+ds dy,
+2 1+h
+0
+K̃
+j=1
+
+where K̃ is a contour starting at −∞, encircling counter-clockwise the points 0,
+ny h
+ny h
+h
+2 1+h µ1 , . . . , 2 1+h µm and going back to −∞. Since 1+h µj < 1 by construction, we may and will choose K̃ so that for any s ∈ K̃, Re s < ny
+2 . Changing
+1+h
+variables of integration from y and s to w = ny
+and
+z
+=
+s
+2
+hw S, where S
+is any positive constant, and dividing by the right-hand side of (A.4), we
+obtain
+L(h; µ) =
+
+S (p−2)/2 (1 + h)(p−n−2)/2 Γ(p/2)
+h(p−2)/2 Γ(np/2)2πi
+Z ∞I
+p
+Y
+np/2−p/2 (wh/(1+h))(z/S)−w
+(z − Sµj )−1/2 dz dw,
+w
+e
+×
+0
+
+K
+
+j=1
+
+where K is a contour starting at −∞, encircling counter-clockwise the points 0,
+Sµ1 , . . . , Sµm , and going back to −∞. In addition, for any z ∈ K, Re z <
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+23
+
+1+h
+h S. Such a choice of K guarantees that the integrand in the above double
+
+integral is absolutely integrable on [0, ∞) × K, so that Fubini’s theorem can
+be used to justify the interchange of the order of the integrals. Changing the
+order of the integrals and setting S = λ1 + · · · + λp , we obtain (2.10).
+A.3. Proof of Theorem 7. First, let us formulate the following technical
+lemma. Its proof is in the Supplementary Appendix [Onatski, Moreira and
+Hallin (2013)].
+√
+c
+Lemma 11. (i) If h < cp , f0 = − 21 (cp + (1 − cp ) ln(1 + h) − cp ln hp ).
+√
+c
+(ii) If h > cp , f0 = − 21 (h + cp + (1 − cp ) ln(cp + h) − hp − ln h).
+Below, we prove Theorem 7 for L(h; µ). The proof for L(h; λ) is similar but
+simpler, and we omit it to save space. As follows from Lemmas 4 and 5, the
+O (1)
+0
+integral in (2.10) can be represented as 2e−nf0 [Γ( 12 ) na1/2
++ hnp3/2 ] uniformly
+√
+in h ∈ (0, h̄]. Therefore, and since Γ( 21 ) = π, we can write
+
+ 
+k2 S (p−2)/2 −nf0
+1
+−1
+√
+e
+(A.5)
+,
+L(h; µ) =
+a0 + h Op
+nπi
+n
+where k2 = h−(p−2)/2 (1+h)(p−n−2)/2 (n−1)p
+Γ( (n−1)p
+)Γ( 2p )Γ−1 ( np
+2
+2
+2 ). Using Stir2π 1/2
+−1
+−r
+r
+ling’s approximation Γ(r) = e r ( r ) (1 + O(r )) with r = 2p , np
+2 and
+(n−1)p
+1 −2
+−1
+−3
+, and the fact that ln(n − 1) = ln n − n − 2 n + O(n ), we find,
+2
+after algebraic simplifications, that
+
+(A.6)
+
+k
+√ 2 = h−(p−2)/2 (1 + h)(p−n−2)/2
+nπ
+× e−((p−2)/2) ln n−p/2+cp /4+ln cp /2 (1 + O(n−1 )).
+
+Using (A.6) and Lemma 11(i), we obtain
+ (p−2)/2
+ 
+ 
+S
+1
+1
+1
+k2 S (p−2)/2 −nf0 −1
+cp /4−ln cp /2
+√
+e
+Op
+=
+,
+e
+h Op
+n
+1+h p
+n
+nπi
+which, together with the fact that S − p = Op (1), implies that
+ 
+ 
+k2 S (p−2)/2 −nf0 −1
+1
+1
+√
+(A.7)
+= Op
+e
+h Op
+n
+n
+nπi
+uniformly over h ∈ (0, h̄].
+√
+Now, as can be verified using (3.3) and (3.6), if h < cp , then
+(A.8)
+
+f2 = −
+
+h2
+.
+4(1 + h)2 (cp − h2 )
+
+24
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+Therefore, using (3.12), we obtain
+(1 + h)(cp − h2 )1/2
+g0 .
+h
+Using (3.4), (A.6), (A.9) and Lemma 11(i) in (A.5), after algebraic simplifications and rearrangements of terms, we get
+
+
+k2 S (p−2)/2 e−nf0 a0
+√
+ln
+nπi
+
+ 
+
+1
+S
+h2
+cp p − 2
+= ln 1 −
+ln
++ +
+(A.10)
+2
+cp
+4
+2
+p
+
+
+h z0 (h)
+1
+n hz0 (h) np − p + 2
+−
+ln 1 −
+− ∆p (z0 (h)).
+−
+2 1+h
+2
+1+h S
+2
+(A.9)
+
+a0 = i
+
+Finally, using the fact that S − p = Op (1), we obtain ln(S/p) = (S − p)/p +
+Op (p−2 ) and
+
+
+
+
+h z0 (h)
+h z0 (h) 1 hz0 (h) 2
+ln 1 −
+−
+=−
+1+h S
+1+h p
+2 (1 + h)p
++
+
+h z0 (h)
+(S − p) + Op (p−3 ).
+1 + h p2
+
+h
+The latter two equalities, (A.10) and the fact that 1+h
+z0 (h) = h + cp entail
+
+(A.11)
+
+k2 S (p−2)/2 e−nf0 a0
+√
+nπi
+2
+
+2
+
+= e−{∆p (z0 (h))−ln(1−h /cp )+(h/cp )(S−p)−h /(2cp )+Op (p
+
+−1 )}/2
+
+,
+
+which, together with (A.7), imply formula (4.2).
+Now, let us prove the convergence of ln L(h; µ) to L(h; µ). By (4.2), the
+joint convergence of ln L(hj ; µ) with j = 1, . . . , r to a Gaussian vector is
+equivalent to the convergence of (S − p, ∆p (z0 (h1 )), . . . , ∆p (z0 (hr ))) to a
+Gaussian vector. A proof of the following technical lemma, based on Theorem 1.1 of Bai and Silverstein (2004), is given in the Supplementary Appendix [Onatski, Moreira and Hallin (2013)].
+Lemma 12. Suppose that the null hypothesis holds. Then, as p, n →c ∞,
+the vector (S − p, ∆p (z0 (h1 )), . . . , ∆p (z0 (hr ))) converges in distribution to a
+Gaussian vector (η, ξ1 , . . . , ξr ) with
+Eη = 0,
+
+Var(η) = 2c,
+−1
+
+Cov(ξj , ξk ) = −2 ln(1 − c
+
+hj hk )
+
+Cov(η, ξj ) = −2hj ,
+and
+
+Eξj = 12 ln(1 − c−1 h2j ).
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+25
+
+Lemma 12 and (4.2) imply that E[L(hj ; µ)] = − 21 Eξj + 12 ln(1 − c−1 h2j ) +
+1
+1 −1 2
+−1 2
+−1 2
+4 c hj = 4 [ln(1 − c hj ) + c hj ] and
+
+hk
+1
+Cov(ξj , ξk ) +
+Cov(ξj , η)
+4
+4c
+hj
+hj hk
++
+Cov(ξk , η) +
+Var(η)
+4c
+4c2
+hj hk
+1
+,
+= − ln(1 − c−1 hj hk ) −
+2
+2c
+which establishes (4.5) and (4.6).
+To complete the proof of Theorem 7, we need to note that the tightness
+of L(h; µ), viewed as a random element of the space C([0, h̄]), as p, n →c ∞,
+follows from formula (4.2) and the fact that S − p and ∆p (z0 (h)), are Op (1),
+uniformly in h ∈ (0, h̄]. This uniformity is a consequence of Lemma A2 proven
+in the Supplementary Appendix [Onatski, Moreira and Hallin (2013)].
+Cov[L(hj ; µ), L(hk ; µ)] =
+
+A.4. Proof of Theorem 8. As in the proof of Theorem 7, we will focus
+on the case of the likelihood ratio based on µ. The proof for
+√ L(h; λ) is
+similar. According to Lemma 6 and formula (2.10), for any h̃ > c, we have
+L(h; µ) = k2 S (p−2)/2 e−nf (z0 (h̃)) Op (1). Using (A.6) and the fact that ( Sp )p =
+p
+(1 + S−p
+p ) = (1 +
+
+Op (1) p
+p ) = Op (1), we can write
+
+(A.12) L(h; µ) = e(n/2)(cp ln(cp (1+h)/h)−ln(1+h)−cp −2f (z0 (h̃))) Op (n1/2 ).
+√
+Noting that h̃ > cp for sufficiently large n and p, and using Lemma 11(ii)
+and the fact that 1+h̃ h̃ z0 (h̃) = h̃ + cp , we get −2f (z0 (h̃)) = (1 − cp ) ln(cp +
+c
+
+h
+h̃) − h̃p − ln h̃ + 1+h
+z0 (h̃). Substituting the latter expression in (A.12) and
+simplifying, we obtain
+
+(A.13)
+
+L(h; µ) = e(n/2)R(h,h̃,cp ) Op (n1/2 ),
+
+where Op (·) is uniform in h ∈ [h̃, ∞) and R(h, h̃, cp ) = (1 − cp ) ln(cp + h̃) −
+cp
+h
+z0 (h̃) − (1 − cp ) ln(1 + h) − cp ln h + cp ln cp − cp .
+− ln h̃ + 1+h
+h̃
+√
+As n, p → ∞, R(h, h̃, cp ) → R(h, h̃, c) uniformly over (h, h̃) ∈ [ c, H]2 . On
+√ √
+√
+the other hand, R(h, h̃, c) is continuous on (h, h̃) ∈ [ c, H]2 , R( c, c, c) =
+
+h̃)
+d
+R(h, h̃, c) = (1 + h)−2 ( (1+h̃)(c+
+) < 0 for all h and h̃
+0, and dh
+− (1+h)(c+h)
+h
+h̃
+√
+√
+such that √ c ≤ h̃ < h ≤ H. Therefore, for any H > c, there exist h̃ and δ
+such that c < h̃ ≤ H, δ > 0 and R(H, h̃, c) < −3δ; and thus, for sufficiently
+d
+large n and p, R(H, h̃, cp ) < −3δ. Now, dh
+R(h, h̃, cp ) = (1 + h)−2 (z0 (h̃) −
+√
+z0 (h)) < 0 for all h > h̃, as long as h̃ ≥ cp . Hence, for sufficiently large
+n and p, R(h, h̃, cp ) < −3δ for all h > h̃. Using (A.13), we get |L(h; µ)| ≤
+e−3nδ/2 Op (n1/2 ) = Op (e−nδ ) uniformly over h ∈ [H, ∞).
+
+26
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+A.5. Proof of Proposition 9. For brevity, we derive only the asymptotic
+power envelope for the case of µ-based tests. According to the Neyman–
+Pearson lemma, the most powerful test of the null θ = 0 against a particular
+alternative θ = θ1 is the test which rejects the null when ln L(θ1 ; µ) is larger
+than some critical value C. It follows frompTheorem 7 that, for such a test to
+have asymptotic size α, C must be C = V (θ1 )Φ−1 (1 − α) + m(θ1 ), where
+2
+2
+1 + e−θ1 )/2 are obtained from
+m(θ1 ) = (−θ12 + 1 − e−θ1 )/4 and V (θ1 ) = (θ12 −p
+(4.5) and (4.6) by the re-parametrization θ = − ln(1 − h2 /c). Now, accordd
+
+ing to Le Cam’s third lemma and Theorem 7, under θ = θ1 , ln L(θ1 ; µ) →
+N (m(θ1 ) + V (θ1 ), V (θ1 )). Therefore, the asymptotic power β(θ1 ; µ) of the
+asymptotically most powerful test of θ = 0 against θ = θ1 is (5.2).
+A.6. Proof of Proposition 10. As shown by Baik, Ben Arous and Péché
+(2005) in the complex case and by Féral and Péché (2009) in the real case, the
+convergence (5.3) takes place
+√ not only under the null, but also under alterc, yielding θ = θ1 < ∞ under the parametrization
+natives
+h
+=
+h
+with
+h
+<
+1
+1
+p
+2
+θ = − ln(1 − h /c). Hence, (5.4) follows.
+Formulas (5.5) and (5.6) can be established using conceptually similar
+steps. To save space, below we only establish formula (5.6). The following
+technical lemma is proven in the Supplementary Appendix [Onatski, Moreira
+and Hallin (2013)].
+Lemma 13. Let CLR be the “corrected” likelihood ratio statistic as defined in Example 3. Then, under the null, as p, n →c ∞, the vector (CLR,
+∆p (z0 (h))) converges in distribution to a Gaussian vector (ζ1 , ζ2 ) with
+Cov(ζ1 , ζ2 ) = −2h + 2 ln(1 + h).
+Lemma 13 and (4.2) imply the convergence in distribution of the vector
+(CLR, ln L(h; λ)) to a Gaussian vector (ζ1 , − 12 ζ2 ). From Bai et al. (2009),
+d
+
+we know that, under the null, CLR → N (− 21 ln(1 − c), −2 ln(1 − c) − 2c).
+By Le Cam’s third lemma, under the alternative h = h1 , CLR converges
+to a Gaussian random variable with the same variance but with mean
+equal to − 12 ln(1 − c) + Cov(ζ1 , − 21 ζ2 ) = − 12 ln(1 − c) + h − ln(1 + h) evaluated at h = h1 . Therefore, the power of the “corrected” likelihood ratio
+test of asymptotic size α equals 1 − Φ(Φ−1 (1 − α) − √h1 −ln(1+h1 ) ). Using
+−2 ln(1−c)−2c
+p
+the reparametrization θ1 = − ln(1 − h21 /c), we get (5.6).
+Acknowledgments. This work started when the first two authors worked
+at and the third author visited Columbia University. We would like to thank
+Tony Cai, the Associate Editor, Nick Patterson and an anonymous referee
+for helpful and encouraging comments.
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+27
+
+SUPPLEMENTARY MATERIAL
+Supplementary Appendix (DOI: 10.1214/13-AOS1100SUPP; .pdf). The
+Supplementary Appendix contains proofs of Lemmas 4, 5, 6, 11, 12 and 13.
+REFERENCES
+Bai, Z. D. (1993). Convergence rate of expected spectral distributions of large random
+matrices. II. Sample covariance matrices. Ann. Probab. 21 649–672. MR1217560
+Bai, Z. D. and Silverstein, J. W. (2004). CLT for linear spectral statistics of largedimensional sample covariance matrices. Ann. Probab. 32 553–605. MR2040792
+Bai, Z., Jiang, D., Yao, J.-F. and Zheng, S. (2009). Corrections to LRT on largedimensional covariance matrix by RMT. Ann. Statist. 37 3822–3840. MR2572444
+Baik, J., Ben Arous, G. and Péché, S. (2005). Phase transition of the largest eigenvalue for nonnull complex sample covariance matrices. Ann. Probab. 33 1643–1697.
+MR2165575
+Baik, J. and Silverstein, J. W. (2006). Eigenvalues of large sample covariance matrices
+of spiked population models. J. Multivariate Anal. 97 1382–1408. MR2279680
+Bejan, A. I. (2005). Largest eigenvalues and sample covariance matrices. Tracy–Widom
+and Painleve II; computational aspects and realization in S-plus with applications.
+Unpublished manuscript, Univ. Warwick.
+Berthet, Q. and Rigollet, P. (2012). Optimal detection of sparse principal components
+in high dimension. Available at arXiv:1202.5070.
+Bianchi, P., Debbah, M., Maida, M. and Najim, J. (2011). Performance of statistical
+tests for single source detection using random matrix theory. IEEE Trans. Inform.
+Theory 57 2400–2419.
+Birke, M. and Dette, H. (2005). A note on testing the covariance matrix for large
+dimension. Statist. Probab. Lett. 74 281–289. MR2189467
+Bloemendal, A. and Virág, B. (2012). Limits of spiked random matrices I. Probab.
+Theory Related Fields. To appear. DOI:10.1007/s00440-012-0443-2. Available at
+arXiv:1011.1877v2.
+Butler, R. W. and Wood, A. T. A. (2002). Laplace approximations for hypergeometric
+functions with matrix argument. Ann. Statist. 30 1155–1177. MR1926172
+Chen, S. X., Zhang, L.-X. and Zhong, P.-S. (2010). Tests for high-dimensional covariance matrices. J. Amer. Statist. Assoc. 105 810–819. MR2724863
+Dickey, J. M. (1983). Multiple hypergeometric functions: Probabilistic interpretations
+and statistical uses. J. Amer. Statist. Assoc. 78 628–637. MR0721212
+El Karoui, N. (2007). Tracy–Widom limit for the largest eigenvalue of a large class of
+complex sample covariance matrices. Ann. Probab. 35 663–714. MR2308592
+Erdelyi, A. (1937). Beitrag zur theorie der konfluenten hypergeometrischen funktionen
+von mehreren veranderlichen. Sitzungsberichte, Akademie der Wissenschaften in Wien,
+Abteilung IIa, Mathematisch-Naturwissenschaftliche Klasse 146 431–467.
+Féral, D. and Péché, S. (2009). The largest eigenvalues of sample covariance matrices
+for a spiked population: Diagonal case. J. Math. Phys. 50 073302, 33. MR2548630
+Fisher, T. J., Sun, X. and Gallagher, C. M. (2010). A new test for sphericity of
+the covariance matrix for high dimensional data. J. Multivariate Anal. 101 2554–2570.
+MR2719881
+Guionnet, A. and Maı̈da, M. (2005). A Fourier view on the R-transform and related
+asymptotics of spherical integrals. J. Funct. Anal. 222 435–490. MR2132396
+
+28
+
+A. ONATSKI, M. J. MOREIRA AND M. HALLIN
+
+Hallin, M. and Paindaveine, D. (2006). Semiparametrically efficient rank-based inference for shape. I. Optimal rank-based tests for sphericity. Ann. Statist. 34 2707–2756.
+MR2329465
+Hillier, G. (2001). The density of a quadratic form in a vector uniformly distributed on
+the n-sphere. Econometric Theory 17 1–28. MR1863565
+Hoyle, D. C. (2008). Automatic PCA dimension selection for high dimensional data and
+small sample sizes. J. Mach. Learn. Res. 9 2733–2759.
+James, A. T. (1964). Distributions of matrix variates and latent roots derived from normal
+samples. Ann. Math. Statist. 35 475–501. MR0181057
+John, S. (1971). Some optimal multivariate tests. Biometrika 58 123–127. MR0275568
+John, S. (1972). The distribution of a statistic used for testing sphericity of normal
+distributions. Biometrika 59 169–173. MR0312619
+Johnstone, I. M. (2001). On the distribution of the largest eigenvalue in principal components analysis. Ann. Statist. 29 295–327. MR1863961
+Kritchman, S. and Nadler, B. (2008). Determining the number of components in a
+factor model from limited noisy data. Chemometrics and Intelligent Laboratory Systems
+94 19–32.
+Kritchman, S. and Nadler, B. (2009). Non-parametric detection of the number of
+signals: Hypothesis testing and random matrix theory. IEEE Trans. Signal Process. 57
+3930–3941. MR2683143
+Le Cam, L. (1960). Locally asymptotically normal families of distributions. Certain approximations to families of distributions and their use in the theory of estimation and
+testing hypotheses. Univ. California Publ. Statist. 3 37–98. MR0126903
+Ledoit, O. and Wolf, M. (2002). Some hypothesis tests for the covariance matrix
+when the dimension is large compared to the sample size. Ann. Statist. 30 1081–1102.
+MR1926169
+Lijoi, A. and Regazzini, E. (2004). Means of a Dirichlet process and multiple hypergeometric functions. Ann. Probab. 32 1469–1495. MR2060305
+Mauchly, J. W. (1940). Significance test for sphericity of a normal n-variate distribution.
+Ann. Math. Statist. 11 204–209. MR0002084
+Mo, M. Y. (2012). Rank 1 real Wishart spiked model. Comm. Pure Appl. Math. 65
+1528–1638. MR2969495
+Nadakuditi, R. R. and Edelman, A. (2008). Sample eigenvalue based detection of highdimensional signals in white noise using relatively few samples. IEEE Trans. Signal
+Process. 56 2625–2638. MR1500236
+Nadakuditi, R. R. and Silverstein, J. W. (2010). Fundamental limit of sample generalized eigenvalue based detection of signals in noise using relatively few signal-bearing and
+noise-only samples. IEEE Journal of Selected Topics in Signal Processing 4 468–480.
+Nadler, B. (2008). Finite sample approximation results for principal component analysis:
+A matrix perturbation approach. Ann. Statist. 36 2791–2817. MR2485013
+Olver, F. W. J. (1997). Asymptotics and Special Functions. AK Peters, Wellesley, MA.
+MR1429619
+Onatski, A. (2009). Testing hypotheses about the numbers of factors in large factor
+models. Econometrica 77 1447–1479. MR2561070
+Onatski, A. (2010). Determining the number of factors from empirical distribution of
+eigenvalues. Rev. Econom. Statist. 92 1004–1016.
+Onatski, A., Moreira, M. J. and Hallin, M. (2013). Supplement to “Asymptotic power
+of sphericity tests for high-dimensional data.” DOI:10.1214/13-AOS1100SUPP.
+Patterson, N., Price, A. L. and Reich, D. (2006). Population structure and eigenanalysis. PLoS Genetics 2 2074–2093.
+
+ASYMPTOTIC POWER OF SPHERICITY TESTS
+
+29
+
+Perry, P. O. and Wolfe, P. J. (2010). Minimax rank estimation for subspace tracking.
+IEEE Journal of Selected Topics in Signal Processing 4 504–513.
+Schott, J. R. (2006). A high-dimensional test for the equality of the smallest eigenvalues
+of a covariance matrix. J. Multivariate Anal. 97 827–843. MR2256563
+Silverstein, J. W. and Bai, Z. D. (1995). On the empirical distribution of eigenvalues
+of a class of large-dimensional random matrices. J. Multivariate Anal. 54 175–192.
+MR1345534
+Srivastava, M. S. (2005). Some tests concerning the covariance matrix in high dimensional data. J. Japan Statist. Soc. 35 251–272. MR2328427
+Srivastava, H. M. and Karlsson, P. W. (1985). Multiple Gaussian Hypergeometric
+Series. Ellis Horwood, Chichester. MR0834385
+Sugiura, N. (1972). Locally best invariant test for sphericity and the limiting distributions. Ann. Math. Statist. 43 1312–1316. MR0311032
+Uhlig, H. (1994). On singular Wishart and singular multivariate beta distributions. Ann.
+Statist. 22 395–405. MR1272090
+van der Vaart, A. W. (1998). Asymptotic Statistics. Cambridge Series in Statistical and
+Probabilistic Mathematics 3. Cambridge Univ. Press, Cambridge. MR1652247
+Wang, D. (2012). The largest eigenvalue of real symmetric, Hermitian and Hermitian
+self-dual random matrix models with rank one external source, Part I. J. Stat. Phys.
+146 719–761. MR2916094
+A. Onatski
+Faculty of Economics
+University of Cambridge
+Sidgwick Avenue
+Cambridge, CB3 9DD
+United Kingdom
+E-mail: ao319@cam.ac.uk
+
+M. J. Moreira
+Escola de Pós-graduação em Economia
+Funação Getulio Vargas (FGV/EPGE)
+Praia de Botafogo, 190-Sala 1100
+Rio de Janeiro-RJ 22250-900
+Brazil
+E-mail: mjmoreira@fgv.br
+
+M. Hallin
+ECARES
+Université libre de Bruxelles CP 114/04
+50, avenue F.D. Roosevelt
+B-1050 Bruxelles
+Belgium
+E-mail: mhallin@ulb.ac.be
+
+

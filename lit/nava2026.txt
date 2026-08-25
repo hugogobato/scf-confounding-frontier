@@ -1,0 +1,3992 @@
+Spectrally Deconfounded Gradient Boosting
+Andrea Nava∗†‡
+
+Peter Bühlmann∗
+
+Fabio Sigrist∗
+
+arXiv:2607.09371v1 [stat.ML] 10 Jul 2026
+
+Abstract
+Flexible machine-learning methods can be sensitive to hidden confounding: they may learn associations induced by unobserved confounders rather than stable signals. Spectral deconfounding
+mitigates this problem by shrinking high-variance directions of the covariate matrix that, under dense confounding, carry latent confounder information. Existing work has largely focused
+on linear models. We develop a nonlinear spectral deconfounding framework for gradient boosting. Our approach replaces the ordinary squared-error loss by a spectral loss, which alters the
+boosting dynamics by slowing down learning in confounding-aligned directions. We show that
+deconfounding is not achieved by the spectral loss alone, but by the interaction between spectral shrinkage and regularization, especially in terms of early stopping. Moreover, we provide a
+mixed-model interpretation that connects LAVA-type shrinkage to random-effects adjustment and
+yields an empirical-Bayes procedure for tuning the spectral loss. We also extend the method to
+general likelihoods and nonlinear confounding using Laplace approximations and kernel random
+effects. Across synthetic and real-world experiments, spectrally deconfounded boosting improves
+estimation of the target function under hidden confounding and is substantially more scalable than
+existing nonlinear spectral deconfounding baselines.
+Keywords: boosting, causal inference, confounding, random effects, mixed models
+
+1
+
+Introduction
+
+Causal inference from observational data is fundamentally challenging in the presence of unobserved
+confounding. When latent variables influence both covariates and an outcome, naive estimation of the
+effect of covariates on the outcome is generally biased. Beyond causal estimation, hidden confounding
+can also harm predictive stability: flexible learners may exploit spurious associations that are predictive
+on the observed distribution but fail to generalize to new environments, thereby degrading robustness
+under distribution shift [Bühlmann, 2020]. Gradient boosting [Friedman et al., 2000, Friedman, 2001]
+is one of the most accurate methods for prediction on tabular data [Grinsztajn et al., 2022], but
+precisely because of its flexibility it is vulnerable to hidden confounding: when confounding-driven
+patterns are predictive in sample, boosting can fit them and thereby lose robustness under changes in
+the confounding structure. In this paper, we study how to improve the robustness of gradient boosting
+to hidden confounding. Since latent confounding cannot be resolved from observational data without
+additional structure, this requires explicit assumptions on how confounding enters the data-generating
+process.
+We consider the dense-confounding regime. The key idea is that when latent confounders affect
+many observed covariates simultaneously, their influence leaves a detectable imprint in the covariance
+geometry of the design matrix, typically concentrating in the directions corresponding to the largest
+singular values of the design matrix. This intuition already appears in genome-wide association studies
+(GWAS) through principal component adjustment, where a small number of top principal components
+are included to control for population structure [Price et al., 2006, Novembre et al., 2008], and in linear
+mixed models, which introduce random effects with covariance matrices derived from the design matrix
+and thereby adjust for confounding without explicitly selecting the number of principal components
+[Zhang et al., 2010, Sul et al., 2018].
+∗ Seminar for Statistics, ETH Zürich, Zürich, Switzerland
+
+† IFZ, Lucerne University of Applied Sciences and Arts, Rotkreuz, Switzerland
+‡ Corresponding author: andrea.nava@stat.math.ethz.ch
+
+1
+
+Spectral deconfounding [Ćevid et al., 2020] takes this route. Rather than estimating latent confounders, it applies a spectral transformation that shrinks directions aligned with high variance and, under strong and dense confounding, with the confounding structure. The underlying dense-confounding
+assumption is closely related to the pervasive-factor assumption studied in high-dimensional factor
+models [Bai, 2003, Fan et al., 2008, Lam and Yao, 2012]. However, while factor-model methods aim to
+estimate the latent factors and their loadings, spectral deconfounding exploits the resulting covariance
+structure to attenuate confounding effects. Combined with regularization, this yields recovery of the
+sparse signal without requiring explicit confounder identification [Ćevid et al., 2020, Guo et al., 2022].
+Scheidegger et al. [2025] provide rigorous mathematical analysis for nonlinear additive models while
+Ulmer et al. [2026] propose a methodology for Random Forests. Our goal is to bring this logic to nonlinear function learning with boosting. We enable deconfounding by specifying a spectral loss for the
+boosting objective function. Moreover, we show that the spectral loss alone does not remove confounding bias: if the learner is allowed to fit indefinitely, it can still absorb confounding-driven structure.
+Robustness instead arises from the interaction between the transformed loss and regularization.
+Our central contribution is to show that spectral deconfounding can be understood as an optimizationpath modification for boosting. Rather than removing hidden confounding by a preprocessing transformation alone, the spectral loss changes the gradient dynamics of boosting: directions associated
+with large singular values of the design, which are expected to contain dense confounding signal, are
+learned more slowly. Deconfounding therefore arises from the interaction between spectral shrinkage
+and regularization, in particular in terms of early stopping. This perspective allows us to extend
+spectral deconfounding from linear estimators to nonlinear gradient-boosted trees.
+More specifically, we make the following contributions. First, we introduce a spectral-loss formulation for gradient boosting under dense hidden confounding. This enables spectral deconfounding for
+nonlinear models when using nonlinear base learners such as trees. Second, we theoretically analyze
+boosting with linear base learners and show that spectral weighting creates an intermediate stopping
+regime in which signal directions are learned while confounding-aligned directions remain suppressed.
+Third, we derive the spectral loss from a mixed-model formulation, connecting LAVA-type spectral
+shrinkage [Chernozhukov et al., 2017] to random-effects adjustment and yielding an empirical-Bayes
+procedure for tuning the transformation. Fourth, we extend the framework to non-Gaussian likelihoods and nonlinear confounding, and provide a scalable software implementation. To the best of
+our knowledge, this is the first spectral deconfounding approach for generalized nonlinear models and
+nonlinear confounding.
+Organization of the paper. The rest of the paper is organized as follows. Section 2 reviews linear
+spectral deconfounding and establishes a connection to mixed models. Section 3 develops an optimization view that highlights the role of regularization. Section 4 introduces the nonlinear extension,
+derives the spectral loss from a random-effects formulation, and presents the resulting boosting algorithm. Section 5 extends the method to non-Gaussian likelihoods and to nonlinear confounding.
+Section 6 reports simulation studies illustrating the benefit of spectral deconfounding and the impact
+of early stopping and iteration control under confounding. Section 7 presents a real-world data case
+study. Section 8 concludes with limitations and future directions.
+Notation. For a matrix A ∈ Rm×n , we write di (A) for its i-th largest (non-zero) singular value, and
+use dmax (A) and dmin (A) for its largest and smallest (non-zero) singular value, respectively. We write
+col(A) for the column space of A, and Im for the m × m identity matrix. For random vectors Z and W ,
+Cov(Z, W ) denotes their cross-covariance matrix, and Cov(Z) := Cov(Z, Z). We write ∥ · ∥2 for the
+Euclidean norm of a vector, the corresponding operator norm of a matrix, and ⟨·, ·⟩ for the Euclidean
+inner product. Finally, for two positive sequences ap and bp , we write ap ≳ bp if there exists a constant
+c > 0, independent of p, such that ap ≥ c bp for all sufficiently large p.
+
+2
+
+Background on spectral deconfounding for linear models
+
+In this section, we review existing work on linear spectral deconfounding and highlight the connection
+between spectral methods and random effects adjustments.
+
+2
+
+2.1
+
+Confounding in linear models
+
+Consider the structural equation model for n i.i.d. observations with unobserved confounding:
+X = HΓ + E,
+
+(1)
+
+Y = Xβ0 + Hδ + ε,
+
+(2)
+
+where H ∈ Rn×q are unobserved confounders, Γ ∈ Rq×p captures their effects on observed variables
+X ∈ Rn×p , β0 ∈ Rp is the direct causal effect of X on Y , δ ∈ Rq is the confounding effect on the
+outcome Y ∈ Rn , E is the unconfounded design independent of H, and ε is outcome noise independent
+of X and H.
+Bias arises because confounders induce correlation between the covariates X and the unobserved
+component Hδ affecting Y . To make this precise, write xi ∈ Rp and hi ∈ Rq for generic row-level
+random vectors corresponding to the rows of X and H. We work with centered covariates, so that
+E[xi ] = 0. Define the population linear projection coefficient
+h
+ i
+⊤ 2
+b0 ∈ arg minp E h⊤
+.
+i δ − xi a
+a∈R
+
+⊤
+The projection residual ri := h⊤
+i δ − xi b0 satisfies Cov(xi , ri ) = 0. Stacking these residuals over the n
+observations gives
+Hδ = Xb0 + r,
+
+where r = (r1 , . . . , rn )⊤ . Substituting into the structural equation yields
+Y = X(β0 + b0 ) + r + ε.
+The vector b0 thus captures the bias introduced by confounding, as it depends on the correlation
+between Hδ and X, while the error vector (Hδ − Xb0 ) is uncorrelated with the covariates in the
+population projection case.
+
+2.2
+
+Spectral deconfounding
+
+Spectral deconfounding [Ćevid et al., 2020] methods apply a linear transformation F ∈ Rn×n to both
+the covariates and the outcome,
+X̃ := F X,
+Ỹ := F Y,
+(3)
+in order to reduce or remove the alignment between the covariates and the bias vector b0 . More
+precisely, let the singular value decomposition of X be X = U DV ⊤ , where D ∈ Rk×k is diagonal with
+entries d1 , . . . , dk , U ∈ Rn×k and V ∈ Rp×k have orthonormal columns, and k = rank(X) ≤ min(n, p).
+A spectral transformation takes the form
+F = U D̃U ⊤ = U diag(d˜1 /d1 , . . . , d˜k /dk ) U ⊤ ,
+
+(4)
+
+where the transformed singular values d˜i ≥ 0 are chosen to attenuate directions associated with
+confounding while preserving the causal signal. In other words, the goal is that the confounding
+component Xb0 , transformed into X̃b0 , is substantially attenuated, while the causal component X̃β0
+retains most of its variance. In the original linear framework of Ćevid et al. [2020], the spectral
+transformation is combined with a regularized estimator, typically the lasso, fitted to the transformed
+data. The
+√ underlying assumption is that β0 is sparse, while the residual confounding contribution
+∥X̃b0 ∥2 / n is sufficiently attenuated so that an ℓ1 -regularization will not select signal from the term
+X̃b0 .
+For linear squared-error objectives, the preprocessing view in (3) is equivalent to replacing the
+ordinary residual norm by the transformed norm
+∥F (Y − Xβ)∥22 .
+We later refer to such transformed squared-error objectives as spectral losses. This loss-based view is
+made explicit in Section 2.4, where it arises naturally from a mixed-model likelihood, and is later used
+to extend spectral deconfounding to nonlinear predictors f (X), for which a preprocessing interpretation
+of X is no longer available.
+3
+
+2.2.1
+
+Some intuition
+
+To see the spectral implication of confounding, let ΣH := Cov(hi ), ΣE := Cov(ei ), and ΣX := Cov(xi )
+denote the population covariance matrices of one observation. Assume ei is independent of hi and
+without loss of generality that ΣH = Iq , then the covariance of xi is ΣX = Γ⊤ Γ + ΣE . When the
+leading eigenvalues of Γ⊤ Γ are sufficiently separated from those of ΣE , the leading eigenspace of the
+population covariance ΣX is close to the loading subspace col(Γ⊤ ). For the realized design matrix X,
+the empirical covariance X ⊤ X/n concentrates around ΣX in large samples. Since the right singular
+vectors of X are the eigenvectors of X ⊤ X, the leading right singular directions of X approximately
+recover the same subspace [Bai, 2003].
+At the same time, the population bias vector satisfies
+−1 ⊤
+−1 ⊤
+⊤
+b0 = Σ−1
+X Cov(xi , hi δ) = ΣX Γ ΣH δ = ΣX Γ δ,
+
+so, under the eigenvalue-separation condition described above, b0 is approximately aligned with the
+loading subspace col(Γ⊤ ), and hence with the leading right singular directions of X. This implies that
+the sample-space confounding component Xb0 has large ℓ2 -norm and is concentrated in the leading left
+singular directions of X. This consideration motivates the following choices of spectral transformations
+used in the literature.
+Trim Transform The Trim transform, proposed by Ćevid et al. [2020], caps the leading singular
+values at a common level without requiring hyperparameter tuning:
+(
+median({dj }kj=1 ), if i ≤ ⌊k/2⌋,
+˜
+di =
+i = 1, . . . , k.
+(5)
+di ,
+otherwise,
+It is also the transformation used in spectrally deconfounded random forests [Ulmer et al., 2026],
+making it a natural benchmark in our experiments.
+LAVA Transform The LAVA method [Chernozhukov et al., 2017], originally developed to deal with
+so-called “sparse+dense” models, combines a sparse component β with a dense component b through
+the objective
+(β̂, b̂) = argmin
+β,b
+
+1
+∥Y − X(β + b)∥22 + λ2 ∥b∥22 + λ1 ∥β∥1 .
+n
+
+(6)
+
+Profiling out b from (6) yields a lasso problem after applying the spectral transformation
+
+1/2
+F = In − X(X ⊤ X + nλ2 Ip )−1 X ⊤
+.
+The corresponding shrinkage in terms of singular values of the design matrix is
+s
+nλ2 d2i
+d˜i =
+, i = 1, . . . , k.
+nλ2 + d2i
+
+(7)
+
+(8)
+
+Unlike principal component adjustment [Price et al., 2006], a LAVA transform shrinks all directions
+continuously rather than removing some of them entirely. This is the transformation we build on later,
+since its ℓ2 -penalized component admits a random effects interpretation and yields a principled route
+to tuning λ2 (see Section 2.4).
+
+2.3
+
+The role of dense confounding
+
+The key structural assumption behind spectral deconfounding is dense confounding. In the linear
+structural equation model X = HΓ + E, this is formalized by requiring that the confounding loadings
+√
+are sufficiently spread out across coordinates, for example through the condition dmin (Γ) ≳ p as
+p → ∞ [Ćevid et al., 2020]. Intuitively, this means that each latent confounder affects many observed
+covariates, so that the resulting bias is distributed broadly across covariates rather than concentrated
+on a small subset.
+4
+
+Dense confounding, together with additional regularity conditions, is used in the spectral deconfounding literature to show that the coefficient-level bias b0 vanishes asymptotically in ℓ2 -norm [Ćevid
+et al., 2020, Lemma 6]. This helps explain why ordinary least squares can become asymptotically unbiased in such regimes and also underlies critiques of latent-confounder recovery based approaches, such
+as that of Grimmer et al. [2023]. However, for regularized estimators, and especially in high-dimensional
+settings, the relevant quantity is not only ∥b0 ∥2 , but also the geometry of the bias Xb0 in sample space
+[Ćevid et al., 2020, Theorem 2]. Even when ∥b0 ∥2 is small, ∥Xb0 ∥2 can remain non-negligible if b0 is
+aligned with high-variance directions of X, and regularized procedures may still be attracted to fitting
+this component. This is particularly natural for estimators that favor high-variance directions, such
+as ridge-type procedures, gradient descent with early stopping, or sparsity-based methods applied to
+anisotropic designs.
+The role of spectral deconfounding is therefore not to eliminate the coefficient bias b0 itself, but
+to control the fitted confounding term by reshaping the spectrum of the design. In other words, for a
+fixed design dimension p, a spectral transformation does not alter the population bias vector b0 , but
+it does change the geometry of the fitted bias in sample space through Xb0 7→ F Xb0 to attenuate its
+alignment with directions that are easy for a regularized learner to fit. This is precisely the mechanism
+we exploit in the gradient boosting setting.
+
+2.4
+
+Mixed models and random-effects adjustment
+
+Mixed-model approaches in genome-wide association studies (GWAS) [Zhang et al., 2010, Sul et al.,
+2018] are closely related to spectral deconfounding. To account for population stratification and other
+latent structure, these methods introduce a Gaussian random effect, leading to the linear mixed model
+Y = Xβ + Xb + ϵ,
+
+b ∼ N (0, σr2 Ip ),
+
+ϵ ∼ N (0, σe2 In ).
+
+(9)
+
+This induces a marginal covariance of the form σr2 XX ⊤ + σe2 In , where XX ⊤ plays the role of a
+so-called kinship or relatedness matrix. The random effect is intended to capture variation induced
+by latent structure in X, such as population stratification or other dense confounding effects. Since
+XX ⊤ = U D2 U ⊤ , the random effect acts along the principal component directions of X, with shrinkage
+modulated continuously by the spectrum D. In this sense, mixed models can be viewed as a continuous
+analogue of principal component adjustment [Price et al., 2006]: instead of selecting a finite number
+of components, they shrink all principal directions using a Gaussian prior.
+Under the Gaussian likelihood, integrating out the random effect yields
+Σ = σr2 XX ⊤ + σe2 In .
+
+Y | X ∼ N (Xβ, Σ) ,
+
+The corresponding maximum likelihood estimator is the generalized least squares estimator β̂ =
+(X ⊤ Σ−1 X)−1 X ⊤ Σ−1 Y , which minimizes the transformed squared loss
+LF (β) :=
+
+1
+∥F (Y − Xβ)∥22 ,
+2
+
+F = Σ−1/2 .
+
+(10)
+
+Equivalently β̂ is obtained by ordinary least squares on the whitened data F X and F Y . As mentioned
+in Section 2.2, we call a loss of this form a spectral loss when it is a squared-error loss transformed by
+a spectral transformation F that acts diagonally in the left singular-vector basis of X. In the mixedmodel formulation above, the whitening matrix F = Σ−1/2 provides one such spectral transformation.
+Indeed, applying the Sherman–Morrison–Woodbury identity to Σ−1 gives
+
+1
+σ2
+Σ−1 = (σr2 XX ⊤ + σe2 In )−1 = 2 In − X(X ⊤ X + σe2 Ip )−1 X ⊤ .
+(11)
+r
+σe
+Thus, up to the irrelevant global factor 1/σe2 , the whitening operator induces exactly the same spectral
+transformation as the LAVA transform in (7), with the identification nλ2 = σe2 /σr2 . Equivalently, the
+transformed singular values satisfy
+s
+d
+nλ2 d2i
+i
+=
+, i = 1, . . . , k.
+(12)
+d˜i = p
+nλ2 + d2i
+1 + (σr2 /σe2 )d2i
+This matches (8). The discussion above can be summarized in the following proposition.
+5
+
+Proposition 2.1 (Mixed-model interpretation of LAVA). Consider the linear mixed model in (9),
+with Σ = Cov(Y |X) = σr2 XX ⊤ + σe2 In . Then the normalized whitening transformation F̄ = σe Σ−1/2
+coincides with the LAVA spectral transformation in (7), with the identification nλ2 = σe2 /σr2 . Equivalently,
+1/2
+σe Σ−1/2 = In − X(X ⊤ X + nλ2 Ip )−1 X ⊤
+.
+Thus, the LAVA shrinkage parameter λ2 can be interpreted as a variance-component ratio.
+This observation provides, to the best of our knowledge, a novel explicit link between the LAVA
+transform used in spectral deconfounding and random-effects adjustment in mixed models.
+
+3
+
+Asymptotic Unbiasedness of Spectrally Deconfounded Gradient Boosting with Linear Base Learners
+
+In this section, we study spectral deconfounding from an optimization perspective. Our goal is to
+understand how spectral losses interact with boosting and, in particular, how they affect the learning
+of confounding-aligned directions. The key idea is that boosting [Freund et al., 1996, Breiman, 1998]
+can be viewed as gradient descent in function space [Friedman et al., 2000, Friedman, 2001, Bühlmann
+and Yu, 2003]. We show that a spectral transformation of the loss induces direction-dependent learning
+rates. Combined with early stopping, this leads to asymptotically unbiased prediction even in the
+presence of confounding.
+We consider a sequence of problems indexed by p, with p → ∞ and n = np → ∞, and suppress
+the dependence of n on p for notational simplicity. Let X ∈ Rn×p be a realized design matrix of rank
+k, with singular value decomposition X = U DV ⊤ , where U = (u1 , . . . , uk ) ∈ Rn×k has orthonormal
+columns. We work with the model
+Y = f0 + g0 + ε,
+
+f0 = Xβ0 ∈ Rn ,
+
+g0 = Xb0 ∈ Rn ,
+
+where f0 represents the signal, g0 represents the confounding contribution, and ε ∈ Rn is additive
+noise. We condition on X throughout.
+We use squared losses of the form
+LW (f ) =
+
+1
+∥W 1/2 (Y − f )∥22 ,
+2
+
+(13)
+
+where W ∈ Rn×n is a symmetric positive semidefinite spectral weight matrix. The ordinary squared
+loss corresponds to W or = In , whereas the spectral loss corresponds to
+W sp = F ⊤ F = U diag(w1 , . . . , wk )U ⊤ ,
+
+wi ≥ 0.
+
+This is equivalent to the transformed-singular-value parametrization used in Section 2.2: if the spectral
+transformation F replaces di by any d˜i ≥ 0, then
+wi = (d˜i /di )2 .
+√
+Thus, specifying the transformed singular values d˜i or the weights wi is equivalent, with d˜i = di wi . In
+this section, we use the weight parametrization wi , since these are the quantities that enter the boosting
+recursion below. For example, the rescaled random-effects transformation F = σe (σr2 XX ⊤ +σe2 In )−1/2
+induces
+wi =
+
+σe2
+,
+2
+2
+σr di + σe2
+
+i = 1, . . . , k.
+
+Consequently, directions corresponding to large singular values of X receive smaller weights. This
+weighting enters the boosting update through the gradient: the negative gradient of LW is
+−∇f LW (f ) = W (Y − f ).
+We consider boosting with a linear base learner. Since the ordinary least squares (OLS) fit of any
+pseudo-response z ∈ Rn on X is its orthogonal projection onto col(X), the base learner is given by
+PX z,
+
+PX := X(X ⊤ X)+ X ⊤ = U U ⊤ .
+6
+
+We then study boosting with this base learner under the ordinary squared loss and under the spectral
+loss introduced above. Fixing a learning rate ν ∈ (0, 1) and starting from fˆ0 = 0, boosting under the
+weighted loss LW is defined recursively by
+fˆm+1 = fˆm + νPX W (Y − fˆm ),
+
+m ≥ 0.
+
+The ordinary L2 -boosting recursion is obtained by taking W = W or = In , while the spectral boosting
+or
+recursion is obtained by taking W = W sp = F ⊤ F . We denote the two resulting iterates by fˆm
+and
+sp
+sp
+ˆ
+fm , respectively. The advantage of this formulation is that both PX and W diagonalize in the basis
+(ui )ki=1 . To analyze the recursion, write
+f0 =
+
+k
+X
+
+fi u i ,
+
+g0 =
+
+i=1
+
+k
+X
+
+gi ui ,
+
+i=1
+
+where fi := ⟨f0 , ui ⟩, gi := ⟨g0 , ui ⟩. Thus fi and gi are the coordinates of the signal and fitted confounding term along the left singular directions of X.
+The conditional bias of the boosting iterates evolves now coordinatewise as
+E[fˆm | X] − f0 = −
+
+k
+X
+
+(1 − νwi )m fi ui +
+
+k
+X
+
+i=1
+
+
+1 − (1 − νwi )m gi ui ,
+
+i=1
+
+where wi = 1 in the ordinary case and wi ≥ 0 are the spectral weights in the transformed case (see
+Appendix A.1 for a derivation). The key insight is that each direction ui is learned at rate νwi : in
+ordinary boosting all directions are learned at the same rate, while spectral deconfounded boosting
+slows down directions with small weights.
+To state our main theorem, we impose the following assumptions.
+Assumption 1 (Reduced model and bounded energy). The noise satisfies E[ε | X] = 0, and
+∥g0 ∥2
+√ = O(1).
+n
+
+∥f0 ∥2
+√ = O(1),
+n
+
+Assumption 2 (Spectral separation). Fix q ∈ N with q < k for all sufficiently large p, and define the
+empirical top-q subspace projector
+q
+X
+P̂H :=
+ui u⊤
+i .
+i=1
+
+The confounding term is concentrated in the top spectral subspace, while the signal is not:
+∥(I − P̂H )g0 ∥2
+√
+→ 0,
+n
+
+∥P̂H f0 ∥2
+√
+→ 0.
+n
+
+Assumption 3 (Weight separation). Let
+wH := max wi ,
+
+wM := min wi .
+
+1≤i≤q
+
+q<i≤k
+
+Assume 0 ≤ wi ≤ 1 for all i = 1, . . . , k, and
+(a)
+
+wH → 0,
+
+(b)
+
+lim inf wM ≥ c > 0.
+p→∞
+
+The assumptions are discussed below after the theoretical statements. The following theorem shows
+that spectral weighting creates a window of stopping times for which the signal is learned while the
+confounding term is not.
+Theorem 3.1 (Asymptotic unbiasedness). Suppose Assumptions 1–3 hold. Let the boosting iterations
+mp satisfy
+(i) mp → ∞,
+(ii) mp νwM → ∞,
+(iii) mp νwH → 0.
+For fixed ν, condition (ii) is implied by Assumption 3(b), while condition (iii) is implied by Assumption
+3(a) for sufficiently slowly growing number of iterations. Then
+1
+sp
+√ E[fˆm
+| X] − f0 → 0.
+p
+n
+2
+7
+
+√
+Corollary 3.2 (Failure of ordinary L2 -boosting). If lim inf ∥g0 ∥2 / n > 0, then for any mp → ∞,
+1
+or
+√ E[fˆm
+| X] − f0 ̸→ 0.
+p
+n
+2
+Discussion. The assumptions in Theorem 3.1 are intended to abstract the behavior of the denseconfounding structural equation model defined by (1) and (2). Their role is to separate three ingredients: a reduced sample-space representation of the bias, spectral concentration of this bias, and
+algorithmic downweighting of the corresponding directions.
+Assumption 1 follows from the usual projection argument in the dense factor model. Writing
+⊤
+b0 = Σ−1
+X Γ δ,
+
+Hδ = Xb0 + r,
+
+the residual r = Hδ − Xb0 is the part of the confounding term orthogonal to the linear span of
+√
+X. Under dense confounding,
+for instance when dq (Γ) ≳ p, this residual has vanishing normalized
+√
+empirical norm, ∥r∥2 / n = op (1); see Appendix B. If (H, E) are jointly Gaussian, then this orthogonal
+projection residual is independent of X, and hence satisfies E[r | X] = 0. In that case, the reduced
+model
+Y = Xβ0 + Xb0 + ε′
+has the exact conditional-mean structure required in Assumption 1. Without joint Gaussianity, the
+same reduced model is valid up to an op (1) perturbation in normalized empirical ℓ2 norm, because the
+orthogonal component r itself vanishes asymptotically.
+Assumption 2 is the corresponding geometric condition in sample space. Its bias part is justified
+by standard strong-factor arguments. Under the factor model X = HΓ + E, the factor component HΓ
+generates q leading singular directions, and the empirical top-q principal subspace of X consistently
+estimates the factor space spanned by H, up to rotation, under standard factor-model conditions [Bai,
+2003]. Equivalently, using perturbation results such as Davis–Kahan or Wedin-type sin-theta bounds
+[Yu et al., 2015], the projector onto the leading left singular vectors of X converges to the
+√ projector
+onto col(H). Since the fitted confounding component satisfies Xb0 = Hδ − r with ∥r∥2 / n = op (1),
+the bias term Xb0 is asymptotically contained in this leading empirical spectral subspace. The second
+part of Assumption 2, namely that the direct signal Xβ0 has negligible projection onto the same
+subspace, is a separate signal-separation condition: it rules out the case in which the target signal
+itself is concentrated in the factor directions that the method is designed to downweight.
+Assumption 3 is algorithmic. It requires that the spectral transformation assign vanishing weights
+to the leading factor directions, while keeping the remaining directions learnable. This follows from
+the usual spike–bulk behavior of X. Under sub-Gaussian assumptions on H and
+√ E,√non-asymptotic
+random matrix bounds imply that the noise bulk has operator norm of order n + p, whereas the
+√
+strong factor component produces q spiked singular values of order np [Vershynin, 2020]. Thus the
+leading singular values separate from the bulk. For LAVA-type weights,
+wi =
+
+nλ2
+,
+nλ2 + d2i
+
+(14)
+
+√
+√
+choosing nλ2 at the bulk scale, nλ2 ≍ ( n + p)2 , gives wi → 0 on the spiked directions and weights
+bounded away from zero on the bulk directions. The same spike–bulk separation also explains the
+Trim transform: the leading singular values are capped at a bulk scale, so their ratios d˜i /di vanish on
+the spikes, while remaining bounded away from zero on non-spiked directions.
+The theorem then isolates the deconfounding mechanism. Spectral weighting does not remove the
+confounding component; instead, it slows the optimization dynamics in directions where the fitted
+confounding term is concentrated. This creates a window in which the signal directions have been
+learned, while the downweighted confounding directions have not. Early stopping is therefore essential,
+and the theorem formalizes this as an intermediate stopping regime: the number of iterations mp must
+diverge so that the non-confounding directions are learned, mp νwM → ∞, but not so fast that the
+downweighted confounding directions are fitted, mp νwH → 0. We empirically validate the importance
+of this intermediate stopping regime in Section 6.2.
+The proof is given in Appendix A. The verification of Assumptions 1–3 under a dense factor model
+and either the Trim or LAVA transform is given in Appendix B. We remark that Theorem 3.1 is a
+8
+
+bias statement: it controls the conditional mean of the boosting iterate. Full prediction consistency
+additionally requires variance control; for the OLS base learner considered here, this requires additional
+effective-dimension conditions, with k/n → 0, being a simple sufficient condition; see remark A.1 in
+Appendix A.
+The analysis uses OLS base learners, which makes the boosting recursion exactly diagonal in the
+left singular-vector basis of X. For nonlinear learners such as trees, this exact diagonalization is no
+longer available. Nevertheless, the theorem provides the guiding optimization picture: the spectral
+loss changes the pseudo-response so that residual variation aligned with the confounding subspace is
+learned more slowly. We use this insight to motivate the nonlinear spectral boosting procedure in the
+next section.
+
+4
+
+Spectral Deconfounding for Nonlinear Models via Tree-Boosting
+
+We now move beyond linear models and allow for a general nonlinear relationship between the covariates X and the response Y . Our proposed solution for spectral deconfounding extends the results from
+Section 2.4 to nonlinear mixed-effects models. Moreover, we propose to choose the spectral shrinkage
+via empirical Bayes and to tune the amount of regularization using a certain form of cross-validation.
+We consider the structural equation model for n i.i.d. observations stacked in matrix form as
+X = HΓ + E,
+
+(15)
+
+Y = f0 (X) + Hδ + ϵ.
+
+(16)
+
+The dimensions of all matrices and vectors, as well as the independence assumptions on E, H,
+and ϵ, are the same as in Section 2.1. Here f0 : Rp → R denotes the target nonlinear regression
+function, and f0 (X) denotes its row-wise evaluation on the design matrix X, that is, f0 (X) :=
+⊤
+f0 (x1 ), . . . , f0 (xn )
+∈ Rn . As in the linear setting, confounding enters additively through the latent term Hδ, while the goal is to recover f0 without explicitly estimating H. In the nonlinear setting,
+the observable regression function, that is the function recovered by population least-squares regression
+of Y on X, is
+E[Y | X] = f0 (X) + m(X),
+m(X) := δ ⊤ E[H | X],
+and the, potentially nonlinear, part of m(X) that is absorbed in estimation depends on the chosen
+model class for f . In particular, under a linear model class this reduces to the linear projection Xb0 .
+Similarly to Section 2.4, we consider the model
+Y = f (X) + Xb + ϵ,
+where f : Rp → R is a possibly nonlinear function and f (X) ∈ Rn denotes its row-wise evaluation on
+the observed covariates, b ∼ N (0, σr2 Ip ) is a random effect, and ϵ ∼ N (0, σe2 In ). Again, integrating
+out b yields the Gaussian marginal model Y | X, f ∼ N f (X), Σ , Σ = σr2 XX ⊤ + σe2 In . Hence the
+marginal log-likelihood is
+1
+1
+ℓ(f, Σ) = − (Y − f (X))⊤ Σ−1 (Y − f (X)) − log |Σ| + const.
+2
+2
+
+(17)
+
+The log-determinant does not depend on f (·), so maximizing the marginal likelihood with respect to
+f (·) is equivalent to minimizing the spectral loss in (10) with Xβ replaced by f (X).
+
+4.1
+
+Gradient tree-boosting with the spectral loss
+
+Next, we propose to estimate the potentially nonlinear signal f0 (·) via gradient tree-boosting by minimizing the spectral loss induced by the quadratic term in Equation 17. Gradient boosting constructs
+a function f (·) as an additive expansion of base learners,
+f (x) =
+
+M
+X
+
+ν h(m) (x),
+
+m=1
+(m)
+
+where h
+∈ H are some base learners, in our case regression trees, and ν > 0 is the learning rate. As
+mentioned in Section 3, the method can be viewed as stagewise gradient descent in a function space:
+9
+
+at iteration m, one fits a new base learner to approximate the negative gradient of the loss evaluated
+at the current fit f (m) . We use a spectral loss. Writing r(m) := Y − f (m) (X) for the residual vector at
+iteration m, the gradient with respect to the prediction vector is ∇f LF (f (m) (·)) = −F ⊤ F r(m) . Hence
+boosting with the spectral loss differs from ordinary L2 -boosting only through the gradient: instead
+of fitting a tree to the raw residuals r(m) , one fits it to the filtered residuals F ⊤ F r(m) .
+In the nonlinear setting, we define the spectral transformation as a full-space operator. Specifically,
+√
+√
+F = U diag ( w1 , . . . , wk ) U ⊤ + (In − U U ⊤ ).
+
+(18)
+
+Thus, F rescales the left singular directions of X and acts as the identity on the orthogonal complement
+of col(X). Consequently,
+F ⊤ F r(m) =
+
+k
+X
+
+wi ⟨ui , r(m) ⟩ui + (In − U U ⊤ )r(m) .
+
+i=1
+
+This full-space definition does not affect the linear OLS base-learner analysis in Section 3, since the
+OLS base learner depends only on the component of the pseudo-response lying in col(X). For tree
+base learners, however, the fitted update is not restricted to col(X), so the action of the spectral
+transformation on col(X)⊥ must be specified. When the weights in (18) are chosen as the LAVA
+weights given in (14), the definition in (18) coincides with the LAVA transformation in (7) and the
+mixed-model whitening transformation in Proposition 2.1, up to a global scaling factor. This factor
+does not affect the corresponding squared-loss minimizer and can be absorbed into the learning rate
+in boosting.
+Algorithm 1 summarizes gradient boosting with a fixed spectral transformation. At each iteration,
+the algorithm computes the filtered residuals F ⊤ F r(m) , fits a base learner to this pseudo-response,
+and updates the current prediction function by a learning-rate-scaled step.
+Algorithm 1 Gradient Boosting with Fixed Spectral Loss
+Input: Data (X, Y ), spectral operator F , number of iterations M , learning rate ν
+Output: fˆ(·)
+1: Initialize f (0) (x) ≡ 0
+2: for m = 0, . . . , M − 1 do
+3:
+Compute residuals: r(m) = Y − f (m) (X)
+4:
+Compute negative spectral gradient: g(m) = F ⊤ F r(m)
+5:
+Fit base learner h(m) ∈ H to (X, g(m) ) by least squares
+6:
+Update f (m+1) (x) = f (m) (x) + ν h(m) (x)
+7: end for
+8: return fˆ(·) = f (M ) (·)
+
+4.2
+
+Empirical-Bayes spectral shrinkage and regularization
+
+Spectral deconfounding involves two conceptually distinct types of tuning choices. The first concerns
+the spectral transformation itself, namely how the geometry of the design is modified. The second
+concerns the regularization of the estimator fitted under that geometry, such as the lasso or ridge
+penalty in linear models or the number of boosting iterations in our nonlinear procedure. Separating
+these two roles is important both conceptually and algorithmically.
+4.2.1
+
+Choosing the spectral transformation via Empirical Bayes
+
+Different spectral deconfounding methods involve different transformation parameters. The Trim transform [Ćevid et al., 2020] is essentially tuning-free, since it modifies the spectrum of X according to a
+fixed deterministic rule. Principal component adjustment depends on the number of principal components removed or controlled for, which is often motivated by factor-model arguments. In practice,
+however, selecting this latent dimension is difficult, since the asymptotic regimes under which the
+number of factors can be identified do not directly translate to finite-sample problems [Bai, 2003]. By
+
+10
+
+contrast, LAVA-type transformations are parameterized through a variance-ratio or shrinkage level
+that controls how strongly high-variance spectral directions are attenuated.
+In our approach, this transformation is selected through a mixed-model formulation. We model the
+dense confounding component as a random effect Xb, with b ∼ N (0, σr2 Ip ), and estimate the variance
+components θ = (σr2 , σe2 ) by empirical Bayes [Robbins, 1964], that is, by maximizing the marginal
+log-likelihood obtained after integrating out the random effect:
+1
+1
+ℓ(θ; f ) = − log |Σθ | − (Y − f (X))⊤ Σ−1
+θ (Y − f (X)) + const,
+2
+2
+
+(19)
+
+where
+Σθ = σr2 XX ⊤ + σe2 In .
+−1/2
+
+For fixed f (·), this yields the spectral operator F = Σθ
+. Thus, rather than specifying a trimming
+threshold or the number of removed principal components a priori, we estimate the spectral geometry
+from the data through the variance components.
+In practice, we optimize θ and f (·) alternately. For fixed f (·), we update the variance components
+by maximizing ℓ(θ; f (·)). For fixed θ, we update f (·) by gradient boosting under the spectral loss
+−1
+induced by F ⊤ F = Σ−1
+can be computed efficiently via the
+θ . When p < n, the application of Σθ
+Sherman–Morrison–Woodbury identity, while when p ≥ n, one may work directly with the n × n
+covariance matrix Σθ . For large p and n, scalability can be obtained using sparse Gaussian-process
+approximations such as Vecchia approximations [Katzfuss et al., 2020], which are implemented in our
+software (for both the linear kernel and the extension below to nonlinear kernels).
+Algorithm 2 Spectral Boosting with Empirical Bayes
+2(0)
+
+2(0)
+
+Input: Data (X, Y ), initial θ(0) = (σr , σe ), number of iterations T , learning rate ν
+Output: fˆ, θ̂
+1: Initialize f (0) (x) ≡ 0
+2: for t = 0, . . . , T − 1 do
+2(t)
+2(t)
+3:
+Form Σ(θ(t) ) = σr XX ⊤ + σe In
+4:
+Boosting step: run Algorithm 1 for 1 iteration
+using F ⊤ F = Σ(θ(t) )−1 , initialized at f (t) , to obtain f (t+1)
+5:
+EB step: update θ(t+1) ∈ arg maxθ ℓ(θ; f (t+1) )
+6: end for
+7: return fˆ = f (T ) , θ̂ = θ (T )
+
+4.2.2
+
+Choosing the stopping iteration via BLUP-corrected cross-validation
+
+Regularization plays a different role. Whereas the spectral transformation determines which directions
+are downweighted, regularization determines how far the estimator is allowed to move along the resulting optimization path. In the linear spectral deconfounding literature, Ćevid et al. [2020] tune the
+estimator regularization, for example the lasso penalty, by cross-validation and then use a conservative selection rule. This concerns the complexity of the estimator, not the transformation itself. By
+contrast, mixed-model formulations are typically used to estimate variance components, but do not
+by themselves emphasize the additional regularization needed when the goal is deconfounding rather
+than pure prediction. A similar point applies to spectrally deconfounded random forests [Ulmer et al.,
+2026], where the transformation is fixed in advance and the role of regularization is not explicit.
+In our boosting-based procedure, regularization is governed primarily by early stopping, that is,
+by the number of boosting iterations. For component-wise linear L2 -boosting, the iteration number
+m plays the role of an inverse regularization parameter: increasing m weakens the regularization. In
+the infinitesimal-step-size limit, the resulting forward-stagewise path is closely related to, and under
+additional conditions coincides with, the lasso/LARS path [Efron et al., 2004, Hastie et al., 2007]. We
+select this number of iterations by K-fold cross-validation with the negative log-likelihood as criterion.
+Importantly, prediction on the validation data is done using both the fixed-effects term and the best
+linear unbiased predictor (BLUP) for the random-effects component. For a training fold (Xtr , Ytr ) and
+validation covariates Xval , we predict
+
+⊤ −1
+⊤
+Ŷval = fˆ(Xval ) + σr2 Xval Xtr
+Σθ,tr Ytr − fˆ(Xtr ) ,
+Σθ,tr = σr2 Xtr Xtr
++ σe2 In .
+11
+
+The inclusion of both the fixed- and random-effects terms for prediction matters for model selection.
+If one predicts only with fˆ(Xval ), then cross-validation can favor estimators that absorb confounding
+structure into fˆ(·), since the same confounding pattern is typically present in both training and validation folds. In that setting, conservative selection rules such as the one-standard-error rule can be helpful
+[Ćevid et al., 2020]. In our formulation, by contrast, the posterior random-effect term is available at
+prediction time and absorbs X-aligned residual structure. This makes standard cross-validation based
+on prediction error substantially better aligned with the goal of selecting the stopping time for fˆ(·). In
+Section 6.2, we show empirically that this procedure performs comparably to an oracle stopping rule
+based on the error with respect to the true target function f0 (·).
+
+5
+
+Extensions: Non-Gaussian Likelihoods and Nonlinear Confounding
+
+We next extend our proposed spectral boosting method beyond the Gaussian likelihood. Our starting
+point is the generalized LAVA estimator of Wang and Shah [2025], which replaces the unknown dense
+confounding contribution by a ridge-regularized bias proxy in the column space of the data matrix
+X. We then reinterpret this proxy through an empirical-Bayes (EB) mixed-model view, in which the
+dense component is modeled as a Gaussian random effect.
+
+5.1
+
+General likelihoods, generalized LAVA, and a mixed model interpretation
+
+Let Y = (y1 , . . . , yn )⊤ denote the observed outcomes and X ∈ Rn×p the covariates. Conditionally on
+a linear predictor η ∈ Rn , we assume independent observations with likelihood
+p(Y | η) =
+
+n
+Y
+
+p(yi | ηi ).
+
+i=1
+
+Equivalently, one may specify a mean parameter µi and a link function g through g(µi ) = ηi . This
+includes, for example, Gaussian regression with identity link, Bernoulli likelihoods with logistic or
+probit links, and Poisson likelihoods with log link. We consider the confounded generalized model
+yi | ηi ∼ p( · | ηi ),
+
+η = f0 (X) + Hδ,
+
+X = HΓ + E.
+
+(20)
+
+Generalized LAVA [Wang and Shah, 2025] replaces the unknown confounding contribution Hδ by
+a dense proxy in the column space of X,
+η = Xβ + Xb,
+
+(21)
+
+where b ∈ Rp is a dense bias parameter. Recall that, under strong and dense confounding, spurious
+structure is expected to concentrate along high-variance directions of X, so the proxy Xb is designed
+to absorb X-aligned variation. Writing
+ρi (ηi ) := − log p(yi | ηi )
+for the negative log-likelihood contribution, generalized LAVA estimates (β, b) via
+)
+( n
+
+1X
+2
+ρi (Xβ + Xb)i + λ1 ∥β∥1 + λ2 ∥b∥2 .
+(β̂, b̂) ∈ arg min
+β,b
+n i=1
+
+(22)
+
+We propose to estimate the signal component and the regularization strength by empirical Bayes,
+treating the dense proxy as a Gaussian random effect b ∼ N (0, σr2 Ip ). Allowing for nonlinear functions,
+we write the predictor as η = f + Xb, where f ∈ Rn may be linear, f = Xβ, or nonlinear, fi = f (xi ).
+Empirical Bayes targets the marginal likelihood
+Z
+p(Y | f, σr2 ) = p(Y | η = f + Xb) π(b | σr2 ) db,
+12
+
+which is not available in closed form for general likelihoods. We therefore use the Laplace approximation
+[Tierney et al., 1989]
+
+
+1
+1
+log p(Y | f, σr2 ) ≈ log p(Y | η = f + X b̂) − 2 ∥b̂∥22 − log det σr2 X ⊤ W (b̂, f )X + Ip + const, (23)
+2σr
+2
+where b̂ is the mode
+b̂(f, σr2 ) = arg max log p(Y | η = f + Xb) −
+b
+
+1
+∥b∥22 ,
+2σr2
+
+(24)
+
+and
+W (b̂, f ) = −∇2η log p(Y | η) η=f +X b̂ .
+More generally, Laplace-type approximations can also be constructed for non-smooth likelihoods by
+replacing the Hessian with an appropriate local curvature [Nava and Sigrist, 2026].
+Note that, for fixed (f, σr2 ), the mode b̂(f, σr2 ) is the dense generalized LAVA proxy. Unlike the
+Gaussian case, it is not generally available in closed form, since the log-likelihood need not be quadratic.
+It is instead computed by Newton’s method, equivalently by ridge-regularized iteratively reweighted
+least squares (IRLS): at a current iterate b(t) , let η (t) = f + Xb(t) , define the score s(t) = ∇η log p(Y |
+η)|η=η(t) , and set W (t) = −∇2η log p(Y | η)|η=η(t) . The second-order Taylor expansion of the loglikelihood at η (t) yields the IRLS pseudo-response
+−1 (t)
+z (t) = η (t) + W (t)
+s .
+The Newton step is therefore obtained by solving the weighted ridge system
+
+
+
+
+X ⊤ W (t) X + σr−2 Ip b(t+1) = X ⊤ W (t) z (t) − f .
+
+(25)
+
+This shows that each Newton step is a ridge-penalized weighted least-squares projection of the current
+working residual z (t) − f onto col(X). This update allocates X-aligned variation to the dense proxy.
+The full mode b̂(f, σr2 ) is obtained by iterating these weighted ridge updates until convergence. This
+makes the connection to generalized LAVA precise at the level of the posterior mode: for fixed (f, σr2 ),
+the dense component is still ridge-regularized, but now after a local quadratic approximation of the
+likelihood.
+Empirical Bayes selects (f, σr2 ) by optimizing the Laplace-approximated log-marginal likelihood
+(23). In our implementation, we update the nonlinear signal f by gradient boosting with respect to the
+corresponding negative Laplace-approximated log-marginal loss; explicit expressions of the derivatives
+are given in Sigrist [2023]. This yields a stagewise procedure in which boosting updates refine f
+given the current proxy, and σr2 is updated by one-dimensional optimization of (23). The variance
+component therefore controls again how much X-aligned structure is allocated to the dense proxy
+versus the nonlinear signal. We demonstrate the effectiveness of the proposed approach for binary
+classification in Section 6.2.2.
+
+5.2
+
+Nonlinear kernel-based deconfounding
+
+We now extend the spectral deconfounding framework beyond the linear confounding regime. Consider
+the structural model
+X = ϕ(H) + E,
+Y = f0 (X) + g(H) + ε,
+where H ∈ Rn×q is a latent confounder, ϕ is a (possibly nonlinear) factor map, and g(H) is an arbitrary
+latent confounding contribution. The observable regression function can again be written as
+E[Y | X] = f0 (X) + m(X),
+
+m(X) := E[g(H) | X].
+
+In the linear-Gaussian setting, where ϕ(H) = HΓ and g(H) = Hδ, the conditional expectation E[H |
+X] is linear in X. Consequently, m(X) = Xb for some coefficient vector b, so the confounding bias lies
+exactly in the linear span of X.
+If both ϕ(H) and g(H) admit a common finite-dimensional basis expansion
+g(H) = δ ⊤ B(H),
+
+ϕ(H) = ΓB(H),
+13
+
+for some feature map B : Rq → RK with K ≪ p, then the problem reduces to a linear confounding
+model in the expanded latent variables B(H). In this case, linear spectral deconfounding remains
+sufficient [Ulmer et al., 2026]. In contrast, when no such shared finite representation exists, m(X) is,
+in general, a nonlinear function of X. Importantly, the practically relevant bias is not m(X) itself, but
+its projection onto the model class used to estimate f0 . Under the squared loss, the fitted predictor
+absorbs only the component of m(X) that lies in the hypothesis space. In particular, for linear models,
+the relevant bias reduces to the linear projection Xb, while for nonlinear learners, richer components
+of m(X) may be representable and thus absorbed. This highlights a limitation of linear spectral
+transformations: they are designed to attenuate Xb, but do not directly address nonlinear components
+of m(X) that become relevant for more expressive learners.
+To account for nonlinear confounding, we extend the spectral transformation to a more flexible
+reproducing kernel Hilbert space (RKHS). Instead of modeling the dense component via a random effect
+with covariance XX ⊤ , we consider a kernel-based random effect with covariance matrix K ∈ Rn×n
+with entries
+Kij = kθ (xi , xj ),
+where kθ (·, ·) is a positive definite kernel with hyperparameters θ. Analogously to the linear case, this
+induces a spectral transformation based on the eigendecomposition of K. The resulting spectral loss
+is
+1
+F = (σr2 K + σe2 In )−1/2 .
+LF (f ) = ∥F (Y − f (X))∥22 ,
+2
+The mechanism of this approach can be understood through a simple spectral argument. Let
+(λj , vj ) denote the eigenpairs of K, and write the confounding signal on the sample as
+m := (m(x1 ), . . . , m(xn ))⊤ =
+
+n
+X
+
+αj vj .
+
+j=1
+
+Since F acts diagonally in this basis, F vj = (σr2 λj + σe2 )−1/2 vj , we obtain
+∥F m∥22 =
+
+n
+X
+
+αj2
+.
+σ 2 λ + σe2
+j=1 r j
+
+(26)
+
+Thus, spectral deconfounding is effective whenever the confounding signal m is concentrated on eigenvectors associated with large eigenvalues of K, since these directions are downweighted most strongly.
+Kernel eigenvectors capture dominant nonlinear modes of variation in the data. Equation (26) shows
+that the method attenuates precisely those components of m(X) that align with these dominant modes.
+Therefore, the kernel extension succeeds when the predictable confounding term is spectrally simple
+with respect to the geometry of X. Finally, the kernel hyperparameters θ can be estimated by empirical Bayes through maximization of the marginal likelihood, exactly as in the linear random-effects
+model.
+
+5.3
+
+Software and reproducibility
+
+The methods presented in this article are implemented in the GPBoost library, written in C++ with
+high-level Python and R interfaces; see https://github.com/fabsig/GPBoost. Code for reproducing
+the experiments in this paper is available at https://github.com/AndreaThomNava/spectral-boosting.
+All numerical experiments were run on a machine with an Intel Xeon E3-1284L v4 processor at 2.90 GHz
+and 31 GB of RAM.
+
+6
+
+Simulation Studies
+
+To investigate the proposed spectrally deconfounded gradient boosting algorithm, we follow the datagenerating process of Ulmer et al. [2026]. We begin by simulating a latent confounding structure that
+induces correlation in the covariates and enters the outcome through a shared linear effect. Specifically,
+
+14
+
+we generate X = E + HΓ, E ∈ Rn×p , H ∈ Rn×q , Γ ∈ Rq×p , and define the latent predictor η :=
+f0 (X) + Hδ ∈ Rn , δ ∈ Rq . The true causal function f0 is constructed using a Fourier basis:
+f0 (X) :=
+
+p
+X
+
+1{j∈Js }
+
+j=1
+
+K
+X
+
+(aj,k cos(0.2k · xj ) + bj,k sin(0.2k · xj )) ,
+
+(27)
+
+k=1
+
+where Js is a randomly selected subset of {1, . . . , p} of size four, representing the true causal features.
+The entries of E, H, δ, and Γ are sampled independently from N (0, 1). For the four causal parents,
+we sample the coefficients aj,k and bj,k uniformly on [−1, 1], with the number of basis functions fixed
+at K = 2. We then obtain the observed response according to the learning task. In the regression
+setting, we add independent Gaussian noise, Y = η + ε, ε ∼ N (0, 0.12 In ). In the classification setting,
+we map the latent predictor through the logistic link and sample Bernoulli labels accordingly.
+
+6.1
+
+Qualitative results
+
+The goal of this section is to illustrate how spectral boosting changes the learned signal under latent
+confounding in terms of feature importance and recovery of the shape of the true causal function.
+We generate data from the confounded nonlinear model (27) with n = 1,000 training observations,
+p = 100 covariates, and q = 20 latent confounders for the regression setting, and n = 10,000, p = 50,
+and q = 20 for the classification setting. We fit (i) our proposed spectral boosting method and (ii)
+traditional gradient tree boosting, both with a learning rate of ν = 0.05 and a tree depth of three.
+The variance components entering the covariance matrix Σθ are selected by empirical Bayes, while the
+number of boosting iterations is chosen by 2-fold cross-validation, using as selection criterion the mean
+squared error and the negative log-likelihood for the regression and classification settings, respectively.
+
+0.5
+
+1
+
+0.0
+
+f ( x)
+
+1e-01
+
+0
+
+-0.5
+-1
+
+-1.0
+
+1e-02
+
+-2
+-8
+
+-4
+
+0
+
+4
+
+8
+
+-10
+
+-5
+
+x98
+
+1e-03
+
+0
+
+5
+
+10
+
+x100
+
+3
+2
+1e-04
+
+f(x)
+
+Standard boosting variable importance
+
+Regression setting. The results in Figure 1 suggest two qualitative advantages of spectral boosting
+over standard boosting under confounding. First, the split-based feature-importance analysis in the
+left plot shows that spectral boosting assigns substantially more importance to the four causal features,
+whereas standard boosting spreads importance more diffusely across many features, consistent with a
+stronger reliance on confounding-driven associations. Second, the partial dependence plots in the right
+panel show that spectral boosting better recovers the target shape on the causal variables and is less
+prone to estimating nonzero effects on non-causal variables. The displayed variables are selected by
+average split-gain importance rank across spectral boosting and standard boosting, separately among
+causal and non-causal covariates.
+
+0.4
+
+1
+
+0.0
+
+0
+-1
+
+1e-05
+0.001
+
+0.010
+
+-0.4
+
+-2
+
+0.100
+
+Spectral boosting variable importance
+
+-0.8
+-5
+
+0
+
+5
+
+x12
+
+Spurious
+
+Causal
+
+Spectral boosting
+
+-10
+
+-5
+
+0
+
+5
+
+10
+
+x62
+
+Standard boosting
+
+True
+
+Figure 1: Regression setting. Left: Log–log scatter of split-based variable importance; causal features
+are highlighted. Right: partial dependence plots for two causal and two non-causal covariates with the
+highest average variable importance rank across the two methods. The top row shows causal covariates
+(x98 and x100); the bottom row shows non-causal covariates (x12 and x62), for which the ground-truth
+effect is zero.
+
+15
+
+f(x)
+
+0.100
+
+2
+
+0.5
+
+1
+
+0.0
+
+0
+
+-0.5
+
+-1
+
+-1.0
+
+-2
+-5
+
+0
+
+5
+
+-10
+
+-5
+
+x45
+
+0.010
+
+0.010
+
+0.100
+
+-0.5
+-1.0
+
+-1.5
+
+Spectral boosting variable importance
+
+-5
+
+0
+
+5
+
+x29
+
+Spurious
+
+Causal
+
+10
+
+0.0
+
+0.0
+-0.5
+-1.0
+
+0.001
+
+5
+
+0.5
+
+0.5
+0.001
+
+0
+
+x21
+
+1.0
+
+f ( x)
+
+Standard boosting variable importance
+
+Classification setting. Figure 2 shows a qualitatively similar pattern in the classification setting,
+although the differences are somewhat less pronounced than in regression. This is expected, since
+recovering the underlying signal is generally more difficult in classification even in the absence of
+confounding. As in the regression case, the feature-importance analysis shows that spectral boosting
+places more emphasis on the four truly causal covariates. The partial dependence plots in the right
+panel indicate that the two methods recover broadly similar effects on the causal variables, while
+spectral boosting is less prone to estimating nonzero effects on non-causal variables. The displayed
+variables are selected using the same criterion as in Figure 1.
+
+Spectral boosting
+
+-4
+
+0
+
+4
+
+x33
+
+Standard boosting
+
+True
+
+Figure 2: Classification setting. Left: Log–log scatter of split-based variable importance; causal
+features are highlighted. Right: partial dependence plots for two causal and two non-causal covariates
+with the highest average variable importance rank across the two methods. The top row shows causal
+covariates (x45 and x21); the bottom row shows non-causal covariates (x29 and x33), for which the
+ground-truth effect is zero.
+
+6.2
+
+Quantitative results
+
+To quantify the accuracy in estimating the causal function, we follow the simulation setting described
+above. In each repetition, we draw a causal function f0 from the Fourier basis expansion and generate
+data from the confounded model. Unless stated otherwise, the default dimensions are n = 1,000,
+p = 250, and q = 20 for the regression setting, and n = 5,000, p = 50, and q = 20 for the classification
+setting. In all cases, only four covariates are active, i.e., only four variables influence the response.
+We then vary one dimension at a time—the sample size n, the number of covariates p, and the latent
+confounder dimension q—while keeping the remaining quantities fixed at their default values. Each
+configuration is repeated 50 times, with the full data-generating process redrawn independently in
+every repetition. Performance is evaluated on a test set of size ntest = 500 using the mean squared
+error with respect to the true causal function:
+MSEf :=
+
+1
+
+n
+test
+X
+
+ntest i=1
+
+2
+f0 (xtest,i ) − fˆ(xtest,i ) .
+
+We benchmark the proposed spectrally deconfounded boosted trees (SpecBoost) against standard
+L2 -gradient-boosted trees (Boosting) and, in the regression setting, against random forests (Random
+Forest) using the ranger implementation [Wright et al., 2019] and the spectrally deconfounded random
+forest of Ulmer et al. [2026] (SDF). Both SpecBoost and Boosting are implemented using the GPBoost
+library [Sigrist et al., 2021]. This comparison isolates the effect of the spectral transformation within
+boosting and positions our method relative to the main existing nonlinear spectral deconfounding
+baseline. In classification, we report results for Spectral Boosting and Standard Boosting only, since
+SDF is designed for squared-loss regression and is not directly applicable to classification. In the
+regression setting, we additionally compare the runtime of the competing methods in order to assess
+the computational cost of spectral deconfounding.
+16
+
+6.2.1
+
+Regression setting
+
+^
+2
+0
+||f (xtest) - f (xtest)||2 ntest
+
+Figure 3 shows that the proposed SpecBoost method consistently achieves lower estimation error
+than standard boosting, and a similar pattern holds for SDF relative to standard random forests.
+The sample size has comparatively little effect on the relative ranking of the methods, whereas the
+number of features and the latent confounder dimension have a more pronounced impact. As the
+number of features increases, the benefits of spectral deconfounding become more evident, indicating
+that deconfounding is particularly useful in higher-dimensional settings. With respect to the latent
+confounder dimension, standard boosting performs best in the unconfounded case, as expected, but the
+loss relative to SpecBoost is small compared with the gains achieved by SpecBoost once confounding is
+present; see Appendix C.2 for a more thorough ablation in the absence of confounding. The results also
+suggest that the Trim transform used in SDF is less effective in regimes with relatively few features,
+in particular when the number of features is smaller than the confounder dimension (middle plot in
+Figure 3), or when the confounder dimension approaches the feature dimension (right plot in Figure 3).
+
+20.0
+
+20.0
+
+10.0
+
+10.0
+
+2.0
+
+2.0
+
+2.000
+
+0.1
+
+0.2
+
+0.005
+
+500
+
+20.000
+10.000
+
+1000 2000 4000
+
+4
+
+Sample size
+
+10 50 100 150 200 250
+
+0
+
+Number of features
+Boosting
+
+SpecBoost
+
+SDF
+
+5 10 20 50 100200
+
+Latent dimension
+
+Random Forest
+
+Figure 3: Regression setting. Boxplots of the mean squared error for the different methods across
+simulation scenarios, displayed on a log(1 + x) scale on the y-axis.
+Figure 4 reports the runtimes across the same simulation settings. As expected, the spectral
+methods are computationally more demanding than their non-spectral counterparts, since they require
+additional matrix factorizations. At the same time, SpecBoost is several orders of magnitude faster
+than SDF across all scenarios. In particular, the runtime of SDF is strongly affected by the sample size,
+whereas our implementation scales substantially better in n, making spectral deconfounding feasible
+for larger regression problems.
+
+Runtime (seconds)
+
+200.0
+
+200
+100
+
+1000
+
+50.0
+
+200
+
+20.0
+
+20
+2
+500
+
+50
+
+5.0
+
+10
+
+0.1
+
+2
+
+1000 2000 4000
+
+Sample size
+SpecBoost
+
+4 10 50 100150200250
+
+Number of features
+Boosting
+
+SDF
+
+0
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+
+Random Forest
+
+Figure 4: Regression setting. Boxplots of the runtime for the different methods across simulation
+scenarios, displayed on a log(1 + x) scale on the y-axis.
+Figure 5 compares the number of boosting iterations selected by cross-validation with an oracle
+stopping rule that minimizes the estimation error with respect to the true target function f0 . The
+17
+
+proposed cross-validation rule, which forms predictions using both the fixed-effects component and
+the posterior random effect, tracks the oracle stopping rule closely across all simulation scenarios. By
+contrast, standard boosting tends to overfit to the confounding structure and therefore selects too
+many iterations. The spectral method can be run for more iterations than standard boosting before
+overfitting to confounding becomes severe, but early stopping remains important: if the procedure
+is run too long, later iterations eventually begin to absorb confounding-driven residual variation. As
+expected, the sample size has relatively little effect on the selected stopping time. In contrast, the
+number of features and the latent confounder dimension have a more visible impact.
+
+Number of iterations
+
+250
+200
+
+200
+
+200
+
+150
+100
+
+100
+
+100
+
+50
+500
+
+1000 2000 4000
+
+4
+
+Sample size
+
+Number of features
+Chosen (CV)
+
+10 50 100 150 200 250
+
+Oracle
+
+0
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+
+standard
+
+spectral
+
+Figure 5: Regression setting. Number of boosting iterations selected by the proposed cross-validation
+rule (solid lines) and by the oracle rule with access to the true target function f0 (dashed lines).
+Figure 6 shows the estimated random-effect variance component σr2 selected by empirical Bayes.
+Since there is no ground-truth value for this parameter in the simulation design, we assess its behavior
+heuristically. In the absence of confounding, one would expect the random-effect variance to be close
+to zero, since there is no confounding-driven structure that needs to be absorbed by the random effect.
+The results suggest that the sample size has only a limited effect on the estimated variance component,
+whereas the number of features and the latent confounder dimension affect it more strongly. As the
+number of features increases, the estimated variance component decreases, which is consistent with the
+fact that under dense confounding the bias becomes smaller in high dimensions. In addition, empirical
+Bayes selects the smallest variance component in the unconfounded setting (latent dimension equal
+zero) and increases it as the latent confounder dimension grows, thereby allowing the random effect to
+absorb a larger fraction of the X-aligned confounding structure.
+2.0
+
+3
+
+1.5
+
+0.020
+
+2
+
+1.0
+1
+
+sr
+
+2
+
+0.015
+0.5
+0.010
+
+0
+
+0.0
+500
+
+1000 2000 4000
+
+Sample size
+
+4
+
+10 50 100 150 200 250
+
+Number of features
+
+0
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+
+Figure 6: Regression setting. Boxplots of the estimated random-effect variance σr2 , displayed on a
+log(1 + x) scale on the y-axis. Larger values correspond to weaker shrinkage of the random effect.
+
+18
+
+6.2.2
+
+Classification setting
+
+^
+2
+0
+||f (xtest) - f (xtest)||2 ntest
+
+Figure 7 reports the test mean squared error for the classification scenarios. The results are broadly
+consistent with those in the regression setting: although the differences are less pronounced than
+in regression, the proposed SpecBoost method still improves over standard boosting in most settings.
+Empirical Bayes also behaves reasonably in the classification setting, and the proposed rule for selecting
+the number of boosting iterations continues to track the oracle stopping rule well; see Figures 17 and
+18 in Appendix C.1.
+10.0
+
+10
+
+5.0
+
+5
+
+2.0
+
+10.00
+5.00
+
+2
+
+1.00
+
+1
+
+0.5
+
+0.05
+500
+
+1000 2000 10000
+
+Sample size
+
+4
+
+10
+
+50
+
+100
+
+150
+
+Number of features
+Boosting
+
+0
+
+5 10 20 50 100200
+
+Latent dimension
+
+SpecBoost
+
+Figure 7: Classification setting. Boxplots of the mean squared error for the different methods across
+simulation scenarios, displayed on a log(1 + x) scale on the y-axis.
+
+6.3
+
+Robustness of empirical-Bayes spectral boosting to violations of assumptions
+
+As discussed above, the spectral transformation underlying our method depends on a shrinkage parameter λ2 , which in the mixed-model formulation corresponds to the ratio of variance components
+nλ2 = σe2 /σr2 . In this section, we investigate the performance and robustness of the empirical Bayes
+estimate and that of a fixed rule proposed by Ćevid et al. [2020].
+Fixed spectral rule. Following Ćevid et al. [2020], the regularization parameter λ2 can be set as
+a function of the singular values of the design matrix X. In particular, the proposed rule selects
+λ2 = n1 d2⌊min(n,p)/2⌋ . This choice is motivated by asymptotic arguments and implicitly assumes that
+the magnitude of the singular values of X reflects the strength of the confounding.
+Empirical Bayes. In contrast, the empirical Bayes approach estimates nλ2 = σe2 /σr2 from the data
+by maximizing the marginal likelihood in Equation 19. Importantly, this criterion depends on the
+residual Y − fˆ(X), and therefore potentially adapts to the observed magnitude of the confounding
+component. In particular, the empirical Bayes estimate reflects the scale of the bias term through its
+contribution to the residual, rather than relying solely on the geometry of X.
+6.3.1
+
+Robustness to violations of the dense-confounding assumption
+
+Our approach relies on the dense-confounding assumption, namely that each latent confounder affects a
+large proportion of the observed covariates. We therefore investigate the robustness of the method when
+this assumption is progressively violated. We consider the default simulation setting with n = 1000,
+p = 250, and q = 20, but vary the number s of covariates affected by the confounders. Specifically, for
+each s ∈ {4, 10, 50, 100, 200, 250}, we randomly select s columns of the loading matrix Γ and generate
+their entries independently from the same Gaussian distribution used in the baseline experiments,
+while setting the remaining 250 − s columns of Γ to zero. Consequently, only the selected covariates
+are influenced by the latent confounders.
+
+19
+
+^
+2
+0
+||f (xtest) - f (xtest)||2 ntest
+
+Figure 8 shows that spectral boosting remains robust to violations of the dense-confounding assumption. As expected, the performance advantage gradually decreases as the confounding becomes
+sparser. Nevertheless, the proposed method remains competitive even when only a small subset of
+covariates is affected by the confounders. Moreover, under the strongest violations of the denseconfounding assumption, empirical-Bayes spectral boosting consistently outperforms both spectrally
+deconfounded random forests and the spectral boosting version using the fixed rule. This suggests that
+the empirical Bayes tuning strategy may provide additional robustness beyond the fixed asymptotic
+choice of the shrinkage parameter, although a more detailed theoretical understanding of this behavior
+remains an interesting direction for future work.
+
+20.0
+10.0
+
+2.0
+
+0.1
+4
+
+10
+
+50
+
+100
+
+200
+
+250
+
+Affected variables
+Boosting
+
+SpecBoost
+
+SDF
+
+Random Forest
+
+SpecBoost - Fixed
+
+Figure 8: Robustness to violations of the dense-confounding assumption in the regression setting. The
+latent confounder affects only a subset of the p = 250 covariates. The x-axis denotes the number of
+affected variables. Boxplots show the test mean squared error on a log(1 + x) scale.
+
+6.3.2
+
+Robustness to design misspecification
+
+We next investigate robustness under design misspecification. In the baseline setting, the design is
+generated as X = HΓ + E, where E is isotropic Gaussian noise. To decouple the spectrum of X from
+the strength of confounding, we now generate X and E as
+X = HΓ + E,
+
+√
+E = p2/3 ZE BE / p + WE ,
+
+where ZE ∈ Rn×p , BE ∈ Rp×p , and WE ∈ Rn×p have independent standard Gaussian entries. The
+√
+√
+term ZE BE / p has operator norm of order O( p) when n and p grow at the same rate. Under Gaussian latent factors
+fixed confounder dimension q, the confounding component HΓ has operator
+√ with
+√
+norm of order O( n p) = O(p). The additional scaling by p2/3 inflates the noise component to order
+O(p7/6 ).
+As a result, the spectrum of X is driven primarily by the noise term, and the magnitude of its
+singular values is no longer informative about the strength of confounding. In contrast, the relevant
+quantity governing the bias is the projection of the confounding component onto the model class, which
+is reflected in the residual Y − fˆ(X). Since empirical Bayes explicitly uses this residual to estimate λ2 ,
+it adapts to the actual magnitude of the confounding present in the data. The fixed spectral rule, by
+contrast, depends only on the singular values of X and therefore works less well when these singular
+values are dominated by variation unrelated to confounding. This leads to improved robustness of the
+empirical Bayes approach when the link between the spectrum of X and the confounding strength is
+violated, as shown in Figure 9.
+
+20
+
+^
+2
+0
+||f (xtest) - f (xtest)||2 ntest
+
+5
+
+5
+2
+
+2
+
+2
+
+1
+500
+
+1000
+
+2000
+
+4000
+
+4
+
+Sample size
+
+10 50 100 150 200 250
+
+0
+
+Number of features
+Boosting
+
+SpecBoost
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+
+SpecBoost - Fixed
+
+Figure 9: Design-misspecified regression setting. Comparison of empirical-Bayes spectral tuning with
+the fixed rule of Ćevid et al. [2020] when the spectrum of X is no longer dominated by the confounding
+component. Boxplots show the test mean squared error on a log(1 + x) scale.
+6.3.3
+
+Well-specified setting
+
+We also consider a setting in which the model is correctly specified. In this regime, both the fixed rule
+and the empirical Bayes estimate yield comparable performance, as shown in Figure 10. The fixed rule
+performs slightly worse in low-dimensional regimes, where it tends to under-regularize. This behavior
+is expected, as the rule is derived under high-dimensional asymptotics.
+
+^
+2
+0
+||f (xtest) - f (xtest)||2 ntest
+
+20.0
+
+20.0
+20.000
+
+10.0
+
+10.000
+
+5.0
+2.0
+
+2.0
+
+2.000
+
+0.1
+
+0.1
+
+0.005
+
+500
+
+1000 2000 4000
+
+Sample size
+
+4
+
+10 50 100 150 200 250
+
+Number of features
+Boosting
+
+SpecBoost
+
+0
+
+5 10 20 50 100200
+
+Latent dimension
+
+SpecBoost - Fixed
+
+Figure 10: Well-specified regression setting. Comparison of empirical Bayes tuning of the spectral
+shrinkage with the fixed rule of Ćevid et al. [2020]. Boxplots show the test mean squared error across
+simulation scenarios, displayed on a log(1 + x) scale.
+
+6.4
+
+Nonlinear confounding
+
+We next consider the nonlinear confounding setting introduced in Section 5.2 and investigate the performance of the proposed kernel extension of spectral deconfounding in two experimental scenarios.
+Throughout this subsection, we use a Gaussian radial basis function (RBF) kernel. In the first experiment, all hyperparameters are estimated by empirical Bayes. In the second experiment, by contrast,
+we fix the random-effect variance using the rule of Ćevid et al. [2020] and set the Gaussian kernel length
+scale via the median heuristic [Garreau et al., 2018] since this scenario is more challenging: the leading
+kernel principal components represent a highly nonlinear structure, while in the first experiment, the
+confounding still lies in a linear subspace.
+
+21
+
+6.4.1
+
+Linear factor model with nonlinear outcome confounding
+
+We construct a family of confounding mechanisms that interpolates between linear and nonlinear
+i.i.d.
+regimes for the confounder g(H). Let H1 ∈ Rn denote the first column of H, with entries hi1 ∼
+N (0, 1), and define
+√
+√
+uα := g(H) = 1 − α H1 + α (H12 − 1),
+α ∈ [0, 1].
+The two components in this construction are the first two Hermite polynomials, which are orthogonal
+under the standard Gaussian measure. This orthogonality is useful because it separates first-order
+and second-order confounding effects. At α = 0, the confounding is purely linear, u0 = H1 ; so
+m(X) = E[H1 | X] is linear in X, and a “correction” of the form Xb is well matched. At α = 1, the
+confounding is purely quadratic: u1 = H12 − 1. In this case,
+m(X) = E[H12 − 1 | X]
+is nonlinear in X. Moreover, its linear projection vanishes. Indeed, for each Xj = γj H1 + Ej ,
+Cov(Xj , H12 − 1) = γj Cov(H1 , H12 − 1) + Cov(Ej , H12 − 1) = 0,
+since Ej is independent of H1 and E[H1 (H12 − 1)] = 0. Hence the best linear approximation to
+m(X) is zero, so linear spectral deconfounding is ineffective in this regime by construction. This
+experiment therefore isolates two important points: (i) the impact of confounding depends on how
+much of m(X) lies in the model class of the learner; (ii) a linear correction can only remove its best
+linear approximation Xb, whereas nonlinear learners may still absorb additional components of m(X).
+We set q = 20, p = 50, and n = 1000 and generate X, H and f0 as above, and repeat the
+procedure K = 25 times. The nonlinear confounding path is driven by the first latent factor H1 ,
+while the remaining latent coordinates enter through the factor model for X. For each value of α,
+we construct uα as above and then rescale it so that its standard deviation is τ = 1.5 times the
+standard deviation of the signal f0 (X). The response is generated as Y = f0 (X) + uα + ε, with
+ε independent noise. We evaluate five methods across values of α ∈ {0, 0.25, 0.5, 0.75, 1}: standard
+boosting, boosting with a linear random effect (SpecBoost), boosting with an RBF kernel random effect
+(Kernel-SpecBoost), Random Forest [Wright et al., 2019], and the spectrally deconfounded random
+forest (SDF) [Ulmer et al., 2026]. To better interpret the results, we also measure how predictable the
+confounding signal uα is from X using linear regression, boosting, kernel ridge regression, and random
+forest. These diagnostics provide an empirical proxy for the projection of the induced bias m(X) onto
+the corresponding model classes.
+Figure 11 summarizes the results. As expected, when α = 0 the confounding is linear, and linear
+spectral deconfounding performs the best (left panel). As α increases, however, the performance
+of the linear random-effect correction deteriorates, reflecting the fact that the linear nuisance Xb
+becomes a progressively poorer approximation to the true bias m(X), as depicted by the right panel
+of Figure 11. Importantly, this does not mean that linear spectral deconfounding becomes irrelevant
+immediately outside the exactly linear setting: even when m(X) is nonlinear, Xb remains its best
+linear approximation, and may still capture a non-negligible part of the confounding signal. Thus,
+linear spectral deconfounding can retain practical value beyond the idealized linear regime.
+At α = 0, the RBF random-effect model is also able to improve over standard boosting in this
+regime, consistent with the fact that its richer model class can represent the linear bias Xb, although
+less efficiently. At intermediate values such as α = 0.5, the two deconfounding methods perform
+comparably. At α = 1, however, where the confounding has no linear component by construction,
+the RBF random-effect model outperforms the linear correction, implicit in both SpecBoost and SDF,
+whose performance becomes close to that of standard boosting. This suggests that a more expressive
+random effect can improve robustness by absorbing structured nonlinear confounding beyond the linear
+regime.
+The diagnostics plot in the right panel of Figure 11 helps explain these patterns. It reveals that
+strong nonlinear confounding may remain present even when its linear projection is weak. In particular, kernel ridge regression can often predict uα from X substantially better than linear regression,
+confirming that the induced bias m(X) is genuinely nonlinear. Yet boosted trees need not absorb all
+of this signal, suggesting that tree-based learners are relatively insensitive to certain dense nonlinear
+22
+
+0.75
+
+2
+
+3.0
+
+R
+
+^
+2
+0
+||f (xtest) - f (xtest)||2 ntest
+
+1.00
+5.0
+
+0.50
+0.25
+
+1.0
+
+0.00
+0.5
+0
+
+0.25
+
+0.5
+
+0.75
+
+a
+
+1
+
+Boosting
+
+Kernel-SpecBoost
+
+SpecBoost
+
+Random Forest
+
+0
+
+0.25
+
+SDF
+
+0.5
+
+0.75
+
+a
+
+1
+
+Boosting
+
+Kernel ridge
+
+Linear
+
+Random Forest
+
+Figure 11: Nonlinear outcome confounding. Performance as the confounding term becomes increasingly
+nonlinear. Vertical bars are twice the standard error of the mean performance. Left: test mean squared
+error. Right: predictability of the latent confounder, measured by the R2 from regressing u on X.
+confounding mechanisms. A natural interpretation is that the confounding m(X) may have only a
+small projection onto the boosted-tree model class, even when it is large in a richer function class such
+as the RKHS induced by the RBF kernel.
+6.4.2
+
+Nonlinear factor model and linear outcome confounding
+
+We now consider the setting in which the confounding arises from a nonlinear factor model in the
+covariates, while the confounder enters the outcome linearly. Specifically, we generate data as
+X = ϕ(H) + E,
+
+Y = f0 (X) + Hδ + ε,
+
+where H ∈ Rn and ϕ : R → Rp is a nonlinear embedding applied row-wise. We construct ϕ(H) by
+first mapping H to a one-dimensional spiral in R2 , Z = (H cos H, H sin H) ∈ Rn×2 , which is then
+linearly embedded row-wise into Rp via ZB, where B ∈ R2×p is a random orthonormal embedding.
+This yields a data set that lies near a curved one-dimensional manifold in Rp .
+8
+0.50
+5
+
+0
+
+KPC1
+
+z2
+
+PC1
+
+4
+
+0
+
+-4
+
+0.25
+
+0.00
+
+-0.25
+
+-5
+-10
+
+-5
+
+z1
+
+0
+
+5
+
+0.0
+
+2.5
+
+5.0
+
+H
+
+7.5
+
+10.0
+
+0.0
+
+2.5
+
+5.0
+
+7.5
+
+10.0
+
+H
+
+Figure 12: Nonlinear factor model. Left: spiral manifold ϕ(H) in R2 , colored by confounder H. Middle:
+First principal component. Right: First (RBF) kernel principal component.
+Although the data lie in a two-dimensional linear subspace, the latent coordinate H is not a linear
+function of X. As a result, linear PCs recover the subspace but fail to recover H. In contrast, kernel PCs
+capture nonlinear structure and recover coordinates that are strongly aligned with H (Figure 12 and
+Figure 13). Linear spectral methods can only attenuate linear projections of m(X) and are therefore
+ineffective if the linear projection is small. In contrast, kernel spectral deconfounding adapts to the
+
+23
+
+R for regression of H on top 2 PCs
+
+geometry of the data and can attenuate components aligned with the recovered nonlinear coordinates.
+This aligns with the theoretical perspective developed in Section 5.2.
+We generate training samples of size n = 1000 and independent test samples of size ntest = 500
+and p = 50. The signal f0 is constructed as in the previous section. The confounder H is sampled
+uniformly and mapped through the spiral embedding described above. We repeat the experiment over
+25 independent replications. Figure 13 shows that Kernel-SpecBoost achieves the lowest test error for
+estimating f0 , outperforming both linear spectral methods and non-spectral baselines. This supports
+the need to account for nonlinear structure in X: the diagnostic in the right panel shows that the first
+two kernel principal components explain substantially more variation in the latent coordinate H than
+the first two linear principal components.
+
+3
+2
+
+1
+
+0.75
+
+0.50
+
+0.25
+
+2
+
+^
+2
+0
+||f (xtest) - f (xtest)||2 ntest
+
+4
+
+t
+t
+st
+ting
+Boos
+Boos
+Fore
+Boos
+Spec nel-Spec andom
+R
+Ker
+
+Kernel PCA
+
+SDF
+
+Linear PCA
+
+Figure 13: Regression setting with nonlinear factor model and linear outcome confounding. Left: test
+mean squared error. Right: R2 of regressing the confounder H on the first two principal components.
+
+7
+
+Real-World Application
+
+We empirically validate our approach using the Boston housing data set [Blake and Merz, 1998],
+obtained through the mlbench package [Leisch and Dimitriadou, 2024], which comprises median house
+prices and neighborhood characteristics for 506 census tracts in the Boston metropolitan area. The
+data set includes geographic coordinates (latitude and longitude) for each tract. Since spatial location
+is known to have a substantial effect on housing prices even after accounting for observed predictor
+variables, fitting a predictive model without accounting for spatial variation introduces confounding
+whenever location is correlated with other covariates. In such cases, non-spatial features may act as
+proxies for location, absorbing spatial effects and thereby biasing estimated feature relationships. Our
+hypothesis is that spectral boosting will produce estimates more closely aligned with a spatial model
+despite not having access to explicit spatial information.
+Figure 14(a) displays the spatial distribution of house prices across the study region. Visual inspection reveals substantial spatial heterogeneity, with elevated prices concentrated in specific neighborhoods. Fitting models without coordinates therefore introduces confounding whenever this spatial
+effect is correlated with other features. Figure 14(b) shows that the first principal component of the
+feature matrix exhibits a clear spatial pattern, consistent with dense confounding, where latent spatial
+effects load onto the leading principal components of the design matrix. This suggests that omitted
+spatial confounding may indeed bias estimators that ignore such structure.
+We run the following experiment to assess robustness to spatial confounding. First, we fit a spatial
+model that includes geographic coordinates in a Gaussian process component with a Matérn kernel,
+while using gradient boosting for the fixed effects, via the GPBoost package [Sigrist, 2022]. This serves
+as a reference model, since it explicitly accounts for spatial price variation. Second, we fit standard
+gradient boosting using only the non-spatial features, deliberately omitting coordinates. Third, we fit
+our proposed spectral boosting model, also excluding coordinates. In the latter two models, spatial
+location acts as a latent confounder. We then compare the methods by examining (i) the alignment of
+the fitted values with the reference model, and (ii) the stability of estimated feature effects via partial
+dependence plots.
+
+24
+
+42.35°N
+
+42.35°N
+
+42.30°N
+
+42.30°N
+
+PC1
+
+Price
+50
+40
+30
+
+42.20°N
+
+20
+42.15°N
+
+42.25°N
+
+Latitude
+
+Latitude
+
+42.25°N
+
+2.5
+42.20°N
+0.0
+
+42.10°N
+
+42.05°N
+
+42.05°N
+
+71.2°W
+
+71.1°W
+
+71.0°W
+
+70.9°W
+
+−2.5
+
+42.15°N
+
+10
+
+42.10°N
+
+71.3°W
+
+5.0
+
+71.3°W
+
+70.8°W
+
+Longitude
+
+71.2°W
+
+71.1°W
+
+71.0°W
+
+70.9°W
+
+70.8°W
+
+Longitude
+
+Figure 14: Boston housing data. Spatial distribution of median house prices (left) and of the first
+principal component of the non-spatial features (right).
+Figure 15 presents partial dependence plots for six features identified as important by permutationbased feature importance in the reference spatial boosting model. The plots show that spectral boosting
+produces feature effects that are closely aligned with those of the spatial boosting model, despite not
+having access to geographic coordinates. In contrast, standard gradient boosting exhibits substantial
+bias for several features. Furthermore, the mean squared error with respect to the predictions of the
+spatial boosting model is 5.26 for spectral boosting and 45.40 for standard boosting. Thus, predictions
+from the spectrally deconfounded model align well with the reference model, whereas this is not the
+case for the confounded boosting model.
+The case of nitrogen oxide concentration (NOX) is particularly illustrative. Standard boosting
+suggests a non-monotone relationship: prices initially increase with NOX before dropping sharply at
+high concentrations. This contradicts the expected negative association between air pollution and
+housing values. The apparent paradox arises because NOX is spatially structured: it is correlated with
+both urban density and industrial land use. Without spatial adjustment, standard boosting interprets
+NOX as a proxy for location: moderate NOX levels coincide with desirable urban neighborhoods,
+whereas extreme values occur in industrial zones. The estimated effect therefore conflates the true
+effect of pollution with spatial price gradients. Our spectral deconfounding approach, by attenuating
+the component of feature variation aligned with spatial structure, recovers a monotonically decreasing
+relationship between NOX and price, consistent with the spatial model. Similar patterns emerge for
+other features, where the standard boosting model overestimates the effect of the feature on house
+prices because it also absorbs the effect of unobserved location: (i) overestimation of the price effect of
+rm (average number of rooms per dwelling) for large values; (ii) implausibly large marginal effects of
+lstat (percentage of lower-status population); (iii) a distorted nonlinear effect of age; and (iv) spikes
+in predicted house prices for certain values of crim (crime rate).
+Furthermore, Figure 16 compares the predicted random effects from the reference spatial boosting
+model and from our proposed spectral boosting model: the correlation coefficient is approximately
+0.83. This shows that our method is able to capture a substantial part of the spatial variation without
+access to coordinates. Spectral boosting implicitly accounts for the spatial confounding through a
+random effect with a carefully chosen covariance structure aligned with the principal components of
+the design matrix, which, under dense confounding, align with the confounder (in this case spatial
+location).
+Overall, these results show that spectral boosting can substantially mitigate confounding from
+omitted spatial variables, yielding interpretable feature effects that are closely aligned with those
+obtained from explicit spatial modeling.
+
+25
+
+Part. Dep.
+
+30
+
+25
+
+20
+−2
+
+−1
+
+0
+
+1
+
+2
+
+3
+
+−1
+
+0
+
+Part. Dep.
+
+rm
+
+1
+
+2
+
+3
+
+lstat
+
+27.5
+25.0
+22.5
+−1
+
+0
+
+1
+
+2
+
+0
+
+1
+
+2
+
+dis
+
+3
+
+4
+
+crim
+
+Part. Dep.
+
+24.0
+23.5
+23.0
+22.5
+22.0
+−2
+
+−1
+
+0
+
+1
+
+−1
+
+age
+Spatial boosting
+
+0
+
+1
+
+2
+
+nox
+Spectral boosting
+
+Standard boosting
+
+Figure 15: Boston housing data. Partial dependence plots for the six features with highest permutation
+importance in the spatial boosting reference model.
+
+8
+
+Conclusion
+
+We introduce spectrally deconfounded gradient boosting, a boosting procedure designed to improve
+robustness to hidden dense confounding. The central idea is to embed spectral deconfounding directly
+into the loss: instead of fitting trees to raw residuals, the algorithm fits them to spectrally filtered
+residuals. This changes the optimization path by slowing learning in directions that are likely to be
+confounding-aligned.
+Our analysis shows that the deconfounding effect does not come from the spectral loss or transformation alone. For continuous shrinkage transformations such as LAVA and Trim, the spectral
+weights remain positive at finite sample sizes, so a sufficiently flexible learner can eventually fit the
+confounding component. Rather, robustness arises from the interaction between spectral weighting and
+regularization, in particular in connection with early stopping. This creates an intermediate regime
+in which signal directions are learned while confounding-aligned directions remain largely unfitted.
+We also provide a mixed-model interpretation of the spectral loss, linking LAVA-type transformations to Gaussian random effects. This perspective yields an empirical-Bayes strategy for selecting the
+strength of spectral shrinkage and improves the suitability of cross-validation for hyperparameter tuning by incorporating the BLUP of the dense random-effect component. Moreover, it naturally extends
+the method to non-Gaussian likelihoods and to kernel-based deconfounding for nonlinear confounding
+structures.
+26
+
+Spectral boosting random effect
+
+20
+10
+0
+−10
+−20
+
+−10
+
+0
+
+10
+
+20
+
+Spatial boosting random effect
+Figure 16: Boston housing data. Predicted random effects from the spatial boosting reference model
+versus those from spectral boosting without access to geographic coordinates.
+Across simulations and a spatially confounded real-data example, spectral boosting improves recovery of the target signal relative to standard boosting while remaining computationally scalable.
+The results suggest that spectral losses provide a practical way to transfer ideas from linear spectral
+deconfounding and mixed-model adjustment to modern nonlinear learners. Important directions for
+future research include a sharper theory for tree-based base learners, principled stopping rules under distribution shift, and a deeper characterization of when kernel spectral transformations capture
+nonlinear confounding.
+
+Acknowledgments
+The authors are grateful to Markus Ulmer, Cyrill Scheidegger, and Peter A. Whalley for useful discussions.
+
+References
+Jushan Bai. Inferential theory for factor models of large dimensions. Econometrica, 71(1):135–171,
+2003.
+Catherine L. Blake and Christopher J. Merz. UCI Repository of Machine Learning Databases. University of California, Irvine, Department of Information and Computer Sciences, Irvine, CA, 1998.
+Formerly available from http://www.ics.uci.edu/~mlearn/MLRepository.html.
+Leo Breiman. Arcing classifier (with discussion and a rejoinder by the author). The Annals of Statistics,
+26(3):801 – 849, 1998.
+Peter Bühlmann and Bin Yu. Boosting with the L2 loss: regression and classification. Journal of the
+American Statistical Association, 98(462):324–339, 2003.
+Peter Bühlmann. Invariance, causality and robustness: 2018 Neyman lecture. Statistical Science, 35
+(3):pp. 404–426, 2020.
+Domagoj Ćevid, Peter Bühlmann, and Nicolai Meinshausen. Spectral deconfounding via perturbed
+sparse linear models. Journal of Machine Learning Research, 21(232):1–41, 2020.
+
+27
+
+Victor Chernozhukov, Christian Hansen, and Yuan Liao. A LAVA attack on the recovery of sums of
+dense and sparse signals. The Annals of Statistics, 45(1):39–76, 2017.
+Bradley Efron, Trevor Hastie, Iain Johnstone, and Robert Tibshirani. Least angle regression. The
+Annals of Statistics, 32(2), April 2004. ISSN 0090-5364.
+Jianqing Fan, Yingying Fan, and Jinchi Lv. High dimensional covariance matrix estimation using a
+factor model. Journal of Econometrics, 147(1):186–197, 2008.
+Yoav Freund, Robert E Schapire, et al. Experiments with a new boosting algorithm. In ICML,
+volume 96, pages 148–156. Bari, Italy, 1996.
+Jerome Friedman, Trevor Hastie, and Robert Tibshirani. Additive logistic regression: a statistical
+view of boosting (with discussion and a rejoinder by the authors). The Annals of Statistics, 28(2):
+337–407, 2000.
+Jerome H Friedman. Greedy function approximation: a gradient boosting machine. Annals of Statistics, pages 1189–1232, 2001.
+Damien Garreau, Wittawat Jitkrittum, and Motonobu Kanagawa. Large sample analysis of the median
+heuristic. arXiv preprint arXiv:1707.07269, Oct. 2018.
+Justin Grimmer, Dean Knox, and Brandon Stewart. Naive regression requires weaker assumptions than
+factor models to adjust for multiple cause confounding. Journal of Machine Learning Research, 24
+(182):1–70, 2023.
+Leo Grinsztajn, Edouard Oyallon, and Gael Varoquaux. Why do tree-based models still outperform
+deep learning on tabular data? In Neural Information Processing Systems Datasets and Benchmarks
+Track, 2022.
+Zijian Guo, Domagoj Ćevid, and Peter Bühlmann. Doubly debiased lasso: High-dimensional inference
+under hidden confounding. Annals of Statistics, 50(3):1320, 2022.
+Trevor Hastie, Jonathan Taylor, Robert Tibshirani, and Guenther Walther. Forward stagewise regression and the monotone lasso. Electronic Journal of Statistics, 1(none), January 2007. ISSN
+1935-7524.
+Matthias Katzfuss, Joseph Guinness, Wenlong Gong, and Daniel Zilber. Vecchia Approximations of
+Gaussian-Process Predictions. Journal of Agricultural, Biological and Environmental Statistics, 25
+(3):383–414, June 2020.
+Clifford Lam and Qiwei Yao. Factor modeling for high-dimensional time series: inference for the
+number of factors. The Annals of Statistics, pages 694–726, 2012.
+Friedrich Leisch and Evgenia Dimitriadou. mlbench: Machine Learning Benchmark Problems, 2024.
+URL https://CRAN.R-project.org/package=mlbench. R package version 2.1-6.
+Andrea Nava and Fabio Sigrist. Laplace approximations for mixed-effects and gaussian process quantile
+regression, 2026. URL https://arxiv.org/abs/2605.21197.
+John Novembre, Toby Johnson, Katarzyna Bryc, Zoltán Kutalik, Adam R Boyko, Adam Auton, Amit
+Indap, Karen S King, Sven Bergmann, Matthew R Nelson, et al. Genes mirror geography within
+europe. Nature, 456(7218):98–101, 2008.
+Alkes L Price, Nick J Patterson, Robert M Plenge, Michael E Weinblatt, Nancy A Shadick, and David
+Reich. Principal components analysis corrects for stratification in genome-wide association studies.
+Nature Genetics, 38(8):904–909, 2006.
+Herbert Robbins. The empirical bayes approach to statistical decision problems. The Annals of
+Mathematical Statistics, 35(1):1–20, 1964.
+Cyrill Scheidegger, Zijian Guo, and Peter Bühlmann. Spectral deconfounding for high-dimensional
+sparse additive models. ACM / IMS J. Data Sci., 2(1), February 2025.
+28
+
+Fabio Sigrist. Gaussian process boosting. Journal of Machine Learning Research, 23(232):1–46, 2022.
+Fabio Sigrist. Latent gaussian model boosting. IEEE Transactions on Pattern Analysis and Machine
+Intelligence, 45(2):1894–1905, 2023.
+Fabio Sigrist, Tim Gyger, and Pascal Kündig. GPBoost: Combining tree-boosting with gaussian
+process and mixed effects models, 2021. URL https://github.com/fabsig/GPBoost. R package
+version 1.6.6.
+Jae Hoon Sul, Lana S Martin, and Eleazar Eskin. Population structure in genetic studies: Confounding
+factors and mixed models. PLoS Genetics, 14(12):e1007309, 2018.
+Luke Tierney, Robert E Kass, and Joseph B Kadane. Fully exponential laplace approximations to
+expectations and variances of nonpositive functions. Journal of the American Statistical Association,
+84(407):710–716, 1989.
+Markus Ulmer, Cyrill Scheidegger, and Peter Bühlmann. Spectrally deconfounded random forests.
+Journal of Computational and Graphical Statistics, 35(2):758–768, 2026.
+Roman Vershynin. High-dimensional probability. University of California, Irvine, 10(11):31, 2020.
+Yuhao Wang and Rajen Shah. Latent confounding in high-dimensional nonlinear models. arXiv
+preprint arXiv:2508.06274, 2025.
+Marvin N Wright, Stefan Wager, Philipp Probst, and Maintainer Marvin N Wright. Package ‘ranger’.
+Version 0.11, 2, 2019.
+Yi Yu, Tengyao Wang, and Richard J Samworth. A useful variant of the davis–kahan theorem for
+statisticians. Biometrika, 102(2):315–323, 2015.
+Zhiwu Zhang, Elhan Ersoz, Chao-Qiang Lai, Rory J Todhunter, Hemant K Tiwari, Michael A Gore,
+Peter J Bradbury, Jianming Yu, Donna K Arnett, Jose M Ordovas, et al. Mixed linear model
+approach adapted for genome-wide association studies. Nature Genetics, 42(4):355–360, 2010.
+
+29
+
+A
+
+Proofs for Section 3
+
+A.1
+
+Proof of boosting recursion
+
+Proof. For ordinary L2 boosting, define
+or
+or
+rm
+:= Y − fˆm
+.
+
+Using OLS as base learner leads to
+or
+or
+or
+rm+1
+= Y − fˆm+1
+= (I − νPX )rm
+.
+
+Since r0or = Y , iteration gives
+or
+rm
+= (I − νPX )m Y,
+
+
+or
+fˆm
+= I − (I − νPX )m Y.
+
+Because PX is an orthogonal projector,
+
+(I − νPX )m = I − 1 − (1 − ν)m PX .
+Hence
+
+or
+fˆm
+= 1 − (1 − ν)m PX Y.
+Taking conditional expectations and using
+PX f0 = f0 ,
+
+E[ε | X] = 0,
+
+PX g0 = g0 ,
+
+we obtain
+
+or
+E[fˆm
+| X] = 1 − (1 − ν)m (f0 + g0 ),
+and therefore
+
+or
+E[fˆm
+| X] − f0 = −(1 − ν)m f0 + 1 − (1 − ν)m g0 .
+For spectral OLS boosting, define
+sp
+sp
+rm
+:= Y − fˆm
+.
+
+Then
+sp
+sp
+rm+1
+= (I − νPX W )rm
+,
+
+sp
+rm
+= (I − νPX W )m Y.
+
+Since PX and W are diagonal in the basis U = (u1 , . . . , uk ),
+PX W ui = wi ui ,
+
+i = 1, . . . , k.
+
+Thus the recursion decouples coordinatewise:
+sp
+⟨rm
+, ui ⟩ = (1 − νwi )m ⟨Y, ui ⟩.
+
+Therefore
+sp
+fˆm
+=
+
+k
+X
+
+
+1 − (1 − νwi )m ⟨Y, ui ⟩ui .
+
+i=1
+
+Using the expansions f0 =
+
+P
+
+i fi ui , g0 =
+
+sp
+E[fˆm
+| X] − f0 = −
+
+P
+
+i gi ui , and E[ε | X] = 0, we get
+
+k
+k
+X
+X
+
+(1 − νwi )m fi ui +
+1 − (1 − νwi )m gi ui .
+i=1
+
+i=1
+
+This proves the lemma.
+
+30
+
+A.2
+
+Proof of Theorem 3.1
+
+Proof. Let
+sp
+B := E[fˆm
+| X] − f0 .
+p
+
+By the boosting recursion proved above,
+B=−
+
+k
+X
+
+(1 − νwi )mp fi ui +
+
+i=1
+
+k
+X
+
+
+1 − (1 − νwi )mp gi ui .
+
+i=1
+
+Split both sums into the top band i ≤ q and the complementary band i > q.
+For the signal on the complementary band, since wi ≥ wM for i > q,
+0 ≤ (1 − νwi )mp ≤ (1 − νwM )mp ≤ exp(−mp νwM ) → 0.
+Hence
+1 X
+√
+(1 − νwi )mp fi ui
+n i>q
+
+∥f0 ∥2
+≤ (1 − νwM )mp √ → 0.
+n
+2
+
+For the confounding component on the top band, since wi ≤ wH for i ≤ q,
+0 ≤ 1 − (1 − νwi )mp ≤ 1 − (1 − νwH )mp ≤ mp νwH → 0,
+where the last inequality follows from Bernoulli’s inequality. Therefore
+∥g0 ∥2
+≤ mp νwH √ → 0.
+n
+
+
+1 X
+√
+1 − (1 − νwi )mp gi ui
+n
+i≤q
+
+2
+
+The two remaining terms are controlled directly by empirical spectral separation. Since 0 ≤ (1 −
+νwi )mp ≤ 1,
+1 X
+∥P̂H f0 ∥2
+√
+√
+(1 − νwi )mp fi ui ≤
+→ 0.
+n
+n
+i≤q
+
+mp
+
+Similarly, since 0 ≤ 1 − (1 − νwi )
+
+2
+
+≤ 1,
+
+
+1 X
+√
+1 − (1 − νwi )mp gi ui
+n i>q
+
+≤
+
+∥(I − P̂H )g0 ∥2
+√
+→ 0.
+n
+
+2
+
+Combining the four bounds gives
+∥B∥2
+√ → 0,
+n
+which proves the theorem.
+For ordinary L2 boosting with OLS base learners we have
+
+or
+E[fˆm
+| X] − f0 = −(1 − ν)mp f0 + 1 − (1 − ν)mp g0 .
+p
+Since mp → ∞ and ν ∈ (0, 1), (1 − ν)mp → 0. Hence, by the reverse triangle inequality,
+ ∥g0 ∥2
+1
+∥f0 ∥2
+or
+√ E[fˆm
+| X] − f0 ≥ 1 − (1 − ν)mp √ − (1 − ν)mp √ .
+p
+n
+n
+n
+2
+The second term converges to zero, while the first is bounded away from zero under our assumptions.
+Therefore the normalized bias cannot converge to zero.
+Finally, if wH /wM → 0 and
+1
+mp ≍ √
+,
+ν wH wM
+then
+
+r
+mp νwM ≍
+
+r
+
+wM
+→ ∞,
+wH
+
+mp νwH ≍
+
+Thus the learning rate condition of the theorem holds.
+31
+
+wH
+→ 0.
+wM
+
+Remark A.1 (Variance and full consistency). Theorem 3.1 is a bias result. It shows that, under the
+spectral separation and stopping conditions, the conditional mean of the boosted fit converges to the
+direct sample-space signal f = Xβ. This does not by itself imply full consistency, since one must also
+control the conditional variance.
+For spectral OLS boosting, the fit is linear in the response:
+
+
+sp
+fˆm
+= Bm Y,
+Bm = U diag 1 − (1 − νw1 )m , . . . , 1 − (1 − νwk )m U ⊤ .
+Hence
+sp
+⊤
+Var(fˆm
+| X) = Bm Σε Bm
+,
+
+Σε := Var(ε | X).
+
+If Σε ⪯ σ 2 In , then
+k 
+2
+ σ2 X
+1 
+sp
+tr Var(fˆm
+| X) ≤
+1 − (1 − νwi )m .
+n
+n i=1
+
+This motivates the effective learned dimension
+2
+deff (Bm ) := tr(Bm
+)=
+
+k 
+X
+
+1 − (1 − νwi )m
+
+2
+
+.
+
+i=1
+
+Under the stopping condition of Theorem 3.1, mp νwM → ∞, all directions outside the top confounding
+band are eventually learned almost fully. Consequently,
+deff (Bmp ) ≳ k − q.
+Thus vanishing prediction variance is ensured by an additional condition such as
+deff (Bmp )
+→ 0,
+n
+
+or more conservatively
+
+k
+→ 0.
+n
+
+This is substantially stronger than the bias assumptions and is generally restrictive when p is of the
+same order as, or larger than, n. In the latter case, a natural route would be componentwise boosting,
+whose effective learned dimension is tied more directly to the number of selected coordinates. However,
+in that case the base learner is no longer a linear operator, so the explicit spectral recursion and the
+present analysis no longer apply directly.
+
+B
+
+Factor-model verification of the pathwise assumptions
+
+This appendix verifies the assumptions of Theorem 3.1 under the dense-confounding factor model
+X = HΓ + E,
+
+Y = Xβ0 + Hδ + η.
+
+Here H ∈ Rn×q contains the latent confounders, Γ ∈ Rq×p is the loading matrix, and E is the
+unconfounded component. The number of confounders q is fixed, and all limits are along p → ∞, with
+n = np → ∞.
+
+B.1
+
+Verification of Assumption 1
+
+Assumption 1 requires the reduced model
+Y = f0 + g0 + ε,
+
+f0 = Xβ0 ,
+
+g0 = Xb0 ,
+
+with E[ε | X] = 0 and bounded empirical L2 norms of f0 and g0 .
+The following lemma verifies the required properties under dense confounding.
+Lemma B.1 (Reduced model and bounded empirical energy). Assume that the rows hi of H are iid
+mean-zero sub-Gaussian with
+Cov(hi ) = Iq ,
+
+32
+
+and that the rows ei of E are iid mean-zero sub-Gaussian, independent of H, with covariance ΣE
+satisfying
+0 < cE ≤ λmin (ΣE ) ≤ λmax (ΣE ) ≤ CE < ∞.
+Assume also
+dq (Γ) ≳
+
+√
+
+p,
+
+∥Xβ0 ∥2
+√
+= Op (1).
+n
+
+∥δ∥2 = O(1),
+
+Let
+⊤
+b0 := Σ−1
+X Γ δ,
+
+ΣX := Cov(xi ) = Γ⊤ Γ + ΣE ,
+and define
+r := Hδ − Xb0 .
+Then
+
+∥Xb0 ∥2
+√
+= Op (1).
+n
+
+∥r∥2
+√ = op (1),
+n
+
+Consequently,
+Y = Xβ0 + Xb0 + r + η
+is an op (1) perturbation, in normalized empirical L2 norm, of the reduced model
+Y = f0 + g0 + ε,
+
+f0 = Xβ0 ,
+
+g0 = Xb0 .
+
+If, in addition, (H, E) are jointly Gaussian and E[η | X] = 0, then E[r + η | X] = 0.
+
+B.2
+
+Verification of Assumption 2
+
+Assumption 2 requires
+∥(I − P̂H )g0 ∥2
+√
+→ 0,
+n
+
+∥P̂H f0 ∥2
+√
+→ 0.
+n
+
+The first condition says that the fitted confounding term lies in the top empirical spectral subspace.
+The second condition says that the direct signal does not.
+Lemma B.2 (Empirical spectral separation). Assume the conditions of Lemma B.1. Let PH be the
+orthogonal projector onto col(H), and let
+P̂H =
+
+q
+X
+
+ui u⊤
+i
+
+i=1
+
+be the projector onto the top q left singular vectors of X.
+Assume that the top empirical factor space is consistently estimated. Equivalently, assume that
+∥P̂H − PH ∥op = op (1).
+This condition is implied by standard strong-factor PCA results; for example, Bai [2003] gives factor
+recovery up to rotation, and Wedin’s sin-theta theorem or Davis–Kahan perturbation theory transfers
+this to projector convergence [Yu et al., 2015].
+Assume also the structural signal-separation condition
+∥P̂H Xβ0 ∥2
+√
+= op (1).
+n
+Then, with f0 = Xβ0 and g0 = Xb0 ,
+∥(I − P̂H )g0 ∥2
+√
+= op (1),
+n
+
+33
+
+∥P̂H f0 ∥2
+√
+= op (1).
+n
+
+B.3
+
+Verification of Assumption 3
+
+Assumption 3 requires
+wH := max wi → 0,
+
+wM := min wi
+
+i≤q
+
+q<i≤k
+
+to stay bounded away from zero. We verify this for LAVA-type weights
+wi =
+
+nλ2
+,
+nλ2 + di (X)2
+
+where di (X) denotes the ith singular value of X.
+Lemma B.3 (LAVA weight separation). Assume that the rows hi of H are iid mean-zero sub-Gaussian
+with Cov(hi ) = Iq , and that the rows ei of E are iid mean-zero sub-Gaussian, independent of H, with
+λmax (ΣE ) ≤ CE < ∞.
+Assume
+dq (Γ) ≳
+
+√
+
+p,
+
+min(n, p) → ∞.
+
+Let the LAVA parameter be chosen at the bulk singular-value scale:
+√
+√
+nλ2 ≍ ( n + p)2 .
+Then
+wH = op (1),
+and there exists c0 > 0 such that
+P(wM ≥ c0 ) → 1.
+
+B.4
+
+Factor-model corollary
+
+Combining the preceding lemmas gives the following stochastic version of the pathwise theorem.
+Corollary B.1 (Dense factor model implies spectral pathwise deconfounding). Suppose the assumptions of Lemmas B.1–B.3 hold. Assume also joint Gaussianity of (H, E) and E[η | X] = 0, so that the
+reduced model has exact conditional mean zero. Let the LAVA weights satisfy
+√
+√
+nλ2 ≍ ( n + p)2 .
+If the stopping sequence satisfies
+mp → ∞,
+
+mp ν
+→ 0,
+min(n, p)
+
+then
+mp νwM → ∞
+
+mp νwH → 0
+
+in probability,
+
+in probability.
+
+Moreover,
+1
+sp
+√ E[fˆm
+| X] − Xβ0 = op (1).
+p
+n
+2
+The deterministic proof of Theorem 3.1 is pathwise. Under the factor model, the same deterministic
+upper bounds hold with op (1) terms. Since finite sums of op (1) terms are op (1), the conclusion of the
+theorem transfers to convergence in probability.
+Remark B.2 (Non-Gaussian factor models). If joint Gaussianity is not assumed, the projection
+resid√
+ual r = Hδ − Xb0 need not satisfy E[r | X] = 0 exactly. Lemma B.1 still gives ∥r∥2 / n = op (1), so
+the same conclusion holds for the approximate reduced model after adding this op (1) contribution to
+the normalized bias.
+
+34
+
+B.5
+
+Proof of Lemma B.1
+
+Proof. This proof follows closely the one presented in Scheidegger et al. [2025].
+For one observation,
+⊤
+ri = h⊤
+i δ − xi b0 .
+Since b0 is the population linear projection coefficient of h⊤
+i δ onto xi ,
+−1
+⊤
+⊤
+E[ri2 ] = Var(h⊤
+i δ) − Cov(hi δ, xi )ΣX Cov(xi , hi δ).
+
+Using Cov(hi ) = Iq and xi = Γ⊤ hi + ei ,
+2
+Var(h⊤
+i δ) = ∥δ∥2 ,
+
+⊤
+Cov(xi , h⊤
+i δ) = Γ δ.
+
+Therefore
+
+
+E[ri2 ] = δ ⊤ Iq − Γ(Γ⊤ Γ + ΣE )−1 Γ⊤ δ.
+By the Woodbury identity,
+⊤
+Iq − Γ(Γ⊤ Γ + ΣE )−1 Γ⊤ = Iq + ΓΣ−1
+E Γ
+
+Thus
+⊤
+E[ri2 ] = δ ⊤ Iq + ΓΣ−1
+E Γ
+
+−1
+
+−1
+
+.
+
+δ.
+
+Since
+−1
+⊤
+2
+λmin (ΓΣ−1
+E Γ ) ≥ λmin (ΣE )dq (Γ) ≳ p,
+
+we get
+∥δ∥22
+.
+p
+
+E[ri2 ] ≲
+Hence
+
+
+E
+
+
+1
+∥δ∥22
+∥r∥22 = E[r12 ] ≲
+.
+n
+p
+
+Because ∥δ∥2 = O(1), Markov’s inequality gives
+∥r∥2
+√ = op (1).
+n
+
+1
+∥r∥22 = op (1),
+n
+Next,
+
+∥Xb0 ∥2
+∥Hδ∥2
+∥r∥2
+√
+≤ √
++ √ .
+n
+n
+n
+Moreover,
+1
+∥Hδ∥22 = δ ⊤
+n
+
+
+
+
+1 ⊤
+H H δ.
+n
+
+Since H ⊤ H/n → Iq in probability and ∥δ∥2 = O(1),
+∥Hδ∥2
+√
+= Op (1).
+n
+Therefore
+
+∥Xb0 ∥2
+√
+= Op (1).
+n
+
+If (H, E) are jointly Gaussian, then r is uncorrelated with X by construction of the population
+projection. Gaussianity implies independence, and hence E[r | X] = 0.
+
+35
+
+B.6
+
+Proof of Lemma B.2
+
+Proof. By Lemma B.1,
+∥r∥2
+√ = op (1).
+n
+
+Xb0 = Hδ − r,
+Therefore
+
+∥(I − P̂H )Hδ∥2
+∥(I − P̂H )Xb0 ∥2
+√
+√
+≤
++ op (1).
+n
+n
+Since Hδ ∈ col(H),
+PH Hδ = Hδ.
+Thus
+(I − P̂H )Hδ = (PH − P̂H )Hδ.
+Therefore
+∥(I − P̂H )Hδ∥2
+∥Hδ∥2
+√
+≤ ∥P̂H − PH ∥op √ .
+n
+n
+By assumption,
+∥P̂H − PH ∥op = op (1).
+By the proof of Lemma B.1,
+∥Hδ∥2
+√
+= Op (1).
+n
+Hence
+∥(I − P̂H )Xb0 ∥2
+√
+= op (1).
+n
+The second statement,
+∥P̂H Xβ0 ∥2
+√
+= op (1),
+n
+is exactly the assumed signal-separation condition.
+
+B.7
+
+Proof of Lemma B.3
+
+Proof. We first lower-bound the top singular values of X. Weyl’s inequality for singular values gives
+dq (X) = dq (HΓ + E) ≥ dq (HΓ) − d1 (E).
+Moreover,
+dq (HΓ) ≥ dq (H)dq (Γ).
+Since the rows of H are iid sub-Gaussian with covariance Iq and q is fixed,
+√
+dq (H) ≍p n.
+By assumption,
+dq (Γ) ≳
+
+√
+
+p.
+
+Finally, by standard sub-Gaussian operator-norm bounds,
+√
+√
+d1 (E) = Op ( n + p)
+[Vershynin, 2020, Chapter 5]. Since min(n, p) → ∞,
+√
+√
+√
+np ≫ n + p.
+Therefore
+di (X)2 ≳p np,
+
+i = 1, . . . , q.
+
+We now control the first non-spiked singular value. Again by Weyl’s inequality,
+dq+1 (X) = dq+1 (HΓ + E) ≤ dq+1 (HΓ) + d1 (E).
+36
+
+Since rank(HΓ) ≤ q,
+dq+1 (HΓ) = 0.
+Hence
+
+√
+√
+dq+1 (X) ≤ d1 (E) = Op ( n + p).
+
+Thus
+
+√
+√ 
+dq+1 (X)2 = Op ( n + p)2 .
+
+√
+√
+With nλ2 ≍ ( n + p)2 , the top weights satisfy
+nλ2
+= Op
+wH = max
+i≤q nλ2 + di (X)2
+Since
+
+ √
+√ 
+( n + p)2
+.
+np
+
+√
+√
+( n + p)2
+1
+≲
+,
+np
+min(n, p)
+
+we get
+wH = op (1).
+For i > q, the bulk bound gives, with probability tending to one,
+√
+√
+di (X)2 ≤ C( n + p)2 .
+Therefore, with probability tending to one,
+√
+√
+c( n + p)2
+√
+≥ c0 > 0.
+wi ≥ √
+√ 2
+√
+c( n + p) + C( n + p)2
+Taking the minimum over i > q gives
+P(wM ≥ c0 ) → 1.
+
+Additional Simulation Results
+
+C.1
+
+Classification
+
+Number of iterations
+
+C
+
+200
+
+100
+
+500
+
+200
+
+200
+
+100
+
+100
+
+1000 2000 10000
+
+4
+
+Sample size
+
+Number of features
+Chosen (CV)
+
+10
+
+Oracle
+
+50
+
+100 150
+
+standard
+
+0
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+spectral
+
+Figure 17: Classification setting. Number of boosting iterations selected by the proposed crossvalidation rule (solid lines) and by the oracle rule with access to the true target function f0 (dashed
+lines).
+
+37
+
+0.8
+
+0.4
+
+0.4
+
+0.6
+
+0.3
+0.3
+
+0.4
+
+sr
+
+2
+
+0.2
+0.2
+
+0.2
+
+0.1
+0.0
+500
+
+1000
+
+2000 10000
+
+4
+
+Sample size
+
+10
+
+50
+
+100 150
+
+0
+
+Number of features
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+
+Figure 18: Classification setting. Boxplots of the estimated random-effect variance σr2 , displayed on a
+log(1 + x) scale on the y-axis.
+10000.0
+
+Runtime (seconds)
+
+500.0
+
+1000.0
+
+200
+
+200.0
+
+50
+
+10.0
+
+20.0
+
+10
+
+0.5
+
+0.5
+
+2
+
+50.0
+
+500
+
+1000 2000 10000
+
+4
+
+Sample size
+
+10
+
+50 100 150
+
+0
+
+Number of features
+SpecBoost
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+
+Boosting
+
+Figure 19: Classification setting. Boxplots of the runtime for the different methods across simulation
+scenarios, displayed on a log(1 + x) scale on the y-axis.
+2.00
+
+2.000
+
+^
+2
+0
+||f (xtest) - f (xtest)||2 ntest
+
+2.00
+1.00
+0.50
+
+1.00
+
+1.000
+
+0.50
+
+0.500
+
+0.05
+
+0.02
+500
+
+1000 2000 4000
+
+Sample size
+
+0.005
+4
+
+10 50 100 150 200 250
+
+Number of features
+Boosting
+
+SpecBoost
+
+SDF
+
+0
+
+5 10 20 50 100200
+
+Latent dimension
+
+Random Forest
+
+Figure 20: Boxplots of the mean squared error for the different methods across simulation scenarios,
+displayed on a log(1 + x) scale on the y-axis.
+
+C.2
+
+Regression - No confounding scenario
+
+In this experiment the confounder’s contribution to the outcome is set to zero, i.e. δ = 0.
+
+38
+
+100.0
+
+Runtime (seconds)
+
+1000
+
+100
+50
+
+20.0
+
+100
+20
+
+5.0
+
+10
+
+1
+
+0.1
+
+2
+
+500
+
+1000 2000 4000
+
+4 10 50 100150200250
+
+Sample size
+
+0
+
+Number of features
+
+SpecBoost
+
+Boosting
+
+SDF
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+
+Random Forest
+
+Figure 21: Boxplots of the runtime for the different methods across simulation scenarios, displayed on
+a log(1 + x) scale on the y-axis.
+
+Number of iterations
+
+250
+200
+
+200
+
+200
+
+150
+100
+
+100
+
+100
+50
+500
+
+1000 2000 4000
+
+4
+
+Sample size
+
+Number of features
+
+10 50 100 150 200 250
+
+Chosen (CV)
+
+Oracle
+
+standard
+
+0
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+spectral
+
+Figure 22: Number of boosting iterations selected by the proposed cross-validation rule (solid lines)
+and by the oracle rule with access to the true target function f0 (dashed lines).
+0.004
+
+0.003
+
+0.003
+
+0.10
+0.002
+
+0.002
+sr
+
+2
+
+0.05
+
+0.001
+
+0.001
+
+0.000
+
+0.00
+
+0.000
+500
+
+1000 2000 4000
+
+Sample size
+
+4
+
+10 50 100 150 200 250
+
+Number of features
+
+0
+
+5 10 20 50 100200
+
+Latent dimension
+
+Figure 23: Boxplots of the estimated random-effect variance σr2 , displayed on a log(1 + x) scale on the
+y-axis. Larger values correspond to weaker shrinkage of the random effect.
+
+C.3
+
+Classification - No confounding scenario
+
+In this experiment the confounder’s contribution to the outcome is set to zero, i.e. δ = 0.
+
+39
+
+^
+2
+0
+||f (xtest) - f (xtest)||2 ntest
+
+10.00
+5.0
+
+5.0
+5.00
+2.0
+
+1.0
+
+1.00
+0.5
+
+0.2
+500
+
+1000
+
+0.05
+
+2000 10000
+
+4
+
+Sample size
+
+10
+
+50
+
+100 150
+
+0
+
+Number of features
+Boosting
+
+5 10 20 50 100200
+
+Latent dimension
+
+SpecBoost
+
+Figure 24: Boxplots of the mean squared error for the different methods across simulation scenarios,
+displayed on a log(1 + x) scale on the y-axis.
+
+500
+
+Runtime (seconds)
+
+500.0
+
+2000.0
+
+100.0
+
+200.0
+
+50
+
+10.0
+
+20.0
+
+10
+
+0.5
+
+0.5
+500
+
+2
+
+1000 2000 10000
+
+4
+
+Sample size
+
+10
+
+50 100 150
+
+0
+
+Number of features
+SpecBoost
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+
+Boosting
+
+Figure 25: Boxplots of the runtime for the different methods across simulation scenarios, displayed on
+a log(1 + x) scale on the y-axis.
+
+0.020
+
+0.15
+
+0.015
+
+0.015
+0.10
+
+0.010
+sr
+
+2
+
+0.010
+0.05
+
+0.005
+
+0.000
+
+0.005
+0.000
+
+0.00
+500
+
+1000 2000 10000
+
+Sample size
+
+4
+
+10
+
+50
+
+100 150
+
+Number of features
+
+0
+
+5 10 20 50 100200
+
+Latent dimension
+
+Figure 27: Boxplots of the estimated random-effect variance σr2 , displayed on a log(1 + x) scale on the
+y-axis. Larger values correspond to weaker shrinkage of the random effect.
+
+40
+
+Number of iterations
+
+250
+200
+
+200
+
+200
+150
+
+100
+
+100
+100
+500
+
+1000 2000 10000
+
+4
+
+Sample size
+
+Number of features
+Chosen (CV)
+
+10
+
+Oracle
+
+50
+
+100 150
+
+standard
+
+0
+
+5
+
+10 20 50 100 200
+
+Latent dimension
+spectral
+
+Figure 26: Number of boosting iterations selected by the proposed cross-validation rule (solid lines)
+and by the oracle rule with access to the true target function f0 (dashed lines).
+
+41
+
+
