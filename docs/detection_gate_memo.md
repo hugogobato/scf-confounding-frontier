@@ -8,6 +8,18 @@ results/alignment_stress.csv, results/lecam_probe_auc.csv; figures:
 figures/power_surface_vs_frontier.pdf, figures/alignment_stress.pdf,
 figures/lecam_probe_auc.pdf.
 
+POST-MEMO ERRATUM (2026-08-25, session 4): the S1 statistic t_aug in the
+frozen pipeline is a degenerate surrogate of lambda_max(M_aug) (secular-
+bracket inversion whenever disc < 0, common at c <= 1); see ERRATUM 4 in
+docs/detection_statistics.md and docs/theory_T3a_eigenvalue_contiguity.md
+Section 5. Every pow_S1_cal / t_aug number below reads "surrogate-S1".
+Gate verdicts are unaffected: S1 was demoted before data (D5/E3) on
+independent grounds and all decisions used self-consistent MC calibration.
+Notably, the TRUE augmented alarm is NOT blind at c = 0.2 - it consistently
+detects subcritical confounding with a geometry-dependent direction; the
+invisible-yet-harmful claim survives only for the S2 family (T2 Proposition
+C) and probe-blind bands (T3(b)), not for spec(M_aug).
+
 ## Size calibration: PASS (noise-aware, D10), raw arithmetic FAIL co-reported
 
 The MC-calibrated S2 size lands inside the frozen band [0.035, 0.065] in

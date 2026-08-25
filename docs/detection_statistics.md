@@ -1,6 +1,19 @@
 # Detection Statistics Specification (SCF Phase 2)
 
 Status: FROZEN 2026-08-24, before any WP 2.1-2.3 sweep data was generated.
+ERRATUM 4 (2026-08-25, session 4; full forensics in
+docs/theory_T3a_eigenvalue_contiguity.md Section 5): the S1 statistic t_aug
+in code/detection.py silently mis-brackets its secular bisection whenever
+disc = (1+lo)^2 - 4(lo + s_total) < 0, which is COMMON at c <= 1 designs:
+the sqrt(max(disc,1e-300)) fallback collapses hi below d[0], the bisection
+runs on an inverted interval, and the returned value is a smooth surrogate
+correlated with lambda_max(Sigmahat) rather than lambda_max(M_aug). All
+stored t_aug / pow_S1_cal artifacts read as "surrogate-S1". Gate verdicts
+are unaffected (S1 demoted pre-data by D5/E3; MC thresholds self-consistent
+under H0/H1). The TRUE augmented alarm behaves very differently - it
+consistently detects subcritical confounding (direction depends on
+geometry); see the T3(a) document. Any future S1 usage must adopt the
+validated robust bracketing (tests/test_theory_T3a.py::_aug_stats).
 ERRATUM 1 (2026-08-24, same day, during unit testing, BEFORE any sweep data):
 the original draft of this document stated Var(z_j) = sigma_eps2 (1 + c d_j);
 the correct law is Var(z_j) = (sigma_eps2 + d_j/c)/sigma_y2^0... precisely

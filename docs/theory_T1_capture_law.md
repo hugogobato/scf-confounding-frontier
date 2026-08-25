@@ -345,39 +345,78 @@ which are irrelevant to the loading-conditional MEAN functional. Lesson
 (guardrail G-T1.6): when a formula matches at one cell, verify it at a cell
 with DIFFERENT structure (here: t != 1) before believing the derivation.
 
-## 5. Extension to fixed r > 1
+## 5. Extension to fixed r > 1 (componentwise statement; PROOF COMPLETE)
 
 Setup: X = sum_j sqrt(l_j) f_j q_j' + U, Q = [q_1..q_r], orthonormal.
 Reduction: G = K + A A', A = [a_1..a_r], a_j = sqrt(l_j)||f_j||e_j + u_j,
 K = U(I - QQ')U' =d W_n(I_n, df = p - r), sigma(K) INDEPENDENT of
-(u_1..u_r) (same per-row block independence, P_Q q-block = 0), e_j from QR
-of F independent of (K, U). Woodbury:
+(u_1..u_r) (same per-row block independence as F0a: rows of U are iid
+N(0, I_p), P_Q kills the q-block coordinates, so the row pairs
+(P_Q r_i, P_perp r_i)... precisely (QQ'r_i, P_perp r_i) are independent
+Gaussians per row), e_j from the QR of F = [f_1..f_r] independent of
+(K, U). Write delta' := 1/(p - r - n - 1), t := lim n delta' = 1/(c - 1)
+(unchanged for fixed r).
 
+Woodbury:
   G^{-1} = K^{-1} - K^{-1}A M^{-1} A'K^{-1},   M = I_r + A'K^{-1}A.
 
-Off-diagonal vanishing lemmas (all elementary):
+Off-diagonal vanishing lemmas (full statements and proofs):
 
-(L1) e_a'K^{-1}e_b = o(delta) for a != b: mean 0 (orthogonality + oddness),
-     magnitude O_p(tr(K^{-2})^{1/2}/n) by Haar-set second moments.
-(L2) e_j'K^{-1}u_k = O_p(delta) uniformly (mean 0, sd^2 = u_k'K^{-2}u_k/n).
-(L3) u_a'K^{-1}u_b = O_p(1/sqrt(n)) for a != b: the (u_a,u_b)-conditional
-     mean is <u_a,u_b> tr(K^{-1})/n (via E[K^{-1} | (u_a,u_b)] = delta_m I;
-     K-conditional mean is 0), with <u_a,u_b> = O_p(sqrt(n)); either way
-     O_p(n^{-1/2}), and every off-diagonal entry of M is O_p(1/sqrt(n)).
+(L1) For a != b, e_a'K^{-1}e_b = o(delta') in probability, jointly over
+     pairs. Proof: condition on (K, U); the pair (e_a, e_b) is uniform on
+     an orthonormal 2-frame (Gram-Schmidt of iid Gaussians), so for any
+     symmetric B := K^{-1} the Haar-pair moments give E[e_a'Be_b | B] = 0
+     exactly and E[(e_a'Be_b)^2 | B] = [tr(B^2) - ...]... = tr(B^2)/(n(n+2))
+     <= tr(B^2)/n^2 (standard frame moment identity; same source as M2).
+     E tr(K^{-2}) = n delta' + n(n+1) delta'^2·... = O(delta') by the
+     inverse-Wishart second-moment law (valid for p - r > n + 3), hence
+     sd(e_a'K^{-1}e_b) = O(delta'/n^{1/2}) = o(delta'). QED.
+(L2) For all j, k: e_j'K^{-1}u_k = O_p(delta') uniformly. Proof:
+     conditional on (K, u_k), linear in e_j with mean 0 and variance
+     u_k'K^{-2}u_k/n <= lambda_max(K^{-2}) ||u_k||^2/n = O_p(delta'^2):
+     E tr(K^{-2}) = O(delta'), ||u_k||^2 = O_p(n). Mean 0 exactly. QED.
+(L3) For a != b: u_a'K^{-1}u_b = O_p(n^{-1/2}). Proof: condition on
+     (u_a, u_b, K): E[u_a'K^{-1}u_b | K, u_a, u_b]: K is independent of
+     (u_a, u_b) with E[K^{-1}] = delta' I, giving conditional mean
+     <u_a, u_b> delta'; fluctuations around it are O_p(tr(K^{-2})^{1/2}/n)
+     = o(n^{-1/2}); and <u_a, u_b> = O_p(sqrt(n)) (two independent
+     N_n vectors), so the term is O_p(n^{-1/2}) overall. Either route:
+     O_p(n^{-1/2}). QED.
 
-Consequently M = diag(1 + t(1+l_j)) + o(1) (diagonals by the r=1 ledger,
-off-diagonals by L1-L3 summed with bounded coefficients), and every
-directional functional decouples componentwise: for each j,
+Consequently every off-diagonal entry of M = I_r + A'K^{-1}A is
+O_p(delta' + n^{-1/2}): the diagonal blocks reproduce the r=1 ledger
+(M1)-(M5) per coordinate (kappa_jj -> 1 + t(1+l_j)), while cross terms
+a_a'K^{-1}a_b = sqrt(l_a l_b)||f_a||||f_b|| e_a'K^{-1}e_b + (L2 pieces) +
+(L3 pieces) are o(delta')-scale against diagonal O(1) contributions.
+Neumann expansion of M^{-1} around its diagonal then decouples every
+directional functional componentwise, because each off-diagonal
+propagation carries at least one L1/L2/L3 factor:
 
-  E[<beta_hat - beta, q_j>|Q] -> (cap_j - 1)<beta,q_j>
-                                 + cap_j sqrt(l_j)/(1+l_j) gamma_j,
-  cap_j = (1 + l_j)/(c + l_j),   E[q_j'Pi q_j|Q] -> (c-1)/(c+l_j),
-  bulk artifact -(1/c - 1) beta_perp unchanged,
+THEOREM T1.b-fixed-r (componentwise capture law). As n -> infinity with
+p/n -> c > 1, r fixed, distinct l_j (separation not even needed beyond
+labeling), for every j <= r:
 
-because t = lim n/(p - r - n - 1) = 1/(c-1) is unchanged for fixed r.
-Cross confounding channels gamma_k (Xq_j)'G^{-1}f_k (k != j) vanish: every
-piece factors through L1-L3 products. This is the vector statement in
-minnorm_bias_vector.
+  E[<beta_hat - beta, q_j> | Q, beta]
+      -> (cap_j - 1) <beta, q_j> + cap_j sqrt(l_j)/(1 + l_j) gamma_j,
+  cap_j = (1 + l_j)/(c + l_j),
+  E[q_j'Pi q_j | Q] -> (c - 1)/(c + l_j),
+  bulk artifact -(1/c - 1) beta_perp unchanged (Section 4.9 block,
+  applied to v orthogonal to span(Q)).
+
+Proof. Each directional channel factors as its r=1 analogue times (1 +
+o(1)): ch_a,j / ch_b,j use only m_{e_j e_j}, m_{e_j u_j}, m_{u_j u_j},
+kappa_jj, A_{e_j}, A_{u_j}; the SM corrections involving cross quantities
+carry L1-L3 products and vanish at first order; the Woodbury correction
+M^{-1} replaces (1 + kappa_jj)^{-1} by ((I + diag + o_p)^{-1})_{jj} =
+(1 + kappa_jj)^{-1} + o(delta'); t is unchanged because df = p - r only
+shifts delta' = 1/(p - r - n - 1) = (1 + o(1))/n·(c-1)^{-1}. Cross
+confounding channels gamma_k (Xq_j)'G^{-1}f_k (k != j): every piece
+contains e_j'K^{-1}e_k (L1) or mixed L2 products: o(1) at first order.
+The artifact block follows from rotational invariance under rotations
+fixing EACH q_j separately (E[P_R | Q] commutes with the torus action,
+hence is diagonal in the (q_j, bulk) decomposition with the Section-4.7
+R2 value on each spike ray and trace-forced 1/c on the complement).
+QED.
 
 NUMERICAL (r = 2, l = (6.708, 0.8), c = 5, fixed-(Q,beta), 400 reps):
 spike 1 dir +0.29003 vs +0.28985; spike 2 (SUBCRITICAL l = 0.8 < sqrt 5)
@@ -429,6 +468,37 @@ Open micro-gap (clerical, does not affect the result): write the p-side
 Stieltjes bookkeeping that derives the quadratic from the Silverstein-Choi
 equation (eq. 1.3/1.4 pins in lit/theory_T1_wishart_locators.md); the root
 is already verified numerically against direct traces.
+
+CLOSED (2026-08-25, session 4). Derivation of the m_bar quadratic.
+g = law of the eigenvalues of K/n, K =d W_n(I_n, df = p - r): a white
+Wishart whose n observed eigenvalues follow the RESTRICTED Marchenko-Pastur
+law mu_r (continuous part of MP_c, normalized to mass 1) on
+[(1-sqrt(c))^2, (1+sqrt(c))^2]. Three exact ingredients:
+
+(1) Full-MP transform, verified convention (Bai 1993 eq. (2.3), as quoted
+    in OM13 Section 3 with the (x - z)^{-1} sign fixed):
+        m_S(z) = [z + c - 1 - sqrt((z-c-1)^2 - 4c)] / (2 c z),
+    which solves the quadratic   c z m_S^2 - (z + c - 1) m_S + 1 = 0.
+    Numeric pin: m_S(-1) at c = 2 equals sqrt(2)/2 = 0.707107.
+(2) Atom split for c > 1: MP_c = (1 - 1/c) delta_0 + (1/c) mu_r, so
+        m_S(z) = -(1 - 1/c)/z + (1/c) m_r(z).
+(3) Therefore m_r(z) = c m_S(z) + (c - 1)/z, and evaluating at z = -lam
+    (all quantities positive there) gives the trace limit in closed form:
+        m_bar(lam) = 2 / [lam + c - 1 + sqrt((lam+c-1)^2 + 4 lam)],
+    which satisfies EXACTLY the quadratic quoted at the top of this
+    section,
+        lam * m_bar^2 + (lam + c - 1) * m_bar - 1 = 0,
+    with continuity anchor m_bar(0+) = 1/(c-1) = t automatic from the
+    rationalized form. Verified symbolically (sympy simplification to 0)
+    and numerically against quadrature of int (x+lam)^{-1} d mu_r at
+    (c,lam) = (2,1): 0.414214 both ways; (5,4): 0.118034 both ways.
+
+NOTE RECORDED DURING THE DERIVATION (guardrail for future edits): a first
+attempt imported the Bai-Silverstein fixed-point equation
+m = 1/(-z + c/(1+m)) from memory; that convention mismatch produced a
+wrong-signed middle term and cost one rederivation. The quadratic displayed
+in Section 6 was CORRECT as originally written; the code path
+mp_stieltjes_bulk_nside implements it and never depended on the detour.
 
 ## 7. Validation ledger for this document
 

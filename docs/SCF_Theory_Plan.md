@@ -1,8 +1,9 @@
 # SCF Theory Plan (Phase 4)
 
-Status: ACTIVE for T1, T2, T3(a) (G3 cleared 2026-08-24); T3(b), T6, T7 run
-alongside Phase 3 (numerical falsifiers on disk); T4 after T1; T5 cut by
-default; theory never blocks submission (give-up rule 1).
+Status: COMPLETE (2026-08-25, session 4). All work packages closed; one
+package (T3a) closed AS REVISED after its own falsifier overturned the
+planned theorem - details in docs/theory_T3a_eigenvalue_contiguity.md.
+Theory never blocked submission (give-up rule 1); nothing outstanding.
 
 This file operationalizes the research plan's Phase-4 target table into
 work packages. It follows the theory-development workflow: validity audit
@@ -140,25 +141,46 @@ conjectural.
 
 ### TP-2 (T2) Frontier achievability + finite-n null law for S2  [adapt]
 
-Target: (a) under H0, t_maxz = O_p(max over k of standardized coordinate)
-has a finite-n inflation factor kappa_n,k over the Bonferroni Gaussian scale
-(measured ~1.7x at Phase-2 scales); derive kappa from the max of correlated
-chi-square-type coordinates with the D10 noise-aware variance law.
-(b) power >= 1/2 at s_eff = s_detect(l,c) as predicted by the F12 slope
-construction; achievability = upper bound matching the OMH power template.
-Guardrail: the composite alternative reduces to aligned mass only through
-the capture-weighted slopes; dropping omega_j breaks the frontier ratio
-calibration (measured 0.93/1.02/1.25 across strata).
-Numerical falsifier: WP 2.3 power_surface.csv g80/g_pred ratios within 1.5.
-Stop rule: 3 weeks.
+CLOSED 2026-08-25 (session 4; docs/theory_T2_frontier.md). The null
+inflation mechanism is a marginal-scale effect, not correlation: calibrated
+coordinates are CONDITIONALLY INDEPENDENT Gaussians (Lemma A - the plan's
+"correlated chi-square" guess superseded), pairwise covariances vanish
+exactly, and kappa_n,k factorizes into an explicit scale-calibration ratio
+(times a documented positive mixture-spread correction). At c > 1 the
+frozen se2/sigma_y^2 estimator conventions mis-scale systematically on the
+n-side spectrum (closed forms via the restricted-MP median: kappa_top =
+3.50 at (5, sub); measured sd(z_cal) 4.21 incl. spread) - recorded as an
+erratum-quality finding with NO gate impact (MC calibration was primary).
+Achievability: limiting experiment = independent Gaussian shifts; NP
+envelope + product-form power attained by S2-MC; slope law carries the BGN
+overlap weight xi^{1/2} and is quadratic-in-g in second moments (sign of
+v_j'q_j is rep-random - means carry no signal), satiating via
+sigma_y^2 = A + g^2. Subcritical ceiling proposition makes "infinite
+frontier" precise. Falsifier: tests/test_theory_T2.py.
+Stop rule: met.
 
 ### TP-3 (T3) Scoped impossibility + visibility boundary  [adapt + NEW]
 
-(a) No eigenvalue-alarm statistic detects sub-BBP dense confounding under
-response standardization: two-point argument in the contiguity regime
-(OMH technique), scoped to statistics measurable wrt the eigenvalues of the
-augmented moment matrix. Status: subcritical blindness confirmed 9/9 strata.
-OPEN (adapt; OMH skeleton frozen in docs/theory_T3_scoped_impossibility.md).
+(a) CLOSED-AS-REVISED 2026-08-25 (session 4;
+docs/theory_T3a_eigenvalue_contiguity.md). The planned OMH-contiguity
+impossibility for spec(M_aug) was FALSIFIED BY ITS OWN PRE-REGISTERED
+FALSIFIER: the true lambda_max(M_aug) separates CONSISTENTLY inside the
+no-detachment region at c = 0.2 (AUC 0.29 -> 0.05 as n goes 800 -> 3200 at
+g = 3.2), with a direction that FLIPS with geometry (upward, AUC -> 1,
+even at the T3(b) visibility fixed point omega = omega* while every bulk
+functional stays flat). The response-standardization channel breaks the
+maximal-invariant structure OMH rely on; the retraction, the corrected
+normalization sigma_y^2 = A + g^2 (the response carries the RAW factor
+link), the PROVED population detachment boundary (Theorem A: top
+detachment needs omega_e > c + 2 sqrt(c), never satisfied by scaling sub
+profiles; bottom wake only for c > 4 - confirmed by fresh simulation),
+and a PIPELINE ERRATUM of independent consequence are all documented:
+the frozen t_aug silently mis-brackets its secular bisection (disc < 0
+collapses hi below d[0]) and has been a degenerate surrogate correlated
+with lambda_max(Sigmahat) all along - gate verdicts unaffected (S1 demoted
+pre-data; MC thresholds self-consistent), but "invisible to eigenvalue
+alarms" must be re-scoped to the S2 family and probe-blind bands in any
+manuscript use.
 (b) CLOSED 2026-08-25 (session 3; docs/theory_T3_visibility_boundary.md):
 the probe feature is q(b) = ||b||^2 with b the self-standardized cross-
 moment. Closed forms (all verified at n=2000 to <=2%): v0 = 1+sigma_eps^2,
@@ -177,15 +199,21 @@ Falsifier: tests/test_theory_T3b.py.
 
 ### TP-4 (T4) Hard-trim dominance  [adapt]
 
-Under separated spikes and A4a, Onatski-truncated OLS attains the minimal
-directional mean-bias floor within estimators measurable wrt spectral
-coordinates with NONNEGATIVE weights. Formalizes the G3 kill (oracle tau
-no-regret 6.2%; pca_onatski wins 89/97). Class definition guardrail: must
-exclude sign-flipping tricks; Onatski selection consistency enters.
-Collapse check: k = r recovers pca_oracle_r behavior; single-spike case
-must reduce to cap-law arithmetic. Numerical falsifier: ablation grid -
-every fixed soft-weight family loses somewhere the theory says it must.
-Stop rule: 3 weeks; fallback restricted class (diagonal monotone weights).
+CLOSED 2026-08-25 (session 4; docs/theory_T4_hard_trim_dominance.md).
+Class corrected during falsification: spectral REGRESSION maps
+beta_hat_m = V diag(m(d_hat)) V' b_raw, m >= 0 (projection-type maps are
+not estimators of beta - caught by the first run, documented). The whole
+dominance question reduces to per-direction transmission coefficients
+T_j(m) inherited from closed T1 results: T(ols) = cap_j (c>1), T(ridge) =
+cap_j(lam), T(trim|retained supercritical) = xi -> 1, T(trim|subcritical or
+dropped) = 0. Theorem E: on all-subcritical cells the minimal
+confounding-attributed floor is ZERO, attained exactly by pi = 0 trims;
+any soft family transmits strictly and loses at every g bounded from zero;
+Onatski selection consistency gives data-driven attainment. Formalizes the
+G3 kill (oracle tau no-regret 6.2%, pca_onatski wins 89/97) as weight-SHAPE
+necessity, not tuning failure. Falsifier: tests/test_theory_T4.py (fresh
+twins; csv anchors matched to +0.2%/+2.5%).
+Stop rule: met.
 
 ### TP-5 (T6) SDBoost collapse lemma  [NEW small, elementary]
 
@@ -214,12 +242,12 @@ tests/test_theory_T7.py.
 | ID | Claim | Tag | Numerical hook |
 |----|-------|-----|----------------|
 | C-T1a | exact c<=1 identity | provable (PROVED) | identity unit test (1e-8) |
-| C-T1b | capture decomposition c>1 + artifact R2 | PROVED at r=1 (elementary Wishart route, audited); fixed-r write-up clerical | correctness_overlays.csv <= 10% at n=8000; tests/test_theory_T1.py |
-| C-T1c | ridge interpolation | PROVED at r=1 (closed 2026-08-25): shifted-resolvent cap(lam) = (1+l)m_bar/(1+(1+l)m_bar), m_bar root of lam m^2+(lam+c-1)m-1; superseded xi-split FALSIFIED by decisive reconciliation (max err 0.081 vs 0.003) and preserved as ridge_capture_superseded | ridge overlays median deviation 0.0%; tests/test_theory_T1.py ridge cells |
-| C-T2 | frontier achievability + kappa_n,k | adapt | power_surface ratios <= 1.5 |
-| C-T3a | eigen-alarm impossibility below BBP | adapt | blind strata power <= 0.25 at max g |
+| C-T1b | capture decomposition c>1 + artifact R2; fixed-r componentwise theorem PROVED (Section 5 write-up complete, session 4) | PROVED | correctness_overlays.csv <= 10% at n=8000; tests/test_theory_T1.py |
+| C-T1c | ridge interpolation | PROVED at r=1 (closed 2026-08-25): shifted-resolvent cap(lam) = (1+l)m_bar/(1+(1+l)m_bar), m_bar root of lam m^2+(lam+c-1)m-1 (Stieltjes derivation closed session 4); superseded xi-split FALSIFIED by decisive reconciliation | ridge overlays median deviation 0.0%; tests/test_theory_T1.py ridge cells |
+| C-T2 | kappa_n,k scale law + frontier achievability + subcritical ceiling | CLOSED (independence lemma supersedes correlated-chi-square guess; c>1 estimator mis-scale recorded) | tests/test_theory_T2.py; frozen ratios <= 1.5 |
+| C-T3a | eigenvalue-alarm impossibility below BBP | REVISED: planned impossibility FALSIFIED by own falsifier; detachment boundary proved; true augmented alarm detects consistently with geometry-dependent direction; S1 pipeline erratum issued | tests/test_theory_T3a.py |
 | C-T3b | visibility boundary phase curve | CLOSED (mean-shift class map + saturation ceiling; small-g shape envelope caveat) | lecam_probe_auc.csv ordering; tests/test_theory_T3b.py |
-| C-T4 | hard-trim dominance | adapt | estimation_cell_detail.csv dominance pattern |
+| C-T4 | hard-trim dominance on subcritical cells within nonnegative spectral regression maps | CLOSED (transmission law anchored in T1.b/T1.c/BGN; strict-loss corollary) | tests/test_theory_T4.py; estimation_cell_detail.csv anchors |
 | C-T6 | sdboost collapse | provable | npz byte-equality 42/97 |
 | C-T7 | trimmed-tau plim + CLT | CLOSED (both arms; OLS shrinkage mechanism verified) | m2_treatment.csv flatness; tests/test_theory_T7.py |
 
@@ -241,13 +269,23 @@ class definition against the ablation grid before writing the proof.
 
 ## Immediate next actions
 
-1. T3(a) proof program (OMH adaptation; the last open impossibility piece;
-   skeleton + guardrails already frozen in docs/theory_T3_scoped_impossibility.md).
-2. TP-4 (T4 hard-trim dominance) - needs only TP-1.2 vocabulary.
-3. Clerical fixed-r write-up for T1 (lemmas L1-L3 proved).
-4. Optional: rerun ridge overlay figures with proved cap(lam); record deltas.
+1. Manuscript assembly: the theory layer is complete. Class map for the
+   detection section must cite the REVISED scopes: pure-X trivial,
+   S2-family ceiling (T2 Prop C), probe visibility law (T3b), augmented-
+   alarm consistency with geometry-dependent direction (T3a revised) -
+   do NOT quote "invisible to eigenvalue alarms" without the S1-erratum
+   caveat.
+2. Optional refinements (non-blocking, queued): analytic law for
+   E[lambda_max(M_aug)] shift under H1 (T3a open mechanism target);
+   subcritical eigenvector-CLT constant for the S2 ceiling; finite-n
+   score-capture interpolation for T7's rho_j.
 
-STATUS SNAPSHOT (2026-08-25, end of session 3): CLOSED - T1.a, T1.b (r=1,
-audited), T1.c ridge (r=1), R2 artifact, fixed-r reduction, T6, T7 both
-arms, T3(b) class map. OPEN - T3(a) OMH adaptation, T2 frontier
-achievability, T4 dominance, clerical write-ups.
+STATUS SNAPSHOT (2026-08-25, end of session 4): ALL Phase-4 packages
+CLOSED. Session-4 closures - T2 (kappa law + achievability), T4
+(dominance), clerical T1 items (fixed-r componentwise theorem write-up;
+Stieltjes micro-gap). T3(a) closed AS REVISED: the planned OMH
+impossibility was falsified by its own falsifier; surviving content =
+proved detachment boundary + low-edge channel prediction + retraction
+trail + S1 pipeline erratum (t_aug surrogate bug, gate verdicts
+unaffected). Suite state: tests/test_theory_T{1,2,3a,3b,4,7}.py all green
+alongside the Phase 1/2 suites.
