@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.13)  25 AUG 2026 20:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.13)  26 AUG 2026 01:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -533,93 +533,126 @@ Package microtype Info: Loading generic protrusion settings for font family
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/
 dvips/cm-super/cm-super-ts1.enc}] [2] [3])
-(./parts/02_model.tex [4] [5] [6] [7]) (./parts/03_capture.tex [8] [9] [10]
+(./parts/02_model.tex [4] [5] [6] [7]
+Overfull \hbox (2.04546pt too wide) in paragraph at lines 141--158
+ [][] 
+ []
+
+[8]) (./parts/03_capture.tex
+<figures/capture_law_schematic.pdf, id=281, 749.70715pt x 277.44841pt>
+File: figures/capture_law_schematic.pdf Graphic file (type pdf)
+<use figures/capture_law_schematic.pdf>
+Package pdftex.def Info: figures/capture_law_schematic.pdf  used on input line 
+13.
+(pdftex.def)             Requested size: 469.75502pt x 173.84511pt.
+ [9] [10 <./figures/capture_law_schematic.pdf>]
+[11] [12]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 95.
+(hyperref)                removing `math shift' on input line 106.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\tau' on input line 95.
+(hyperref)                removing `\tau' on input line 106.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 95.
+(hyperref)                removing `math shift' on input line 106.
 
-[11]
-<figures/de_overlay_grid.pdf, id=274, 505.89pt x 289.08pt>
+[13] [14]
+<figures/de_overlay_grid.pdf, id=404, 505.89pt x 289.08pt>
 File: figures/de_overlay_grid.pdf Graphic file (type pdf)
 <use figures/de_overlay_grid.pdf>
-Package pdftex.def Info: figures/de_overlay_grid.pdf  used on input line 148.
+Package pdftex.def Info: figures/de_overlay_grid.pdf  used on input line 174.
 (pdftex.def)             Requested size: 469.75502pt x 268.43579pt.
-) (./parts/04_detection.tex [12] [13 <./figures/de_overlay_grid.pdf>]
-<figures/power_surface_vs_frontier.pdf, id=343, 794.97pt x 231.26399pt>
+) (./parts/04_detection.tex [15] [16 <./figures/de_overlay_grid.pdf>]
+[17]
+<figures/power_surface_vs_frontier.pdf, id=483, 794.97pt x 231.26399pt>
 File: figures/power_surface_vs_frontier.pdf Graphic file (type pdf)
 <use figures/power_surface_vs_frontier.pdf>
 Package pdftex.def Info: figures/power_surface_vs_frontier.pdf  used on input l
-ine 32.
+ine 54.
 (pdftex.def)             Requested size: 469.75502pt x 136.65982pt.
-
-[14]) (./parts/05_blindness.tex [15 <./figures/power_surface_vs_frontier.pdf>]
-<figures/alignment_stress.pdf, id=421, 433.62pt x 252.945pt>
+ [18 <./figures/power_surface_vs_frontier.pdf>]) (./parts/05_blindness.tex
+[19] [20]
+<figures/alignment_stress.pdf, id=570, 433.62pt x 252.945pt>
 File: figures/alignment_stress.pdf Graphic file (type pdf)
 <use figures/alignment_stress.pdf>
-Package pdftex.def Info: figures/alignment_stress.pdf  used on input line 27.
+Package pdftex.def Info: figures/alignment_stress.pdf  used on input line 48.
 (pdftex.def)             Requested size: 399.29463pt x 232.93222pt.
-
-[16] [17 <./figures/alignment_stress.pdf>]
-<figures/lecam_probe_auc.pdf, id=490, 433.62pt x 252.945pt>
+ [21] [22 <./figures/alignment_stress.pdf>]
+<figures/lecam_probe_auc.pdf, id=639, 433.62pt x 252.945pt>
 File: figures/lecam_probe_auc.pdf Graphic file (type pdf)
 <use figures/lecam_probe_auc.pdf>
-Package pdftex.def Info: figures/lecam_probe_auc.pdf  used on input line 69.
+Package pdftex.def Info: figures/lecam_probe_auc.pdf  used on input line 92.
 (pdftex.def)             Requested size: 469.75502pt x 274.03723pt.
-) (./parts/06_estimation.tex [18]
-[19 <./figures/lecam_probe_auc.pdf>] [20]
-<figures/crossover_curves.pdf, id=576, 722.7pt x 231.26399pt>
+)
+(./parts/06_estimation.tex [23] [24 <./figures/lecam_probe_auc.pdf>] [25]
+[26]
+<figures/crossover_curves.pdf, id=738, 722.7pt x 231.26399pt>
 File: figures/crossover_curves.pdf Graphic file (type pdf)
 <use figures/crossover_curves.pdf>
-Package pdftex.def Info: figures/crossover_curves.pdf  used on input line 43.
+Package pdftex.def Info: figures/crossover_curves.pdf  used on input line 57.
 (pdftex.def)             Requested size: 469.75502pt x 150.32333pt.
-<figures/bias_phase_diagram_empirical.pdf, id=577, 397.485pt x 245.718pt>
+<figures/bias_phase_diagram_empirical.pdf, id=739, 397.485pt x 245.718pt>
 File: figures/bias_phase_diagram_empirical.pdf Graphic file (type pdf)
 <use figures/bias_phase_diagram_empirical.pdf>
 Package pdftex.def Info: figures/bias_phase_diagram_empirical.pdf  used on inpu
-t line 50.
+t line 64.
 (pdftex.def)             Requested size: 469.75502pt x 290.40213pt.
 ) (./parts/07_benchmarks.tex
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <14.4> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 1.
- [21 <./figures/crossover_curves.pdf>] [22 <./figures/bias_phase_diagram_empiri
-cal.pdf>]
-[23]
-Overfull \hbox (81.85435pt too wide) in paragraph at lines 48--59
+ [27 <./figures/crossover_curves.pdf>] [28 <./figures/bias_phase_diagram_empiri
+cal.pdf>] [29]
+Overfull \hbox (752.50575pt too wide) in paragraph at lines 48--59
  [][] 
  []
 
-[24]
-<figures/benchmark_frontier_check.pdf, id=713, 975.645pt x 303.534pt>
+[30]
+<figures/benchmark_frontier_check.pdf, id=894, 975.645pt x 303.534pt>
 File: figures/benchmark_frontier_check.pdf Graphic file (type pdf)
 <use figures/benchmark_frontier_check.pdf>
 Package pdftex.def Info: figures/benchmark_frontier_check.pdf  used on input li
 ne 71.
 (pdftex.def)             Requested size: 469.75502pt x 146.14854pt.
-) (./parts/08_limitations.tex [25 <./figures/benchmark_frontier_check.pdf>]) [2
-6] (./paper.bbl [27]) [28] (./paper.aux)
+) (./parts/08_limitations.tex [31 <./figures/benchmark_frontier_check.pdf>] [32
+])
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 48.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 48.
+
+[33] [34]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (48.43051pt too wide) in paragraph at lines 152--153
+[]\OT1/cmr/m/n/10.95 (-20) The sim-u-la-tion grids were de-fined be-fore any sw
+eep data ex-isted and are hash-locked (\OT1/cmtt/m/n/10.95 configs/grid[]*.json
+\OT1/cmr/m/n/10.95 (-20) ,
+ []
+
+[35] (./paper.bbl [36] [37]) [38] (./paper.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `paper.out' has not changed.
-(rerunfilecheck)             Checksum: 4D3A164452CD64C189FD58E4EACD68CE;5613.
+(rerunfilecheck)             Checksum: 91751B4772611CE9C525EDD75C0C455A;6491.
  ) 
 Here is how much of TeX's memory you used:
- 13841 strings out of 476106
- 215677 string characters out of 5793933
- 1941975 words of memory out of 5000000
- 35314 multiletter control sequences out of 15000+600000
- 577833 words of font info for 197 fonts, out of 8000000 for 9000
+ 13955 strings out of 476106
+ 217665 string characters out of 5793933
+ 1943975 words of memory out of 5000000
+ 35374 multiletter control sequences out of 15000+600000
+ 579993 words of font info for 211 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
- 75i,11n,79p,2477b,672s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,11n,79p,2416b,626s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texl
@@ -628,24 +661,28 @@ xmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/font
 s/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb
-></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/s
-hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/tex
-live/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/font
-s/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type
-1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmtt12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmtt9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/s
-ymbols/msbm10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0600.pfb></
-usr/share/texmf/fonts/type1/public/cm-super/sfrm0800.pfb>
-Output written on paper.pdf (28 pages, 541480 bytes).
+/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pf
+b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.
+pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr
+/share/texmf/fonts/type1/public/cm-super/sfrm0600.pfb></usr/share/texmf/fonts/t
+ype1/public/cm-super/sfrm0800.pfb>
+Output written on paper.pdf (38 pages, 669739 bytes).
 PDF statistics:
- 936 PDF objects out of 1000 (max. 8388607)
- 518 compressed objects within 6 object streams
- 118 named destinations out of 1000 (max. 500000)
- 36580 words of extra memory for PDF output out of 42996 (max. 10000000)
+ 1209 PDF objects out of 1440 (max. 8388607)
+ 722 compressed objects within 8 object streams
+ 154 named destinations out of 1000 (max. 500000)
+ 36617 words of extra memory for PDF output out of 42996 (max. 10000000)
 

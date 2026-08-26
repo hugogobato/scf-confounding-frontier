@@ -3,44 +3,47 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: paper.aux
 The style file: plainnat.bst
 Database file #1: references.bib
-You've used 19 entries,
+Warning--to sort, need author or key in geo_gse63060
+Warning--to sort, need author or key in geo_gse63061
+You've used 28 entries,
             2773 wiz_defined-function locations,
-            741 strings with 9118 characters,
-and the built_in function-call counts, 9251 in all, are:
-= -- 896
-> -- 476
-< -- 10
-+ -- 160
-- -- 141
-* -- 805
-:= -- 1435
-add.period$ -- 86
-call.type$ -- 19
-change.case$ -- 104
-chr.to.int$ -- 19
-cite$ -- 38
-duplicate$ -- 382
-empty$ -- 747
-format.name$ -- 176
-if$ -- 1921
-int.to.chr$ -- 1
+            798 strings with 10935 characters,
+and the built_in function-call counts, 12808 in all, are:
+= -- 1246
+> -- 619
+< -- 15
++ -- 212
+- -- 183
+* -- 1090
+:= -- 1959
+add.period$ -- 121
+call.type$ -- 28
+change.case$ -- 146
+chr.to.int$ -- 27
+cite$ -- 60
+duplicate$ -- 549
+empty$ -- 1073
+format.name$ -- 231
+if$ -- 2681
+int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 18
-newline$ -- 132
-num.names$ -- 76
-pop$ -- 151
+missing$ -- 25
+newline$ -- 185
+num.names$ -- 104
+pop$ -- 228
 preamble$ -- 1
-purify$ -- 85
+purify$ -- 117
 quote$ -- 0
-skip$ -- 293
+skip$ -- 417
 stack$ -- 0
-substring$ -- 452
-swap$ -- 19
+substring$ -- 594
+swap$ -- 29
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 209
-warning$ -- 0
-while$ -- 88
+type$ -- 303
+warning$ -- 2
+while$ -- 119
 width$ -- 0
-write$ -- 310
+write$ -- 441
+(There were 2 warnings)

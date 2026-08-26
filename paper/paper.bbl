@@ -1,9 +1,29 @@
-\begin{thebibliography}{19}
+\begin{thebibliography}{28}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[geo(2013{\natexlab{a}})]{geo_gse63060}
+{GSE63060}: Blood gene expression profiles of alzheimer's disease patients and
+  healthy controls ({AddNeuroMed}).
+\newblock NCBI Gene Expression Omnibus, 2013{\natexlab{a}}.
+\newblock URL
+  \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63060}.
+
+\bibitem[geo(2013{\natexlab{b}})]{geo_gse63061}
+{GSE63061}: Blood gene expression profiles of alzheimer's disease patients and
+  healthy controls ({AddNeuroMed}, replication series).
+\newblock NCBI Gene Expression Omnibus, 2013{\natexlab{b}}.
+\newblock URL
+  \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63061}.
+
+\bibitem[Bai and Ng(2002)]{bai2002determining}
+Jushan Bai and Serena Ng.
+\newblock Determining the number of factors in approximate factor models.
+\newblock \emph{Econometrica}, 70\penalty0 (1):\penalty0 191--221, 2002.
+\newblock \doi{10.1111/1468-0262.00272}.
 
 \bibitem[Baik et~al.(2005)Baik, Ben~Arous, and P{\'e}ch{\'e}]{bbp2005phase}
 Jinho Baik, G{\'e}rard Ben~Arous, and Sandrine P{\'e}ch{\'e}.
@@ -42,6 +62,22 @@ Domagoj Cevid, Peter B{\"u}hlmann, and Nicolai Meinshausen.
 \newblock arXiv:1811.05352. CORRECTION vs research plan: published in JMLR, not
   Annals of Statistics.
 
+\bibitem[Chernozhukov et~al.(2011)Chernozhukov, Hansen, and
+  Liao]{chernozhukov2017high}
+Victor Chernozhukov, Christian Hansen, and Yuan Liao.
+\newblock High dimensional sparse econometric models: An introduction.
+\newblock Technical report, SSRN / Springer Proceedings in Mathematics, 2011.
+\newblock FLAGGED: this is the introduction survey; exact method-paper locator
+  for LAVA still to be pinned before it is used as a Phase 2 baseline.
+
+\bibitem[Cinelli and Hazlett(2020)]{cinelli2020making}
+Carlos Cinelli and Chad Hazlett.
+\newblock Making sense of sensitivity: Extending omitted variable bias.
+\newblock \emph{Journal of the American Statistical Association}, 115\penalty0
+  (530):\penalty0 2377--2391, 2020.
+\newblock \doi{10.1080/01621459.2020.1750028}.
+\newblock URL \url{https://arxiv.org/abs/1903.03276}.
+
 \bibitem[Dobriban and Wager(2018)]{dobriban2018high}
 Edgar Dobriban and Stefan Wager.
 \newblock High-dimensional asymptotics of prediction: Ridge regression and
@@ -74,6 +110,13 @@ Trevor Hastie, Andrea Montanari, Saharon Rosset, and Ryan~J. Tibshirani.
 \newblock \emph{Annals of Statistics}, 50\penalty0 (2):\penalty0 949--986,
   2022.
 \newblock \doi{10.1214/21-AOS2133}.
+
+\bibitem[Hill(2011)]{hill2011bayesian}
+Jennifer~L. Hill.
+\newblock Bayesian nonparametric modeling for causal inference.
+\newblock \emph{Journal of Computational and Graphical Statistics}, 20\penalty0
+  (1):\penalty0 217--240, 2011.
+\newblock \doi{10.1198/jcgs.2010.08162}.
 
 \bibitem[Janzing and Sch{\"o}lkopf(2018)]{janzing2018detecting}
 Dominik Janzing and Bernhard Sch{\"o}lkopf.
@@ -128,6 +171,13 @@ Alexei Onatski, Marcelo~J. Moreira, and Marc Hallin.
 \newblock URL \url{https://arxiv.org/abs/1306.4867}.
 \newblock Theorem-level read completed during prior-art verification.
 
+\bibitem[Poterba et~al.(1995)Poterba, Venti, and Wise]{poterba1995do}
+James~M. Poterba, Steven~F. Venti, and David~A. Wise.
+\newblock Do 401(k) contributions crowd out other personal saving?
+\newblock \emph{Journal of Public Economics}, 58\penalty0 (1):\penalty0 1--32,
+  1995.
+\newblock \doi{10.1016/0047-2727(94)01462-W}.
+
 \bibitem[Rendsburg et~al.(2024)Rendsburg, Vankadara, Ghoshdastidar, and von
   Luxburg]{rendsburg2024consistent}
 Lydia Rendsburg, L.~C. Vankadara, Debarghya Ghoshdastidar, and Ulrike von
@@ -156,6 +206,14 @@ Melissa Ulmer, Cyrill Scheidegger, and Peter B{\"u}hlmann.
 \newblock \doi{10.1080/10618600.2025.2569602}.
 \newblock URL \url{https://arxiv.org/abs/2502.03969}.
 
+\bibitem[VanderWeele and Ding(2017)]{vanderweele2017evalue}
+Tyler~J. VanderWeele and Peng Ding.
+\newblock Sensitivity analysis in observational research: Introducing the
+  {E}-value.
+\newblock \emph{Annals of Internal Medicine}, 166\penalty0 (4):\penalty0
+  268--274, 2017.
+\newblock \doi{10.7326/M16-2607}.
+
 \bibitem[Wang and Blei(2019)]{wang2019blessings}
 Yixin Wang and David~M. Blei.
 \newblock The blessings of multiple causes.
@@ -163,5 +221,12 @@ Yixin Wang and David~M. Blei.
   (528):\penalty0 1574--1596, 2019.
 \newblock \doi{10.1080/01621459.2019.1686987}.
 \newblock Issue corrected from plan's 527 to 528.
+
+\bibitem[Wooldridge(2016)]{wooldridge2016introductory}
+Jeffrey~M. Wooldridge.
+\newblock \emph{Introductory Econometrics: A Modern Approach}.
+\newblock Cengage Learning, 6th edition, 2016.
+\newblock k401ksubs dataset; Rdatasets mirror:
+  \url{https://vincentarelbundock.github.io/Rdatasets/doc/wooldridge/k401ksubs.html}.
 
 \end{thebibliography}

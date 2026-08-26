@@ -23,7 +23,7 @@
 
 \title{The Confounding Frontier:\\ Exact Spectral Bias Laws, Calibrated Detection,\\ and the Limits of Deconfounding under Dense Hidden Confounding}
 
-\author{Hugo Souto\thanks{Code, data artifacts, memos, and the \texttt{confounderalarm} package: repository \texttt{scf} accompanying this paper. Every empirical claim maps to a figure, parquet artifact, and configuration identifier in \texttt{paper/claim\_map.md}.}}
+\author{Hugo Souto\thanks{Correspondence: author contact details to be completed at submission. Code, data artifacts, memos, and the \texttt{confounderalarm} package: repository \texttt{scf} accompanying this paper; a public archive DOI is minted at acceptance, and the checksummed artifact manifest ships as supplementary material. }}
 \date{August 25, 2026}
 
 \begin{document}
@@ -31,7 +31,7 @@
 \maketitle
 
 \begin{abstract}
-High-dimensional observational studies routinely suffer dense latent confounding: pervasive latent factors shift both the covariates and the response at once. We develop an exact spectral theory of when this confounding matters, when it is detectable, and when spectral adjustment helps or hurts, for regression in the proportional regime $c=p/n$. Four results anchor the paper. First, a capture law: when $c>1$, minimum-norm least squares inherits along each population spike direction $q_j$ a bias component rescaled by $\mathrm{cap}_j=(1+l_j)/(c+l_j)$, while at $c\le 1$ the population bias is inherited exactly; the law is proved by an elementary argument (Gram completion of squares, Sherman--Morrison, inverse-Wishart moments) that uses no local-law machinery, extends to any fixed number of factors, interpolates through ridge regression, and yields a trimmed-coefficient law explaining why trim-then-regress treatment estimates stay flat across $c$ while ordinary least squares inflates roughly six-fold. Second, a calibrated alarm whose power frontier is predictable: the empirical frontier matching the deterministic prediction has median ratio $1.02$ across strata, with size control verified over thousands of null replicates. Third, scoped impossibility: below the Baik--Ben Arous--P\'ech\'e threshold, eigenvalue-alarm statistics are blind to dense confounding under response standardization, and quadratic probes obey an explicit visibility law whose born-blind boundary sits exactly at the Marchenko--Pastur point $c=1$ for scaling spike profiles; a flexible machine-learning probe confirms operational invisibility at $c=0.8$ while detecting reliably at $c=0.2$, so claims are rescoped rather than asserted universally. Fourth, a characterized negative result: empirically Bayes tuned soft spectral trimming either collapses exactly to ordinary least squares or loses to Onatski hard-trimming in every measured harmful cell (no-regret share $4.1\%$ even with oracle tuning), a failure mode our dominance theorem explains and that the capture law predicts. Semi-synthetic benchmarks on three real covariate geometries validate the alarm's straddle of its predicted frontier and the trim-then-regress recipe ($\tau$ error $0.173$ against $0.421$ for ordinary least squares under matched injection). A released package turns the theory into verdicts with calibrated p-values and blind-region certificates.
+For high-dimensional regression with dense latent confounding in the proportional regime $c=p/n$, we prove an exact capture law: minimum-norm least squares inherits along each spike direction $q_j$ a bias component rescaled by $\mathrm{cap}_j=(1+l_j)/(c+l_j)$. The law follows from an elementary overlap-free argument, extends to any fixed rank, interpolates through ridge regression, and yields a companion law under which hard-trim-then-regress treatment estimates stay stable across $c$ while ordinary least squares inflates roughly six-fold. Building on the same null theory, we construct a calibrated spike-coordinate alarm whose realized power frontier matches its deterministic prediction with median empirical-to-predicted ratio 1.02 in simulation strata. On detection limits, we prove a population detachment boundary for augmented-spectrum alarms, show that a stronger universal impossibility claim fails under pre-registered tests of our own design, scope every blindness statement to named statistic classes, and derive an exact visibility law that locates the born-blind crossing of quadratic probes at the Marchenko--Pastur point $c=1$ for the scaling family studied. On estimation, we prove that within the class of spectral-weight estimators no soft member matches the transmission floor of hard trimming on subcritical cells, consistent with the empirical failure of tuned soft methods throughout the harmful region, including exact collapse to ordinary least squares on roughly a third of harmful cells. Semi-synthetic benchmarks on three real covariate geometries and a released package complete the evidence.
 \end{abstract}
 
 \input{parts/01_intro}
@@ -45,11 +45,119 @@ High-dimensional observational studies routinely suffer dense latent confounding
 
 \appendix
 
+\section{The $r=1$ capture ledger}\label{app:ledger}
+
+This appendix carries out, end to end, the computation behind Theorem~\ref{thm:captureR1}. Work under model M1 with $r=1$, realized spike direction $q$, spike strength $l$, scalar link $\gamma$, and minimum-norm least squares $\hat\beta=X'G^{-1}Y$, $G=XX'$, at $c=p/n>1$. All expectations are conditional on $(Q,\beta)$; fluctuation terms are tracked by inverse-Wishart moment bounds and are $o(1)$.
+
+\medskip
+\noindent\emph{Step 1 (completion of squares).} Write $G=K+aa'$ with
+$K=U(I-qq')U'$ and $a=\sqrt{l}\,\|f\|\,e+u$, where $u:=Uq$, $e:=f/\|f\|$. Row-wise Gaussian independence separates $\sigma(K)$ from $(u,\|f\|)$; a change of basis shows $K\stackrel{d}{=}W_n(I_n,p-1)$, a central Wishart matrix with $p-1$ degrees of freedom; $e$ is Haar uniform on the unit sphere, independent of $(K,u)$; and $\|f\|^2\sim\chi_n^2$ independent of $(K,e)$.
+
+\medskip
+\noindent\emph{Step 2 (resolvent scalars).} Sherman--Morrison gives
+$G^{-1}=K^{-1}-\frac{K^{-1}aa'K^{-1}}{1+\kappa}$, $\kappa=a'K^{-1}a$,
+so every functional below reduces to finitely many shifted-resolvent quantities: the diagonal probes $m_{ee}=e'K^{-1}e$, $m_{uu}=u'K^{-1}u$, the cross probe $m_{eu}=e'K^{-1}u$, and the couplings $A_e=a'K^{-1}e$, $A_u=a'K^{-1}u$. Classical inverse-Wishart moments give $m_{ee}\to\delta'$ with $\delta'=(p-n-2)^{-1}$ scale, $m_{uu}\to t$ with $t=(c-1)^{-1}$, and $\kappa\to t(1+l)$, so the Sherman--Morrison denominator satisfies $1+\kappa\to D=1+t(1+l)$; Marchenko--Pastur negative-moment bounds control all terms of order $\delta'$.
+
+\medskip
+\noindent\emph{Step 3 (odd symmetry).} Every moment involving $m_{eu}$ or the odd part of $A_e$ carries an odd number of factors of $e$; since $e$ is Haar, its distribution is invariant under $e\mapsto-e$ while $(K,u,\|f\|)$ are unchanged, so all such moments vanish exactly. No joint-moment calculation and no local-law input is needed anywhere: this symmetry is what makes the ledger elementary.
+
+\medskip
+\noindent\emph{Step 4 (channel assembly).} The two confounding channels through which $\gamma$ enters the $q$-coordinate of $\hat\beta$ reduce to
+\[
+\mathrm{ch}_a=\sqrt{l}\,\|f\|^2\,e'G^{-1}e
+\;\to\;\sqrt{l}\,\frac{t(1+t)}{D},
+\qquad
+\mathrm{ch}_b=\|f\|\,u'G^{-1}e
+\;\to\;-\sqrt{l}\,\frac{t^{2}}{D},
+\]
+with denominator $D=1+t(1+l)$. Their sum is
+$\sqrt{l}\,t/D=\sqrt{l}/(c+\ell)$ evaluated at $\ell=l$: an exact algebraic identity in $t$, which is why the limit holds simultaneously along the whole path and not merely at a fixed point.
+
+\medskip
+\noindent\emph{Step 5 (signal and artifact blocks).} The same scalars give the rowspace deficit: rotational invariance of $U$ about $q$ forces $\E[\Pi q\mid Q]=\rho\,q$, and evaluating $\E[q'\Pi q\mid Q]$ through Step 2 yields the companion identity $\rho=(c-1)/(c+l)$; multiplying by $\langle\beta,q\rangle$ produces the artifact term $-(c-1)/(c+l)\langle\beta,q\rangle$ of claim (ii). For claim (iv), applying Steps 2--4 to a fixed unit $v\perp q$ leaves only the null-space fitting artifact, $\E[\langle v,\hat\beta-\beta\rangle\mid Q]\to-(1-\frac1c)\langle v,\beta\rangle$. Claim (i) is the exact finite-$n$ identity $\E[\hat\beta]-\beta=\Sigma_X^{-1}\Lambda\gamma$, verified numerically to $10^{-8}$. \hfill$\square$
+
+\section{Proof supplement for the off-diagonal vanishing lemma}\label{app:offdiag}
+
+Lemma~\ref{lem:offdiag} is the only input to Theorem~\ref{thm:captureFixedR} beyond the $r=1$ ledger, so we record its argument in full. Write $K=U(I-QQ')U'$, so that $K\stackrel{d}{=}W_n(I_n,p-r)$, and let $e_1,\dots,e_r$ be the orthonormalized factor directions and $u_k=Uq_k$ their coupled noise images.
+
+\noindent(1) Diagonal scale. For any unit $a\perp QQ'$, Haar frame moments of $K^{-1}$ give $\E[a'K^{-1}aa'K^{-1}a]=(p-r-n-1)^{-2}\{1+O(r/n)\}$ with fluctuations $O_p(\delta')$, where $\delta'=1/(p-r-n-1)$; this is the per-coordinate anchor inherited verbatim from the $r=1$ ledger.
+
+\noindent(2) Rate L1 ($e_a'K^{-1}e_b=o(\delta')$, jointly over pairs). Polarization expresses $e_a'K^{-1}e_b$ through diagonal-type functionals of $(e_a\pm e_b)/\sqrt2$. A fourth-moment version of (1), obtained from Haar frame moments of order four, bounds each such functional's centered square by $C\,\delta'^2\,n^{-1}$ with an absolute constant $C$; substituting both polarized terms and subtracting the two diagonal anchors leaves
+$\Pr\bigl(|e_a'K^{-1}e_b|>\epsilon\,\delta'\bigr)\le C_r\,\epsilon^{-2}\,n^{-1}\to0$
+jointly over the fixed number of pairs, with $C_r$ combinatorial in fixed $r$.
+
+\noindent(3) Rate L2 ($e_j'K^{-1}u_k=O_p(\delta')$, conditional mean zero). Per-row block independence of $(Q^\top r_i,\,(I-QQ')r_i)$ makes $u_k$ independent of $K$ with conditional mean zero; Cauchy--Schwarz against the diagonal anchor of (1) yields the rate.
+
+\noindent(4) Rate L3 ($u_a'K^{-1}u_b=O_p(n^{-1/2})$, $a\ne b$). Conditioning on $U$ and using entrywise inverse-Wishart moments, each product $u_a'K^{-1}u_b$ concentrates about zero at the sample scale $n^{-1/2}$.
+
+Combining (2)-(4), every off-diagonal entry of $M=I_r+A'K^{-1}A$ vanishes in probability (the L1 pieces at the sharper $o(\delta')$ scale, the L2 and L3 pieces at $O_p(n^{-1/2})$), which is all the Neumann expansion consumes, while diagonals converge to $1+t(1+l_j)$; the Neumann expansion of $M^{-1}$ about its diagonal then propagates errors by at most one extra power of the same vanishing factors, which is what the proof of Theorem~\ref{thm:captureFixedR} uses. Uniformity holds over any fixed number of pairs; nothing is claimed for growing $r$. The complete computations behind the remaining sketched results (the ridge capture, the power ceiling, the SDBoost collapse lemma, and the dominance theorem) are archived line-by-line in five supplementary theory documents bundled with the submission, Supplementary Documents S-A (capture ledger), S-B (frontier and null law), S-C (hard-trim dominance), S-D (collapse lemma), and S-E (trimmed-treatment law); each computation additionally carries permanent numerical falsifiers in the repository test suite.
+
+\section{Proofs for the Section~\ref{sec:blindness} boundaries}\label{app:sec5proofs}
+
+\subsection*{Proof of Proposition~\ref{prop:visibility}}
+
+Work under $H_0$ first. The null response variance is $\mathrm{plim}\,\mathrm{sd}_y^2=\beta^\top\Sigma_X\beta+\sigma_\varepsilon^2$, and Haar isotropy of $\beta$ under A4a gives $\beta^\top\Sigma_X\beta=1+\sum_j l_j\langle\beta,q_j\rangle^2\to1$, since each inner product is $O_p(p^{-1/2})$; this is $v_0=A$. For the raw floor, write $q_{\mathrm{raw}}=\|X_c^\top Y_c/n\|^2$ with $Y_c=X_c\beta+\varepsilon$ under $H_0$, so
+$\E[q_{\mathrm{raw}}]=\E[\beta^\top(X_c^\top X_c/n)^2\beta]+\E\|X_c^\top\varepsilon/n\|^2$.
+Averaging the first term over the Haar draw of $\beta$ turns it into a trace identity, $\E[\beta^\top\hat\Sigma^{\,2}\beta]=\mathrm{tr}(\E[\hat\Sigma^{\,2}])/p=1+c+o(1)$, because $\mathrm{tr}(\hat\Sigma^{\,2})/p\to1+c$ for a Wishart-type sample covariance (the Marchenko--Pastur second moment); the noise term is $\sigma_\varepsilon^2\,\mathrm{tr}(X_c^\top X_c)/n^2=\sigma_\varepsilon^2\,\mathrm{tr}(\hat\Sigma)/n\to\sigma_\varepsilon^2 c$. Summing, $M_0=1+c(1+\sigma_\varepsilon^2)=1+cA$. Under $H_1$ at strength $g$ along direction $\mathrm{dir}$, the numerator gains two pieces: the coherent mass enters the $n$-normalized cross-moment directly, contributing $g^2\omega$ riding on the spike coordinates, and the bulk leakage of the factor vector through the design's noise part, $\|U_0^\top(\gamma f)\|^2/n^2\to cg^2$, where $U_0$ collects the non-spike rows of the loading basis and per-coordinate leakage variance is $c=p/n$. Hence $\E[q_{\mathrm{raw}}\mid g]\to M_0+g^2(\omega+c)$. Dividing by the realized response scale (so $\mathrm{sd}_y^2\to v_0+g^2$ under $H_1$, since the raw link contributes variance $g^2$ before standardization) produces the displayed curve
+$\E[q\mid g]\to\{M_0+g^2(\omega+c)\}/(v_0+g^2)$,
+and algebra gives the fixed-point form with $m_0=M_0/v_0$ and $\omega_\star=1/A$: the shift is $\Delta(g)=-g^2(\omega_\star-\omega)/(v_0+g^2)$, which satiates at $|\omega_\star-\omega|$ as $g\to\infty$. The born-blind condition follows by requiring the maximal standardized shift to fall inside $a$ null standard deviations. \hfill$\square$
+
+\subsection*{Proof of Proposition~\ref{prop:detach}}
+
+The standardized pair has population second-moment matrix
+$\Omega(g)=\begin{pmatrix}1&\bar u^\top\\ \bar u&\Sigma_X\end{pmatrix}$, $\bar u=(\Sigma_X\beta+\Lambda\gamma)/\sigma_y(g)$,
+whose spectrum splits into the common bulk and spikes $\tau_j=1+l_j$ plus at most finitely many detached levels solving the secular equation (under A4a the $\Sigma_X\beta$ piece of $u$ shifts each $\kappa_j$ by only $O_p(p^{-1/2})$ and is dropped from the displayed couplings; its remainder lives in the absolutely continuous part and is absorbed by part (iii))
+$\tau=1+\sum_{j\le r}\kappa_j/(\tau-\tau_j)$, $\kappa_j=l_jg^2\mathrm{dir}_j^2/\sigma_y^2(g)$.
+This is the rank-$2r$ secular identity for a block arrowhead matrix, obtained by eliminating $(\tau I-\Sigma_X)^{-1}$ from the eigenvalue equation.
+
+\noindent(i) Top edge. Define $f(\tau)=\tau-1-\sum_j\kappa_j/(\tau-\tau_j)$ on $(b_+,\infty)$ where every $\tau-\tau_j>c+2\sqrt c-l_j>0$. Then $f'(\tau)=1+\sum_j\kappa_j/(\tau-\tau_j)^2>0$, so at most one root exists, and it exists iff $f(b_+)<0$, i.e.
+$b_+-1<\sum_j\frac{\kappa_j}{b_+-\tau_j}
+=\frac{g^2}{A+g^2}\sum_j\frac{l_j\,\mathrm{dir}_j^2}{c+2\sqrt c-l_j}$.
+The left side is the constant $B=c+2\sqrt c$; the right side factors as $\{g^2/(A+g^2)\}\,\omega_e$ with $g^2/(A+g^2)$ increasing toward $1$. Detachment at strength $g$ therefore holds iff $\{g^2/(A+g^2)\}\,\omega_e>B$: possible at some strength iff $\omega_e>B$, and then automatic for all sufficiently large $g$. For scaling sub-profiles ($l_j=w\sqrt c$) each denominator is bounded below by $c>0$ while numerators scale like $\sqrt c$, giving the computed ratios $\omega_e/B=0.235,0.081,0.036$ at $c=0.2,0.8,2.0$: never detached.
+
+\noindent(ii) Bottom edge. On $(-\infty,b_-)$ every denominator is negative; $f(\tau)\to-\infty$ as $\tau\to-\infty$ while $f(\tau)\to+\infty$ as $\tau\uparrow b_-$, and $f'>0$ throughout, so exactly one root exists for every nonzero coupling pattern, sticking to $b_-$ as all couplings vanish. The root can sit at depth one below the edge only if the secular balance admits a solution there; clearing denominators at that evaluation point yields, for equal spikes, the wake inequality $(1-b_-)\bigl((1+l)-b_-\bigr)<\omega$ with saturated couplings, which fails at the three equal-spike scaling cells with margins $0.64$ versus $0.22$, $1.42$ versus $0.45$, and $1.27$ versus $0.71$: the bottom root never wakes.
+
+\noindent(iii) Equal bulk laws. Inside the no-detachment region, $H_0$ and $H_1$ populations differ by a matrix of rank at most $2r+2$; interlacing bounds the Kolmogorov distance of the two empirical spectral distributions by that rank over $n$, so all absolutely continuous limit laws coincide. \hfill$\square$
+
+
+
 \section{Reproducibility}\label{app:repro}
 
-Every number in this paper regenerates from frozen artifacts. The simulation grids were defined before any sweep data existed and are hash-locked (\texttt{configs/grid\_*.json}, grid hash \texttt{a920e554e692}); every result row carries the hash of the model card and assumption ledger pair, so no undocumented modeling knob can enter a reported cell. The global seed is $20260823$, with per-replication seeds derived deterministically from configuration and replication identifiers. Figures regenerate exclusively from parquet files through versioned scripts (\texttt{code/make\_pilot\_figures.py}, \texttt{code/make\_phase2\_figures.py}); no figure is edited by hand.
+Every number in this paper regenerates from frozen artifacts. Table~\ref{tab:gridspec} collects the frozen profile constants needed to reconstruct every headline constant quoted in the text.
 
-The identity layer is guarded by permanent tests: classical transcriptions (Marchenko--Pastur edges, BBP outlier locations, BGN overlaps, Tracy--Widom null calibration) run to stated tolerances in \texttt{tests/test\_identities.py}, and each theorem carries its own falsifier suite, including \texttt{tests/test\_theory\_T1.py} ($39$ checks covering an $(l,c)$ grid, $n$-scaling probes, and corners near $c=1$) and the trimmed-law and visibility-law suites ($48$ further checks). The full suite is green at the submission tag. Large sweeps executed as self-contained Google Colab shards ($38$ phase-two notebooks plus six benchmark notebooks) with per-file checksums consolidated locally; the same shards constitute the computational appendix. The package \texttt{confounderalarm} (version $0.1.0$) installs cleanly in a fresh virtual environment and its examples run end to end. An artifact manifest with sha256 checksums for every parquet, figure, and table used here accompanies the repository, and \texttt{paper/claim\_map.md} links each claim to its figures, artifacts, and configuration identifiers.
+\begin{table}[h]
+\centering\small
+\begin{tabular}{lll}
+\toprule
+Object & Frozen value & Used in \\
+\midrule
+Scaling sub-profile & $l_j=w_0\sqrt c$, $w_0=0.5$ & Secs.~\ref{sec:detection}--\ref{sec:blindness} \\
+Scaling mixed profile & leading $w_0=2.3$--$2.4$ by stratum ($2.375$ at $\theta=\pi/6$) & Sec.~\ref{sec:blindness} \\
+Link direction & $\theta=\pi/6$ unless swept & Secs.~\ref{sec:detection}--\ref{sec:blindness} \\
+M2 weak-injection grid & $c\in\{0.2,0.8,2\}$, $\|\pi\|_2^2=1$ sparse, $\sigma_\nu^2=1$ & Sec.~\ref{sec:capture}, \ref{sec:estimation} \\
+Treatment loading & single spike $(\delta_g,l)=(0.417,4)$ giving middle $\Lambda_D$ term $0.058$ & Sec.~\ref{sec:capture} \\
+Frontier strata & mixed profile, $\theta=\pi/6$, $c\in\{0.2,0.8,2\}$, $n=2000$ & Sec.~\ref{sec:detection} \\
+Blind strata & fully subcritical profiles or $\gamma\perp e_1$; 9 of 12 strata & Sec.~\ref{sec:detection} \\
+Benchmark aspects & six configs with $c\in[0.20,4.64]$ & Sec.~\ref{sec:benchmarks} \\
+\bottomrule
+\end{tabular}
+\caption{Frozen grid specifications underlying the headline constants ($\Lambda_D=1.558=0.5+0.058+1$, wake margins, $\omega_e/B$ ratios).}
+\label{tab:gridspec}
+\end{table}
+
+
+Each headline result whose main-text treatment is a sketch carries its complete computation in a named supplementary document, matching the descriptions above: the capture ledger (including the ridge interpolation) in S-A, the frontier and null-law closure in S-B, the dominance theorem in S-C, the collapse lemma in S-D, and the trimmed-treatment law in S-E; the $r=1$ ledger and the two Section-\ref{sec:blindness} proofs appear in Appendices~\ref{app:ledger}--\ref{app:sec5proofs} of this paper itself.
+
+
+The simulation grids were defined before any sweep data existed and are hash-locked (\texttt{configs/grid\_*.json}, grid hash \texttt{a920e554e692}); every result row carries the hash of the model card and assumption ledger pair, so no undocumented modeling knob can enter a reported cell. The global seed is $20260823$, with per-replication seeds derived deterministically from configuration and replication identifiers. Figures regenerate exclusively from parquet files through versioned scripts (\texttt{code/make\_pilot\_figures.py}, \texttt{code/make\_phase2\_figures.py}); no figure is edited by hand.
+
+The identity layer is guarded by permanent tests: classical transcriptions (Marchenko--Pastur edges, BBP outlier locations, BGN overlaps, Tracy--Widom null calibration) run to stated tolerances in \texttt{tests/test\_identities.py}, and each theorem carries its own falsifier suite, including \texttt{tests/test\_theory\_T1.py} ($39$ checks covering an $(l,c)$ grid, $n$-scaling probes, and corners near $c=1$) and the trimmed-law and visibility-law suites ($48$ further checks). The full suite is green at the submission tag. Large sweeps executed as self-contained Google Colab shards ($38$ phase-two notebooks plus six benchmark notebooks) with per-file checksums consolidated locally; the same shards constitute the computational appendix. The package \texttt{confounderalarm} (version $0.1.0$) installs cleanly in a fresh virtual environment and its examples run end to end. An artifact manifest with sha256 checksums for every parquet, figure, and table used here accompanies the repository, and \texttt{paper/claim\_map.md} links each empirical claim to its figures, artifacts, and configuration identifiers.
+
+\section*{Data and code availability}
+All datasets are public: AddNeuroMed expression series GSE63060 and GSE63061 (NCBI Gene Expression Omnibus), the IHDP covariate benchmark mirror of \citet{hill2011bayesian}, and the k401ksubs extract from \citet{wooldridge2016introductory}. The simulation and analysis code, the frozen grid configurations, the \texttt{confounderalarm} package, supplementary theory documents A--E, and the checksummed artifact manifest are released with the paper.
+
+\section*{Competing interests}
+The author declares no competing interests.
 
 \bibliographystyle{plainnat}
 \bibliography{references}

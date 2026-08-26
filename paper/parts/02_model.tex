@@ -33,10 +33,13 @@ One caveat is recorded honestly. Exactly zero OLS bias together with nonzero spi
 
 \begin{definition}[Loading-conditional bias]
 \label{def:bias}
-For an estimator $T$ of $\beta$ under M1, the bias functional is
-$\mathrm{Bias}(T) = \mathbb{E}\left[\,T(Y,X) \mid \Lambda\,\right] - \beta$,
-averaging over $f$, $u$, $\eps$, and the draw of $\beta$, but conditioning on the realized loading geometry $\Lambda$ (equivalently $Q$). The scalar gate summary is
-$\mathrm{rel\_bias}(T) = \|\mathrm{Bias}(T)\|_2 / \|\beta\|_2$.
+For an estimator $T$ of $\beta$ under M1, define the bias functional as the conditional mean of the estimation error,
+\[
+\mathrm{Bias}(T) := \mathbb{E}\bigl[\,T(Y,X) - \beta \,\big|\, Q, l\,\bigr],
+\]
+where the expectation integrates out $f$, $u$, $\eps$, and the independent A4a draw of $\beta$, while the realized loading geometry $(Q,l)$ is held fixed. $\mathrm{Bias}(T)$ is thus a deterministic vector attached to the geometry, not a random quantity. The scalar gate summary is its norm relative to the signal,
+$\mathrm{rel\_bias}(T) = \|\mathrm{Bias}(T)\|_2 / \|\beta\|_2$
+with $\|\beta\|_2=1$, and every ``mean-bias norm'' below means exactly this number.
 \end{definition}
 
 The conditioning carries content: were $Q$ redrawn Haar-isotropically on every replicate, the unconditional mean bias vector would vanish by spherical symmetry, while each dataset still suffers an $O(1)$ bias along its own realized spike directions, so the unconditional moment averages away exactly the error practitioners incur. This functional is what simulations estimate ($Q$ drawn once per configuration) and what the laws of Section 3 predict.
@@ -46,14 +49,14 @@ A companion functional isolates what confounding adds over pure fitting artifact
 \mathrm{rel\_bias}_{\mathrm{conf}}(T)
 = \frac{\bigl\| \mathbb{E}[T \mid \Lambda, \gamma] - \mathbb{E}[T \mid \Lambda, \gamma = 0] \bigr\|_2}{\|\beta\|_2},
 \]
-estimated from twin arms under common random seeds. The subtraction matters for $c > 1$, where minimum-norm least squares shrinks $\beta$ even without confounding; at $c \le 1$ an exact finite-$n$ identity makes the functionals coincide, so twin arms run only there.
+estimated from twin arms under common random seeds. The subtraction matters for $c > 1$, where minimum-norm least squares shrinks $\beta$ even without confounding, so twin arms are run on that side. At $c \le 1$ an exact finite-$n$ identity (Section~\ref{sec:capture}) makes the two functionals coincide, and the plain bias functional is used directly with no twin arm.
 
 \begin{definition}[Outlier visibility]
 \label{def:visibility}
 $V(X) = \lambda_{\max}(X^\top X/n)/\sigma_u^2$, compared against the Tracy--Widom upper $99\%$ quantile for white noise scaled by $1/n$; configurations exceeding it are outlier-positive.
 \end{definition}
 
-Two frontier quantities organize the empirical questions: the detection frontier $s_{\mathrm{detect}}(l,c)$, the minimal effective detection spike (Definition~\ref{def:seff}) at which the calibrated test of Section~\ref{subsec:detection} reaches power $1/2$ at size $0.05$, and the removal frontier $s_{\mathrm{remove}}(l,c)$, the minimal spike strength at which worst-case over-$\theta$ relative bias of the best spectral estimator falls to at most $\delta = 0.05$. They are claimed distinct: regions exist where $V(X)$ sits below the Tracy--Widom threshold yet $\mathrm{rel\_bias}$ reaches $0.2$ (invisible yet harmful), and regions where the design is clearly outlier-positive (spikes with $l > 2\sqrt{c}$) yet $\mathrm{rel\_bias}$ stays at or below $0.02$ (visible yet harmless).
+The detection frontier organizes the empirical questions; a removal frontier was also registered, and we state at once how it is discharged. The detection frontier is $s_{\mathrm{detect}}(l,c)$, the minimal effective detection spike (Definition~\ref{def:seff}) at which the calibrated alarm of Section~\ref{sec:detection} reaches power $0.8$ at size $0.05$; we adopt the 80-percent convention because that is the level at which all empirical maps below are quoted (the registered gate rule used a $1/2$-power variant; nothing downstream depends on the choice), and the removal frontier $s_{\mathrm{remove}}(l,c)$, the minimal spike strength at which worst-case over-$\theta$ relative bias of the best spectral estimator falls to at most $\delta = 0.05$ (registered for completeness; Section~\ref{sec:estimation} shows why its empirical curve is not the binding object). They are claimed distinct: regions exist where $V(X)$ sits below the Tracy--Widom threshold yet $\mathrm{rel\_bias}$ reaches $0.2$ (invisible yet harmful), and regions where the design is clearly outlier-positive (spikes with $l > 2\sqrt{c}$) yet $\mathrm{rel\_bias}$ stays at or below $0.02$ (visible yet harmless).
 
 \subsection{The identification subtlety and the assumption ledger}
 \label{subsec:ledger}
@@ -87,10 +90,10 @@ A3 makes $\mathrm{Cov}(X,Y) = \Sigma_X\beta + \Lambda\gamma$ an exact identity a
 
 \begin{assumption}[A4a: near-orthogonality of the structural direction]
 \label{assump:A4a}
-$\beta$ is drawn independently of $(Q, \gamma, l)$ with $\mathbb{E}[\beta] = 0$, $\|\beta\|_2 = 1$, delocalized coordinates (for instance uniform on $S^{p-1}$); equivalently, $|\langle \beta, u_j \rangle| = O_p(p^{-1/2})$ for each $j \le r$.
+$\beta$ is drawn independently of $(Q, \gamma, l)$ with $\mathbb{E}[\beta] = 0$, $\|\beta\|_2 = 1$, delocalized coordinates (for instance uniform on $S^{p-1}$), which implies $|\langle \beta, u_j \rangle| = O_p(p^{-1/2})$ for each $j \le r$, the checkable form used below.
 \end{assumption}
 
-A4a is the material assumption and standing default, in the spirit of perturbed-design near-orthogonality. It spreads the $\beta$ signal over the bulk of the whitened cross-moment spectrum while $\Lambda\gamma$ concentrates on spike directions, so testing $H_0\colon \gamma = 0$ is well posed with $\Lambda$ treated as a nuisance estimated from $X$. Estimation claims need not invoke A4a; only detection claims do. If $\beta$ correlates with leading eigenvectors, part of the signal mimics a spike and test size inflates; a dedicated alignment sweep quantifies tolerated violation. Three sensitivity variants replace A4a where flagged. A4b (perturbed sparsity) sets $\beta = \beta_s + \Lambda\gamma/\sigma_u^2$ with $\beta_s$ $k$-sparse, $k = o(n/\log p)$: detection becomes finding a dense perturbation of a sparse regression. A4c (multiple responses) shares loadings across $m \ge r$ responses, identifying the confounding subspace from the cross-response moment matrix, mainly strengthening power. A4d (mechanism independence, after Janzing--Schoelkopf) assumes $\beta$ independent of the spectrum of $\Sigma_X$; it motivates comparison baselines but is never maintained ourselves. Every detection statement names its variant, defaulting to A4a.
+A4a is the material assumption and standing default, in the spirit of perturbed-design near-orthogonality. It spreads the $\beta$ signal over the bulk of the whitened cross-moment spectrum while $\Lambda\gamma$ concentrates on spike directions, so testing $H_0\colon \gamma = 0$ is well posed with $\Lambda$ treated as a nuisance estimated from $X$. The directional capture laws need no A4a, since they condition on the realized $\beta$; aggregate artifact-size control and every detection claim do. If $\beta$ correlates with leading eigenvectors, part of the signal mimics a spike and test size inflates; our alignment evidence covers the confounding direction's angle to the factor axes, while a dedicated size sweep under deliberate beta-eigenvector correlation remains an open measurement (Section~\ref{sec:limitations}). Three sensitivity variants replace A4a where flagged. A4b (perturbed sparsity) sets $\beta = \beta_s + \Lambda\gamma/\sigma_u^2$ with $\beta_s$ $k$-sparse, $k = o(n/\log p)$: detection becomes finding a dense perturbation of a sparse regression. A4c (multiple responses) shares loadings across $m \ge r$ responses, identifying the confounding subspace from the cross-response moment matrix, mainly strengthening power. A4d (mechanism independence, after Janzing--Sch{\"o}lkopf) assumes $\beta$ independent of the spectrum of $\Sigma_X$; it motivates comparison baselines but is never maintained ourselves. Every detection statement names its variant, defaulting to A4a.
 
 \begin{assumption}[A5: homoskedastic noise]
 \label{assump:A5}
@@ -113,7 +116,7 @@ Detection asks whether the observed joint law of $(Y,X)$ contains evidence of co
 \[
 H_0\colon \gamma = 0 \qquad\text{versus}\qquad H_1\colon \gamma \ne 0 \ \text{with}\ \|\Lambda\gamma\|_2 = \Theta(1),
 \]
-and interest centers on whitened cross-moments. With $\widehat\Sigma = X^\top X/n$ and $W = XY/n$: S1 is the largest eigenvalue of $\widehat\Sigma^{-1} W W^\top \widehat\Sigma^{-1}/n$ with Tracy--Widom-calibrated threshold; S2 consists of linear spectral statistics of $\widehat\Sigma^{-1} W W^\top$ at data-chosen test functions; S3 is the Onatski ratio statistic for spiked directions of the whitened cross-moment. Named baselines outside the family: residual F-test, UCM bootstrap (Rendsburg et al.), scree inspection.
+and interest centers on whitened cross-moments. With $\widehat\Sigma = X^\top X/n$ and $W = XY/n$, the registered statistic family is the following census, used consistently throughout the paper. S1 is the largest eigenvalue of $\widehat\Sigma^{-1} W W^\top \widehat\Sigma^{-1}/n$ with a Tracy--Widom-calibrated threshold; it was demoted to diagnostic status before any sweep ran and its implementation erratum is documented in Section~\ref{sec:blindness}. S2, the alarm we ship, is the calibrated maximum of standardized spike coordinates of the whitened cross-moment (constructed in Section~\ref{sec:detection}; within the linear-spectral-statistic family just named, it is the member whose test functions concentrate on the supercritical coordinates). S3 is the Onatski ratio statistic for spiked directions of the whitened cross-moment, used for rank selection rather than testing. Named baselines outside the family: the residual F-test; a bootstrap-calibrated variant of the Janzing--Sch\"olkopf spectral confounding-strength criterion \citep{janzing2018detecting,rendsburg2024consistent}; and scree inspection (S0 in what follows), which sees design spikes but not confounding.
 
 \begin{definition}[Effective detection spike]
 \label{def:seff}
@@ -125,4 +128,40 @@ s_{\mathrm{eff}} := \bigl\| P_{\mathrm{spike}}\;\Sigma_X^{-1/2}\,\Lambda\gamma \
 where $P_{\mathrm{spike}}$ projects onto supercritical population eigenvector directions.
 \end{definition}
 
-Only supercritical-aligned mass yields a coherent rank-$r$ mean shift in the whitened cross-moment; the rest hides in the bulk. Under subcritical profiles $s_{\mathrm{eff}} = 0$ at leading order regardless of $g$: this is the formal content of ``invisible,'' and why visibility (Definition~\ref{def:visibility}) and harmfulness (Definition~\ref{def:bias}) must be tracked separately. $s_{\mathrm{detect}}$ marks where calibrated alarms fire, $s_{\mathrm{remove}}$ where spectral adjustment suffices; the gap between them is what this paper maps.
+Only supercritical-aligned mass yields a coherent rank-$r$ mean shift in the whitened cross-moment; the rest hides in the bulk. Under subcritical profiles $s_{\mathrm{eff}} = 0$ at leading order regardless of $g$: this is the formal content of ``invisible,'' and why visibility (Definition~\ref{def:visibility}) and harmfulness (Definition~\ref{def:bias}) must be tracked separately. Of the two frontiers, this paper maps $s_{\mathrm{detect}}$ empirically (Sections~\ref{sec:detection}--\ref{sec:benchmarks}); the removal side is settled structurally rather than curve-by-curve, because Section~\ref{sec:estimation} shows that hard trimming on discarded directions removes transmission exactly while no tuned soft member does, so the open scientific question is where detection fails, not where removal stops.
+
+\subsection{Notation}
+\label{subsec:notation}
+
+For reference, Table~\ref{tab:notation} collects the symbols used repeatedly across sections.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{ll@{\qquad}ll}
+\toprule
+Symbol & Meaning & Symbol & Meaning \\
+\midrule
+$n, p$ & sample size, dimension & $c=p/n$ & aspect ratio \\
+$r$ & number of latent factors & $l_j$ & $j$-th spike strength (of $\Lambda\Lambda^\top/\sigma_u^2$) \\
+$q_j$, $Q$ & spike directions, loading basis & $b=\Lambda\gamma$ & population bias direction \\
+$\beta,\ \gamma$ & structural vector, factor link & $\theta;\ g=\|\gamma\|$ & link alignment; link strength \\
+$M_1, M_2$ & vector / treatment models & $\tau; D$ & treatment effect; treatment \\
+$s_{\mathrm{eff}}$ & effective detection spike (Def.~\ref{def:seff}) & $V(X)$ & outlier-visibility statistic \\
+S0--S3 & statistic census (Sec.~\ref{subsec:detection}) & $\mathrm{cap}_j$ & capture coefficient $(1+l_j)/(c+l_j)$ \\
+$t=1/(c-1)$ & resolvent parameter ($c>1$) & $\bar m(\lambda)$ & ridge resolvent scalar (Prop.~\ref{prop:ridgeCap}) \\
+$A=1+\sigma_\eps^2$ & null response variance & $\omega;\ \omega_\star$ & confounding mass; visibility fixed point \\
+$w_0$ & scaling-profile constant & $\Lambda_D$ & OLS attenuation excess (Sec.~3) \\
+$\hat w$ & sample cross-moment $X_c^\top\tilde Y/n$ & $\mathrm{sd}_0(q_0)$ & null sd of a probe carrier \\
+\bottomrule
+\end{tabular}
+\caption{Frequently used notation. Population quantities carry no hats; sample quantities do.}
+\label{tab:notation}
+\end{table}
+
+
+
+\begin{remark}[Pre-registration vocabulary]
+\label{rem:vocab}
+The words frozen and gate carry precise meanings throughout. A quantity is frozen when it was hash-committed before any sweep data existed (grids, thresholds, tuning budgets, decision rules); a gate verdict is the recorded pass or fail against those committed rules; and no-regret for an estimator means its mean-bias norm lies within $1.05\times$ that of the best baseline in the same cell. Deviations from any frozen rule are labeled and reported where they occur. An adjudication labeled GO (respectively REVIEW, KILL) is the recorded decision to proceed (respectively to re-examine, to abandon a claim); supplementary documents S-A through S-E contain the complete computations behind results whose proofs are only sketched in the main text.
+\end{remark}
