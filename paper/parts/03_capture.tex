@@ -47,7 +47,7 @@ Proof status, stated honestly. Claim (i) is an identity, unit-tested to $10^{-8}
 Let $K=U(I-QQ')U'\stackrel{d}{=}W_n(I_n,p-r)$, let $e_1,\dots,e_r$ be the orthonormalized factor directions, and set $\delta'=1/(p-r-n-1)$. Then, with $r$ fixed as $n\to\infty$: for $a\ne b$, $e_a'K^{-1}e_b=o(\delta')$ in probability, jointly over pairs; uniformly over $j,k$, $e_j'K^{-1}u_k=O_p(\delta')$ with conditional mean zero exactly; and for $a\ne b$, $u_a'K^{-1}u_b=O_p(n^{-1/2})$.
 \end{lemma}
 
-All three rates follow from Haar frame moments of $K^{-1}$ together with the per-row block independence of $(QQ'r_i, P_{Q^\perp}r_i)$, exactly as in the $r=1$ ledger of Theorem~\ref{thm:captureR1}.
+All three rates follow from Haar frame moments of $K^{-1}$ together with the per-row block independence of $(QQ'r_i, P_{Q^\perp}r_i)$, exactly as in the $r=1$ ledger of Theorem~\ref{thm:captureR1}. In full, the first rate is Wishart concentration of $e_a'K^{-1}e_b$ about its zero mean via Haar frame moments of order four; the second is Cauchy--Schwarz against the same concentration combined with the exact conditional mean zero inherited from the odd symmetry of $u_k$ around its conditional mean; the third follows by conditioning on $U$ and applying the inverse-Wishart moment calculus entrywise. Proofs are short but not vacuous, and we flag plainly that they are concentration arguments at fixed $r$: uniformity in growing $r$ is neither claimed nor needed anywhere downstream.
 
 \begin{theorem}[Capture law, fixed $r$]\label{thm:captureFixedR}
 Let $r$ be fixed with distinct $l_1,\dots,l_r$. As $n\to\infty$ with $p/n\to c>1$, for every $j\le r$,
@@ -82,10 +82,10 @@ with continuity anchor $\bar m(0+)=1/(c-1)=t$. At $r=1$, conditionally on $(Q,\b
 \[
 E[\langle\hat\beta_{\lambda}-\beta,q\rangle\mid Q,\beta]
 \to\frac{-\langle\beta,q\rangle+\sqrt{l}\,\bar m(\lambda)\,\gamma}{1+(1+l)\bar m(\lambda)}
-=-(\operatorname{cap}(\lambda)-1)\langle\beta,q\rangle
+=(\operatorname{cap}(\lambda)-1)\langle\beta,q\rangle
 +\operatorname{cap}(\lambda)\frac{\sqrt{l}}{1+l}\,\gamma,
 \]
-where $\displaystyle\operatorname{cap}(\lambda):=\frac{(1+l)\bar m(\lambda)}{1+(1+l)\bar m(\lambda)}$. As $\lambda\to 0$ this returns the min-norm capture law exactly, $\operatorname{cap}(0)=(1+l)/(c+l)$; as $\lambda\to\infty$, $\operatorname{cap}(\lambda)\to 0$ and the directional mean tends to $-\langle\beta,q\rangle$ (the estimator collapses to zero).
+where $\displaystyle\operatorname{cap}(\lambda):=\frac{(1+l)\bar m(\lambda)}{1+(1+l)\bar m(\lambda)}$, so that $\operatorname{cap}(\lambda)-1=-\{1+(1+l)\bar m(\lambda)\}^{-1}$ identically; this identity reconciles the two displayed forms exactly (an early draft carried the opposite sign on the first term and was caught by precisely this reconciliation). As $\lambda\to 0$ this returns the min-norm capture law exactly, $\operatorname{cap}(0)=(1+l)/(c+l)$; as $\lambda\to\infty$, $\operatorname{cap}(\lambda)\to 0$ and the directional mean tends to $-\langle\beta,q\rangle$ (the estimator collapses to zero).
 \end{proposition}
 
 \begin{remark}[The verification loop at work]
